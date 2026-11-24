@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 1.2.4
+
+* Apply the Memory Well artwork to the admin header, Activity empty state and Dashboard widget. Refresh the directory screenshots.
+
 ## 1.2.3
 
 * Rename the plugin to Lanternmote Change Log and update the directory artwork and screenshots.

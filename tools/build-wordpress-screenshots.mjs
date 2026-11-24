@@ -11,6 +11,8 @@ const pluginBuild = join(root, ".tmp", "wp-assets-preview");
 const adminCss = await readFile(join(pluginBuild, "admin.css"));
 const adminJs = await readFile(join(pluginBuild, "admin.js"));
 const publicDir = join(root, "ui", "public");
+const wellMark = await readFile(join(publicDir, "well-mark.png"));
+const wellScene = await readFile(join(publicDir, "well-scene.png"));
 const dashboardCss = await readFile(join(publicDir, "dashboard.css"));
 const themeCss = await readFile(join(publicDir, "theme.css"));
 const manropeLatin = await readFile(join(publicDir, "fonts", "manrope-latin.woff2"));
@@ -179,6 +181,8 @@ const server = createServer((request, response) => {
     "/admin.css": ["text/css; charset=utf-8", adminCss],
     "/admin.js": ["text/javascript; charset=utf-8", adminJs],
     "/dashboard.css": ["text/css; charset=utf-8", dashboardCss],
+    "/well-mark.png": ["image/png", wellMark],
+    "/well-scene.png": ["image/png", wellScene],
     "/theme.css": ["text/css; charset=utf-8", themeCss],
     "/fonts/manrope-latin.woff2": ["font/woff2", manropeLatin],
     "/fonts/manrope-latin-ext.woff2": ["font/woff2", manropeLatinExtended],
@@ -231,13 +235,13 @@ async function capture() {
     await dashboard.locator(".widget-preview").screenshot({ path: join(output, "screenshot-3.png") });
     await dashboard.close();
 
-    const settings = await browser.newPage({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 1 });
+    const settings = await browser.newPage({ viewport: { width: 1050, height: 1000 }, deviceScaleFactor: 1 });
     settings.setDefaultTimeout(6000);
     await settings.goto(`${base}/?page=lanternmote-change-log&view=settings`);
     await settings.getByRole("heading", { name: "Log health", exact: true }).waitFor();
     await settings.getByText(`Lanternmote Change Log · Version ${version}`).waitFor();
     await settings.evaluate(() => document.fonts.ready.then(() => undefined));
-    await settings.screenshot({ path: join(output, "screenshot-4.png"), animations: "disabled", clip: { x: 0, y: 0, width: 1050, height: 975 } });
+    await settings.screenshot({ path: join(output, "screenshot-4.png"), animations: "disabled", clip: { x: 0, y: 0, width: 1050, height: 935 } });
     await settings.close();
     await page.close();
     for (const name of ["screenshot-1.png", "screenshot-2.png", "screenshot-3.png", "screenshot-4.png"]) {

@@ -4,7 +4,7 @@ A free activity history plugin for WordPress site administrators. Search changes
 
 The Lanternmote menu sits near the top of the WordPress admin menu. The main Dashboard includes recent changes and activity counts. Authorized viewers can also open the five newest changes from the WordPress admin toolbar, with polling only on visible admin pages.
 
-The 1.2.3 release is an expanded pilot for disposable and staging sites while the project gathers feedback. It is licensed under GPL 2.0 or later.
+The 1.2.4 release is an expanded pilot for disposable and staging sites while the project gathers feedback. It is licensed under GPL 2.0 or later.
 
 Version 1.2.3 carries forward the expanded pilot features from 1.2.0 and fixes findings from the WordPress automated review. These include a Super Admin network activity center, session inventory and revocation, optional concurrent session limits and idle expiry, the live admin toolbar feed, expanded WooCommerce capture, optional Advanced Custom Fields field label events, optional bbPress activity, optional WPForms form and submission events, optional Yoast SEO and Rank Math change records, optional Paid Memberships Pro membership events, optional Termly setting events, optional MainWP Dashboard tracking with child event transfer, optional InfiniteWP source and backup tracking, configurable warning email digests, immediate email, Slack, and Twilio SMS alert rules with all or any condition matching, private HTML reports, activity statistics, saved report templates, and scheduled report delivery. External storage and archives, WordPress core checksum comparison, and several real connector checks remain on the roadmap.
 
@@ -50,7 +50,7 @@ npm ci
 npm run package
 ```
 
-The build updates the bundled admin files and creates `release/lanternmote-change-log.1.2.3.zip`. The archive includes the plugin, frontend source, package lock, and third party license notices.
+The build updates the bundled admin files and creates `release/lanternmote-change-log.1.2.4.zip`. The archive includes the plugin, frontend source, package lock, and third party license notices.
 
 ## Run the local pilot
 

@@ -1014,7 +1014,7 @@ function ActivityView({ filters, apply, heading, initialEventId }) {
           toggleSelected={id => setSelectedIds(current => current.includes(id) ? current.filter(value => value !== id) : [...current, id])}
           selectPage={selected => setSelectedIds(selected ? data.events.map(event => event.id) : [])} />
         : <div className="cvsj-empty">
-          {data ? <CircleHelp size={25} aria-hidden="true" /> : <Clock3 size={25} aria-hidden="true" />}
+          {data && !active ? <span className="cvsj-mark" aria-hidden="true" /> : data ? <CircleHelp size={25} aria-hidden="true" /> : <Clock3 size={25} aria-hidden="true" />}
           <h2 role={data ? undefined : "status"}>{data ? (active ? "No matching events" : "No activity recorded yet") : "Loading activity…"}</h2>
           {data && <p>{active ? "Try a different search or clear the filters." : "New events will appear here as changes happen in WordPress."}</p>}
           {data && active && <Button variant="outline" onClick={() => apply({})}>Clear filters</Button>}
@@ -1578,7 +1578,7 @@ function App() {
   const currentPage = showNetworkSites ? "sites" : showSessions ? "sessions" : showSettings ? "settings" : showReports ? "reports" : "activity";
   return <div className="cvsj-app">
     <div className="cvsj-heading">
-      <div className="cvsj-mark"><Activity size={25} aria-hidden="true" /></div>
+      <span className="cvsj-mark" aria-hidden="true" />
       <div><h1 ref={heading} tabIndex={-1}>{config.networkMode ? "Network Lanternmote" : "Lanternmote"}</h1><p>{config.networkMode ? "Review changes across sites in this network." : "See who changed what across this WordPress site."}</p></div>
     </div>
     <nav className="cvsj-nav" aria-label="Lanternmote">

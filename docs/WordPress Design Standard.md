@@ -1,6 +1,8 @@
 # WordPress Design Standard
 
-Use this as the default for new WordPress plugin interfaces. Change Vigil Site Journal is the reference implementation. Apply the same design language to plugin pages, Settings, dialogs, and widgets. Respect the native WordPress shell, and use the site's brand when the user specifies one.
+Start every WordPress plugin with **The Memory Well** visual style unless the user specifies another direction. Use original fantasy adventure pixel art, a restrained palette of plum shadows and lavender midtones, and a small peach light that draws the eye. Give each plugin its own object or scene tied to its purpose. Lanternmote uses a well that holds memories. [Approved visual reference](memory-well.png)
+
+Carry the identity into directory artwork, the admin header and illustrated empty states. Use pixel lettering for short display titles and a readable sans serif for controls, tables and Settings. Derive interface accents from the artwork and check contrast on the actual surface. The component and layout guidance below describes the existing admin interface. Use the LAHL Calculator as the interaction reference for buttons, active tabs and callouts. [WordPress UI component pack and usage](https://github.com/seraphalaric-beep/rent_review_calculator#wordpress-ui-component-pack)
 
 ## Colour and surfaces
 
@@ -11,7 +13,7 @@ Use this as the default for new WordPress plugin interfaces. Change Vigil Site J
 | Main text | `#192133` |
 | Secondary text and metadata | `#4B5568` |
 | Subtle dividers | `#E0E3EA` |
-| Control border | `#9BA2B1` |
+| Control border | `#747E94` |
 | Indigo for primary actions, links, active navigation, and focus | `#464E9C` |
 | Indigo hover | `#373E83` |
 | Indigo tint for selection and icons | `#EEF0FA` |

@@ -4,7 +4,7 @@ Tags: activity log, audit log, history
 Requires at least: 6.9
 Tested up to: 7.1
 Requires PHP: 8.3
-Stable tag: 1.2.3
+Stable tag: 1.2.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -121,6 +121,9 @@ Deactivation and deletion preserve history by default. To erase activity and set
 
 == Changelog ==
 
+= 1.2.4 =
+Refresh the admin header, activity empty state and Dashboard summary with the Memory Well artwork.
+
 = 1.2.3 =
 * Renamed the plugin to Lanternmote Change Log for the WordPress directory review.
 * Refreshed the listing graphics and screenshots.
@@ -177,6 +180,9 @@ Deactivation and deletion preserve history by default. To erase activity and set
 * Improved spacing, button sizing, and narrow screen layouts.
 
 == Upgrade Notice ==
+
+= 1.2.4 =
+Refresh the admin header, activity empty state and Dashboard summary with the Memory Well artwork.
 
 = 1.2.3 =
 Deactivate any version 1.2.2 installation before activating Lanternmote. Both versions use the same activity and settings data. Leave the old copy deactivated so its uninstall option cannot erase shared data.

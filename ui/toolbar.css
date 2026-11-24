@@ -1,13 +1,13 @@
 #wpadminbar li#wp-admin-bar-cvsj-live-activity > .ab-sub-wrapper {
   overflow: hidden;
-  border: 1px solid #d9dfea;
+  border: 1px solid #e4dce9;
   border-radius: 0 0 8px 8px;
   background: #fff;
   box-shadow: 0 12px 28px rgb(23 32 51 / 16%);
 }
 
 #wpadminbar #wp-admin-bar-cvsj-live-activity .ab-sub-wrapper .ab-item {
-  color: #172033;
+  color: #302439;
 }
 
 #wpadminbar #wp-admin-bar-cvsj-live-activity-feed > .cvsj-toolbar-feed-content {
@@ -17,14 +17,14 @@
   height: auto;
   min-height: 38px;
   padding: 12px;
-  color: #172033;
+  color: #302439;
   line-height: 1.45;
   white-space: normal;
 }
 
 #wpadminbar .cvsj-toolbar-feed-status {
   margin: 0 0 8px;
-  color: #526078;
+  color: #62556d;
   font-size: 12px;
   font-weight: 600;
 }
@@ -47,7 +47,7 @@
   min-height: 0;
   padding: 9px 8px;
   border-radius: 5px;
-  color: #172033;
+  color: #302439;
   line-height: 1.4;
   white-space: normal;
   overflow-wrap: anywhere;
@@ -55,37 +55,37 @@
 
 #wpadminbar #wp-admin-bar-cvsj-live-activity .cvsj-toolbar-event-list .cvsj-toolbar-event:hover,
 #wpadminbar #wp-admin-bar-cvsj-live-activity .cvsj-toolbar-event-list .cvsj-toolbar-event:focus-visible {
-  background: #eef2ff;
-  color: #3730a3;
-  outline: 2px solid #4f46e5;
+  background: #f2eaf7;
+  color: #4f2d64;
+  outline: 2px solid #67427d;
   outline-offset: -2px;
 }
 
 #wpadminbar #wp-admin-bar-cvsj-live-activity-view-all > .ab-item {
   height: auto;
   padding: 10px 12px;
-  border-top: 1px solid #e3e7ef;
-  color: #3730a3;
+  border-top: 1px solid #e4dce9;
+  color: #4f2d64;
   font-size: 12px;
   font-weight: 600;
 }
 
 #wpadminbar #wp-admin-bar-cvsj-live-activity-view-all > .ab-item:hover,
 #wpadminbar #wp-admin-bar-cvsj-live-activity-view-all > .ab-item:focus-visible {
-  background: #eef2ff;
-  color: #3730a3;
+  background: #f2eaf7;
+  color: #4f2d64;
 }
 
 #wpadminbar #wp-admin-bar-cvsj-live-activity .cvsj-toolbar-event-summary {
-  color: #172033;
+  color: #302439;
   font-size: 13px;
   font-weight: 600;
 }
 
 #wpadminbar #wp-admin-bar-cvsj-live-activity .cvsj-toolbar-event-meta {
-  color: #526078;
+  color: #62556d;
   overflow: hidden;
-  color: #526078;
+  color: #62556d;
   font-size: 11px;
   text-overflow: ellipsis;
 }

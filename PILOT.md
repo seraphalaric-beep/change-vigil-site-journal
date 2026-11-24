@@ -134,3 +134,9 @@ The final ZIP was installed on a clean WordPress 6.9.11 site with PHP 8.3.36 and
 The directory asset ZIP contains the Lucide icon and its PNG variants, both WordPress banner sizes, four screenshots from the current interface with sample event data, and the icon license. The numbered screenshots match the readme captions. The asset ZIP was checked against the source files, and the banner and Settings artwork were visually inspected.
 
 The final upload ZIP has SHA256 `e88402c5a11bf467d32054e7f2719b63d2311bdfd2083c4a44ecf52c821c4aba`.
+
+## 1.2.4 Memory Well artwork candidate
+
+The local install ZIP was built with `npm run package` and installed on WordPress 7.1.4, PHP 8.5.12 and MariaDB 11.4.13. Every installed plugin file matched the ZIP. The security and interface checks (`tools/quality.mjs`) passed, with zero browser errors and zero violations in 12 axe scans across five widths from 320 to 1440 pixels. The automated activity pilot (`tools/pilot.mjs`, full mode) passed. The separate Dashboard regression comparison was skipped by request. The run logged WordPress core warnings about a missing comment author URL in fixture comments. Compatibility on other WordPress and PHP versions was not rerun for this candidate.
+
+With 100,000 events the first REST page took 175 ms and the filtered page took 348 ms at the 95th percentile. The automated investigation took 1.198 seconds. Visual inspection covered the desktop and mobile Activity screen, mobile details, Dashboard and Settings. The directory ZIP was checked against its source files, image dimensions, file size limits and all four numbered readme captions.

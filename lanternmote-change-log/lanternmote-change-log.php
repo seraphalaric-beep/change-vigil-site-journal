@@ -3,7 +3,7 @@
  * Plugin Name: Lanternmote Change Log
  * Description: Investigate WordPress changes, with searchable history and CSV export.
  * Author: Bryan Mc Namara
- * Version: 1.2.3
+ * Version: 1.2.4
  * Requires at least: 6.9
  * Requires PHP: 8.3
  * License: GPL-2.0-or-later

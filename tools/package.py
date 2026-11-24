@@ -45,7 +45,7 @@ while pending:
     pending.extend(lock[f"node_modules/{name}"].get("dependencies", {}))
 for asset in (
     "admin.js", "admin.css", "dashboard.css", "theme.css", "toolbar.js", "toolbar.css",
-    "fonts/manrope-latin.woff2", "fonts/manrope-latin-ext.woff2", "fonts/Manrope-OFL.txt",
+    "well-mark.png", "well-scene.png", "fonts/manrope-latin.woff2", "fonts/manrope-latin-ext.woff2", "fonts/Manrope-OFL.txt",
 ):
     assert f"{SLUG}/build/{asset}" in entries, f"Run the frontend build to create {asset}."
 

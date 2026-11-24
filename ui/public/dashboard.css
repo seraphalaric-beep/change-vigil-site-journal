@@ -32,6 +32,17 @@
   font: 600 17px/1.3 var(--cvsj-font);
 }
 
+.cvsj-dashboard-widget .cvsj-dashboard-overview::before {
+  content: "";
+  display: inline-block;
+  vertical-align: middle;
+  width: 24px;
+  height: 24px;
+  margin-inline-end: 8px;
+  background: url("./well-mark.png") center / contain no-repeat;
+  image-rendering: pixelated;
+}
+
 .cvsj-dashboard-widget .cvsj-dashboard-intro {
   margin: var(--cvsj-meta-gap) 0 0;
   color: var(--cvsj-muted);
