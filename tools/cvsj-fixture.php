@@ -15,23 +15,23 @@ foreach ( [ 'admin.php', 'nav-menu.php', 'comment.php', 'class-wp-upgrader.php' 
     }
 }
 
-use ChangeVigilSiteJournal\Store;
-use ChangeVigilSiteJournal\Capture;
-use ChangeVigilSiteJournal\FileMonitor;
-use ChangeVigilSiteJournal\ScheduledReports;
-use ChangeVigilSiteJournal\Alerts;
-use ChangeVigilSiteJournal\DeveloperAPI;
+use LanternmoteChangeLog\Store;
+use LanternmoteChangeLog\Capture;
+use LanternmoteChangeLog\FileMonitor;
+use LanternmoteChangeLog\ScheduledReports;
+use LanternmoteChangeLog\Alerts;
+use LanternmoteChangeLog\DeveloperAPI;
 
 $operation = sanitize_key( $_POST['operation'] ?? '' );
 if ( 'nonce' === $operation && is_user_logged_in() ) {
-	wp_send_json( [ 'nonce' => wp_create_nonce( 'wp_rest' ), 'restBase' => rest_url( 'change-vigil-site-journal/v1/' ) ] );
+	wp_send_json( [ 'nonce' => wp_create_nonce( 'wp_rest' ), 'restBase' => rest_url( 'lanternmote-change-log/v1/' ) ] );
 }
 if ( 'session_probe' === $operation ) {
 	$user_id = get_current_user_id();
 	$state = [ 'user_id' => $user_id, 'idle_enabled' => false, 'elapsed' => null, 'session_found' => false, 'filter_registered' => false ];
-	$stored = (array) get_option( ChangeVigilSiteJournal\Sessions::SETTINGS, [] );
+	$stored = (array) get_option( LanternmoteChangeLog\Sessions::SETTINGS, [] );
 	$state['idle_enabled'] = ! empty( $stored['idle_enabled'] );
-	$state['filter_registered'] = false !== has_filter( 'determine_current_user', [ ChangeVigilSiteJournal\Sessions::class, 'enforce_idle_limit' ] );
+	$state['filter_registered'] = false !== has_filter( 'determine_current_user', [ LanternmoteChangeLog\Sessions::class, 'enforce_idle_limit' ] );
 	if ( $user_id && function_exists( 'wp_get_session_token' ) ) {
 		$token = wp_get_session_token();
 		$session = '' === $token ? null : WP_Session_Tokens::get_instance( $user_id )->get( $token );
@@ -46,7 +46,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
     wp_send_json_error( 'Pilot administrator required.', 403 );
 }
 
-const CVSJ_PLUGIN = 'change-vigil-site-journal/change-vigil-site-journal.php';
+const CVSJ_PLUGIN = 'lanternmote-change-log/lanternmote-change-log.php';
 global $wpdb;
 if ( 'activate' === $operation ) {
     $result = activate_plugin( CVSJ_PLUGIN );
@@ -229,7 +229,7 @@ function fixture_extended_events( int $editor_id ): array {
 	update_option( $widget_option, [ '2' => [ 'text' => $widget_secret ], '_multiwidget' => 1 ], false );
 	delete_option( $widget_option );
 
-	$events = \ChangeVigilSiteJournal\Store::query( [ 'q' => $suffix ], 200, 0, 0, true );
+	$events = \LanternmoteChangeLog\Store::query( [ 'q' => $suffix ], 200, 0, 0, true );
 	fixture_check( $events );
 	$encoded = wp_json_encode( $events, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
 	$privacy_ok = ! str_contains( $encoded, $comment_secret )
@@ -239,13 +239,13 @@ function fixture_extended_events( int $editor_id ): array {
 		&& ! str_contains( $encoded, 'updated.' . $suffix . '@example.test' )
 		&& ! str_contains( $encoded, $url_secret )
 		&& ! str_contains( $encoded, $widget_secret );
-	$profile_event = \ChangeVigilSiteJournal\Store::query( [ 'action' => 'user_profile_changed', 'item' => 'user:' . $editor_id ], 10, 0, 0, true );
+	$profile_event = \LanternmoteChangeLog\Store::query( [ 'action' => 'user_profile_changed', 'item' => 'user:' . $editor_id ], 10, 0, 0, true );
 	fixture_check( $profile_event );
-	$password_event = \ChangeVigilSiteJournal\Store::query( [ 'action' => 'password_changed', 'item' => 'user:' . $editor_id ], 10, 0, 0, true );
+	$password_event = \LanternmoteChangeLog\Store::query( [ 'action' => 'password_changed', 'item' => 'user:' . $editor_id ], 10, 0, 0, true );
 	fixture_check( $password_event );
-	$sign_out_event = \ChangeVigilSiteJournal\Store::query( [ 'action' => 'signed_out', 'item' => 'user:' . $editor_id ], 10, 0, 0, true );
+	$sign_out_event = \LanternmoteChangeLog\Store::query( [ 'action' => 'signed_out', 'item' => 'user:' . $editor_id ], 10, 0, 0, true );
 	fixture_check( $sign_out_event );
-	$menu_events = \ChangeVigilSiteJournal\Store::query( [ 'action' => 'menu_item_updated', 'q' => $suffix ], 20, 0, 0, true );
+	$menu_events = \LanternmoteChangeLog\Store::query( [ 'action' => 'menu_item_updated', 'q' => $suffix ], 20, 0, 0, true );
 	fixture_check( $menu_events );
 	$menu_destination_captured = false;
 	foreach ( $menu_events as $menu_event ) {
@@ -307,7 +307,7 @@ function fixture_woocommerce_disabled(): array {
 	$product->set_status( 'draft' );
 	$product_id = (int) $product->save();
 	fixture_check( $product_id );
-	\ChangeVigilSiteJournal\Capture::flush_woocommerce_changes();
+	\LanternmoteChangeLog\Capture::flush_woocommerce_changes();
 	$events = Store::query( [ 'item' => 'product:' . $product_id ], 20, 0, 0, true );
 	fixture_check( is_array( $events ) );
 	wp_delete_post( $product_id, true );
@@ -320,7 +320,7 @@ function fixture_woocommerce_events(): array {
 		throw new RuntimeException( 'Enable WooCommerce recording and install WooCommerce before running this fixture.' );
 	}
 	$suffix = strtolower( wp_generate_password( 8, false, false ) );
-	$product_name = 'Change Vigil product ' . $suffix;
+	$product_name = 'Lanternmote product ' . $suffix;
 	$updated_product_name = 'Updated ' . $product_name;
 	$product_id = 0;
 	$coupon_id = 0;
@@ -379,16 +379,16 @@ function fixture_woocommerce_events(): array {
 		fixture_check( true );
 
 		wp_trash_post( $product_id );
-		\ChangeVigilSiteJournal\Capture::flush_woocommerce_changes();
+		\LanternmoteChangeLog\Capture::flush_woocommerce_changes();
 		wp_untrash_post( $product_id );
-		\ChangeVigilSiteJournal\Capture::flush_woocommerce_changes();
+		\LanternmoteChangeLog\Capture::flush_woocommerce_changes();
 		wp_delete_post( $product_id, true );
 		wp_trash_post( $coupon_id );
-		\ChangeVigilSiteJournal\Capture::flush_woocommerce_changes();
+		\LanternmoteChangeLog\Capture::flush_woocommerce_changes();
 		wp_untrash_post( $coupon_id );
-		\ChangeVigilSiteJournal\Capture::flush_woocommerce_changes();
+		\LanternmoteChangeLog\Capture::flush_woocommerce_changes();
 		wp_delete_post( $coupon_id, true );
-		\ChangeVigilSiteJournal\Capture::flush_woocommerce_changes();
+		\LanternmoteChangeLog\Capture::flush_woocommerce_changes();
 
 		$tax_value = 'yes' === strtolower( (string) $old_tax ) ? 'no' : 'yes';
 		update_option( 'woocommerce_calc_taxes', $tax_value, false );
@@ -444,7 +444,7 @@ function fixture_woocommerce_events(): array {
 		if ( $coupon_id && get_post( $coupon_id ) instanceof WP_Post ) {
 			wp_delete_post( $coupon_id, true );
 		}
-		\ChangeVigilSiteJournal\Capture::flush_woocommerce_changes();
+		\LanternmoteChangeLog\Capture::flush_woocommerce_changes();
 		update_option( Store::SETTINGS, $old_settings, false );
 		foreach ( [ 'woocommerce_calc_taxes' => $old_tax, 'woocommerce_notify_low_stock' => $old_notify, 'woocommerce_specific_allowed_countries' => $old_countries ] as $option => $value ) {
 			if ( false === $value ) {
@@ -473,7 +473,7 @@ function fixture_acf_events( bool $enabled ): array {
 	$after_email = 'after-' . $suffix . '@example.invalid';
 	acf_add_local_field_group( [
 		'key' => 'group_cvsj_' . $suffix,
-		'title' => 'Change Vigil ACF fixture',
+		'title' => 'Lanternmote ACF fixture',
 		'fields' => [
 			[ 'key' => $marker_key, 'label' => 'Editorial marker', 'name' => $marker_name, 'type' => 'text' ],
 			[ 'key' => $email_key, 'label' => 'Contact email', 'name' => $email_name, 'type' => 'email' ],
@@ -484,7 +484,7 @@ function fixture_acf_events( bool $enabled ): array {
 		],
 	] );
 	$post_id = wp_insert_post( [
-		'post_title' => 'Change Vigil ACF fixture ' . $suffix,
+		'post_title' => 'Lanternmote ACF fixture ' . $suffix,
 		'post_type' => 'page',
 		'post_status' => 'publish',
 	], true );
@@ -494,9 +494,9 @@ function fixture_acf_events( bool $enabled ): array {
 	if ( $enabled ) {
 		update_field( $marker_key, 'After marker', (int) $post_id );
 		update_field( $email_key, $after_email, (int) $post_id );
-		\ChangeVigilSiteJournal\Capture::flush_acf_changes();
+		\LanternmoteChangeLog\Capture::flush_acf_changes();
 		update_field( $marker_key, 'After marker', (int) $post_id );
-		\ChangeVigilSiteJournal\Capture::flush_acf_changes();
+		\LanternmoteChangeLog\Capture::flush_acf_changes();
 	}
 	$events = Store::query( [ 'item' => 'page:' . (int) $post_id, 'action' => 'acf_fields_changed' ], 20, 0, 0, true );
 	fixture_check( is_array( $events ) );
@@ -507,14 +507,14 @@ function fixture_acf_events( bool $enabled ): array {
 	$product_supported = $enabled && post_type_exists( 'product' );
 	if ( $product_supported ) {
 		$product_id = wp_insert_post( [
-			'post_title' => 'Change Vigil ACF product ' . $suffix,
+			'post_title' => 'Lanternmote ACF product ' . $suffix,
 			'post_type' => 'product',
 			'post_status' => 'publish',
 		], true );
 		fixture_check( $product_id );
 		update_post_meta( (int) $product_id, $marker_name, 'Before product marker' );
 		update_field( $marker_key, 'After product marker', (int) $product_id );
-		\ChangeVigilSiteJournal\Capture::flush_acf_changes();
+		\LanternmoteChangeLog\Capture::flush_acf_changes();
 		$product_events = Store::query( [ 'item' => 'product:' . (int) $product_id, 'action' => 'acf_fields_changed' ], 10, 0, 0, true );
 		fixture_check( is_array( $product_events ) );
 		$product_details = $product_events ? json_decode( (string) $product_events[0]['details'], true ) : [];
@@ -525,7 +525,7 @@ function fixture_acf_events( bool $enabled ): array {
 	}
 	$result = [
 		'supported' => true,
-		'hookRegistered' => false !== has_filter( 'acf/update_value', [ ChangeVigilSiteJournal\Capture::class, 'acf_value_updated' ] ),
+		'hookRegistered' => false !== has_filter( 'acf/update_value', [ LanternmoteChangeLog\Capture::class, 'acf_value_updated' ] ),
 		'postId' => (int) $post_id,
 		'postName' => get_the_title( $post_id ),
 		'eventCount' => count( $events ),
@@ -549,7 +549,7 @@ function fixture_acf_events( bool $enabled ): array {
 
 function fixture_bbpress_items( string $suffix ): array {
 	$forum_id = bbp_insert_forum( [
-		'post_title' => 'Change Vigil forum ' . $suffix,
+		'post_title' => 'Lanternmote forum ' . $suffix,
 		'post_content' => 'PRIVATE_BBPRESS_FORUM_BODY_' . $suffix,
 		'post_status' => 'publish',
 		'post_author' => get_current_user_id(),
@@ -557,7 +557,7 @@ function fixture_bbpress_items( string $suffix ): array {
 	fixture_check( $forum_id );
 	$topic_id = bbp_insert_topic( [
 		'post_parent' => (int) $forum_id,
-		'post_title' => 'Change Vigil topic ' . $suffix,
+		'post_title' => 'Lanternmote topic ' . $suffix,
 		'post_content' => 'PRIVATE_BBPRESS_TOPIC_BODY_' . $suffix,
 		'post_status' => 'publish',
 		'post_author' => get_current_user_id(),
@@ -706,7 +706,7 @@ function fixture_bbpress_events(): array {
 
 function fixture_wpforms_form( string $suffix ): int {
 	$form_id = wp_insert_post( [
-		'post_title' => 'Change Vigil WPForms ' . $suffix,
+		'post_title' => 'Lanternmote WPForms ' . $suffix,
 		'post_type' => 'wpforms',
 		'post_status' => 'publish',
 		'post_author' => get_current_user_id(),
@@ -746,7 +746,7 @@ function fixture_wpforms_events(): array {
 		$form_id = fixture_wpforms_form( $suffix );
 		fixture_check( wp_update_post( [
 			'ID' => $form_id,
-			'post_title' => 'Updated Change Vigil WPForms ' . $suffix,
+			'post_title' => 'Updated Lanternmote WPForms ' . $suffix,
 			'post_content' => 'PRIVATE_WPFORMS_FORM_EDIT_' . $suffix,
 		], true ) );
 		$form_events = Store::query( [ 'item' => 'wpforms_form:' . $form_id ], 50, 0, 0, true );
@@ -777,7 +777,7 @@ function fixture_wpforms_events(): array {
 			'supported' => true,
 			'version' => WPFORMS_VERSION,
 			'formId' => $form_id,
-			'formName' => 'Updated Change Vigil WPForms ' . $suffix,
+			'formName' => 'Updated Lanternmote WPForms ' . $suffix,
 			'actions' => array_column( $events, 'action_key' ),
 			'unchangedIgnored' => $unchanged_ignored,
 			'zeroEntryIdIgnored' => $zero_id_ignored,
@@ -885,7 +885,7 @@ function fixture_seo_hook_state(): array {
 	return [
 		'yoastLoaded' => fixture_seo_plugin_loaded( 'yoast' ),
 		'rankMathLoaded' => fixture_seo_plugin_loaded( 'rank_math' ),
-		'optionHookRegistered' => false !== has_action( 'updated_option', [ ChangeVigilSiteJournal\Capture::class, 'seo_option_updated' ] ),
+		'optionHookRegistered' => false !== has_action( 'updated_option', [ LanternmoteChangeLog\Capture::class, 'seo_option_updated' ] ),
 	];
 }
 
@@ -921,11 +921,11 @@ function fixture_pmpro_loaded(): bool {
 function fixture_pmpro_hook_state(): array {
 	return [
 		'loaded' => fixture_pmpro_loaded(),
-		'membershipHook' => false !== has_action( 'pmpro_after_all_membership_level_changes', [ ChangeVigilSiteJournal\Capture::class, 'pmpro_membership_levels_changed' ] ),
-		'levelCreateHook' => false !== has_action( 'pmpro_added_membership_level', [ ChangeVigilSiteJournal\Capture::class, 'pmpro_level_added' ] ),
-		'levelBeforeUpdateHook' => false !== has_action( 'pmpro_update_membership_level', [ ChangeVigilSiteJournal\Capture::class, 'pmpro_level_before_update' ] ),
-		'levelUpdateHook' => false !== has_action( 'pmpro_updated_membership_level', [ ChangeVigilSiteJournal\Capture::class, 'pmpro_level_updated' ] ),
-		'levelDeleteHook' => false !== has_action( 'pmpro_delete_membership_level', [ ChangeVigilSiteJournal\Capture::class, 'pmpro_level_deleted' ] ),
+		'membershipHook' => false !== has_action( 'pmpro_after_all_membership_level_changes', [ LanternmoteChangeLog\Capture::class, 'pmpro_membership_levels_changed' ] ),
+		'levelCreateHook' => false !== has_action( 'pmpro_added_membership_level', [ LanternmoteChangeLog\Capture::class, 'pmpro_level_added' ] ),
+		'levelBeforeUpdateHook' => false !== has_action( 'pmpro_update_membership_level', [ LanternmoteChangeLog\Capture::class, 'pmpro_level_before_update' ] ),
+		'levelUpdateHook' => false !== has_action( 'pmpro_updated_membership_level', [ LanternmoteChangeLog\Capture::class, 'pmpro_level_updated' ] ),
+		'levelDeleteHook' => false !== has_action( 'pmpro_delete_membership_level', [ LanternmoteChangeLog\Capture::class, 'pmpro_level_deleted' ] ),
 	];
 }
 
@@ -1068,10 +1068,10 @@ function fixture_termly_loaded(): bool {
 function fixture_termly_hook_state(): array {
 	return [
 		'loaded' => fixture_termly_loaded(),
-		'bannerHook' => false !== has_action( 'update_option_termly_display_banner', [ ChangeVigilSiteJournal\Capture::class, 'termly_banner_updated' ] ),
-		'autoblockerHook' => false !== has_action( 'update_option_termly_display_auto_blocker', [ ChangeVigilSiteJournal\Capture::class, 'termly_autoblocker_updated' ] ),
-		'scanHook' => false !== has_action( 'update_option_termly_site_scan', [ ChangeVigilSiteJournal\Capture::class, 'termly_site_scan_updated' ] ),
-		'keyDeleteHook' => false !== has_action( 'delete_option', [ ChangeVigilSiteJournal\Capture::class, 'termly_api_key_before_delete' ] ),
+		'bannerHook' => false !== has_action( 'update_option_termly_display_banner', [ LanternmoteChangeLog\Capture::class, 'termly_banner_updated' ] ),
+		'autoblockerHook' => false !== has_action( 'update_option_termly_display_auto_blocker', [ LanternmoteChangeLog\Capture::class, 'termly_autoblocker_updated' ] ),
+		'scanHook' => false !== has_action( 'update_option_termly_site_scan', [ LanternmoteChangeLog\Capture::class, 'termly_site_scan_updated' ] ),
+		'keyDeleteHook' => false !== has_action( 'delete_option', [ LanternmoteChangeLog\Capture::class, 'termly_api_key_before_delete' ] ),
 	];
 }
 
@@ -1093,13 +1093,13 @@ function fixture_termly_events(): array {
 		$original[ $name ] = [ 'exists' => false !== get_option( $name, false ), 'value' => get_option( $name, false ) ];
 	}
 	$actions = [
-		'added_option' => [ ChangeVigilSiteJournal\Capture::class, 'termly_api_key_added' ],
-		'update_option_termly_api_key' => [ ChangeVigilSiteJournal\Capture::class, 'termly_api_key_updated' ],
-		'delete_option' => [ ChangeVigilSiteJournal\Capture::class, 'termly_api_key_before_delete' ],
-		'deleted_option' => [ ChangeVigilSiteJournal\Capture::class, 'termly_api_key_deleted' ],
-		'update_option_termly_display_banner' => [ ChangeVigilSiteJournal\Capture::class, 'termly_banner_updated' ],
-		'update_option_termly_display_auto_blocker' => [ ChangeVigilSiteJournal\Capture::class, 'termly_autoblocker_updated' ],
-		'update_option_termly_site_scan' => [ ChangeVigilSiteJournal\Capture::class, 'termly_site_scan_updated' ],
+		'added_option' => [ LanternmoteChangeLog\Capture::class, 'termly_api_key_added' ],
+		'update_option_termly_api_key' => [ LanternmoteChangeLog\Capture::class, 'termly_api_key_updated' ],
+		'delete_option' => [ LanternmoteChangeLog\Capture::class, 'termly_api_key_before_delete' ],
+		'deleted_option' => [ LanternmoteChangeLog\Capture::class, 'termly_api_key_deleted' ],
+		'update_option_termly_display_banner' => [ LanternmoteChangeLog\Capture::class, 'termly_banner_updated' ],
+		'update_option_termly_display_auto_blocker' => [ LanternmoteChangeLog\Capture::class, 'termly_autoblocker_updated' ],
+		'update_option_termly_site_scan' => [ LanternmoteChangeLog\Capture::class, 'termly_site_scan_updated' ],
 	];
 	$last_id = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COALESCE(MAX(id), 0) FROM %i', Store::table() ) );
 
@@ -1157,12 +1157,12 @@ function fixture_mainwp_loaded(): bool {
 function fixture_mainwp_hook_state(): array {
 	return [
 		'loaded' => fixture_mainwp_loaded(),
-		'siteAddHook' => false !== has_action( 'mainwp_added_new_site', [ ChangeVigilSiteJournal\Capture::class, 'mainwp_site_added' ] ),
-		'siteDeleteHook' => false !== has_action( 'mainwp_site_deleted', [ ChangeVigilSiteJournal\Capture::class, 'mainwp_site_deleted' ] ),
-		'siteSyncHook' => false !== has_action( 'mainwp_site_sync', [ ChangeVigilSiteJournal\Capture::class, 'mainwp_site_sync' ] ),
-		'syncRequestFilter' => false !== has_filter( 'mainwp_sync_others_data', [ ChangeVigilSiteJournal\Capture::class, 'mainwp_sync_request' ] ),
-		'clientHook' => false !== has_action( 'mainwp_client_updated', [ ChangeVigilSiteJournal\Capture::class, 'mainwp_client_updated' ] ),
-		'clientDeleteHook' => false !== has_action( 'mainwp_client_deleted', [ ChangeVigilSiteJournal\Capture::class, 'mainwp_client_deleted' ] ),
+		'siteAddHook' => false !== has_action( 'mainwp_added_new_site', [ LanternmoteChangeLog\Capture::class, 'mainwp_site_added' ] ),
+		'siteDeleteHook' => false !== has_action( 'mainwp_site_deleted', [ LanternmoteChangeLog\Capture::class, 'mainwp_site_deleted' ] ),
+		'siteSyncHook' => false !== has_action( 'mainwp_site_sync', [ LanternmoteChangeLog\Capture::class, 'mainwp_site_sync' ] ),
+		'syncRequestFilter' => false !== has_filter( 'mainwp_sync_others_data', [ LanternmoteChangeLog\Capture::class, 'mainwp_sync_request' ] ),
+		'clientHook' => false !== has_action( 'mainwp_client_updated', [ LanternmoteChangeLog\Capture::class, 'mainwp_client_updated' ] ),
+		'clientDeleteHook' => false !== has_action( 'mainwp_client_deleted', [ LanternmoteChangeLog\Capture::class, 'mainwp_client_deleted' ] ),
 	];
 }
 
@@ -1186,15 +1186,15 @@ function fixture_mainwp_transfer(): array {
 		'summary' => 'Edited Privacy policy page',
 		'details' => [ 'changes' => [ 'Title' => [ 'Previous title', 'New title' ] ], 'untrusted' => '<img src=x onerror=alert(1)>' ],
 	];
-	$request = ChangeVigilSiteJournal\Capture::mainwp_sync_request( [], (object) [ 'id' => $site_id ] );
-	$before = ChangeVigilSiteJournal\Store::query( [ 'site_id' => (string) $site_id ], 10, 0, 0, true );
+	$request = LanternmoteChangeLog\Capture::mainwp_sync_request( [], (object) [ 'id' => $site_id ] );
+	$before = LanternmoteChangeLog\Store::query( [ 'site_id' => (string) $site_id ], 10, 0, 0, true );
 	fixture_check( is_array( $before ) );
 	do_action( 'mainwp_site_sync', (object) [ 'id' => $site_id ], [ 'activity_log_for_admins' => [ 'schema_version' => 1, 'events' => [ $event ] ] ], true, '', [] );
 	do_action( 'mainwp_site_sync', (object) [ 'id' => $site_id ], [ 'activity_log_for_admins' => [ 'schema_version' => 1, 'events' => [ $event ] ] ], true, '', [] );
-	$rows = ChangeVigilSiteJournal\Store::query( [ 'site_id' => (string) $site_id ], 10, 0, 0, true );
+	$rows = LanternmoteChangeLog\Store::query( [ 'site_id' => (string) $site_id ], 10, 0, 0, true );
 	fixture_check( is_array( $rows ) );
-	$request_after = ChangeVigilSiteJournal\Capture::mainwp_sync_request( [], (object) [ 'id' => $site_id ] );
-	$export = ChangeVigilSiteJournal\Capture::mainwp_sync_export( [], [ 'activity_log_for_admins' => [ 'schema_version' => 1, 'after_id' => 0, 'limit' => 50 ] ] );
+	$request_after = LanternmoteChangeLog\Capture::mainwp_sync_request( [], (object) [ 'id' => $site_id ] );
+	$export = LanternmoteChangeLog\Capture::mainwp_sync_export( [], [ 'activity_log_for_admins' => [ 'schema_version' => 1, 'after_id' => 0, 'limit' => 50 ] ] );
 	$export_ids = array_map( 'intval', array_column( $export['activity_log_for_admins']['events'] ?? [], 'id' ) );
 	$raw = wp_json_encode( $rows );
 	$result = [
@@ -1269,7 +1269,7 @@ function fixture_infinitewp_loaded(): bool {
 function fixture_infinitewp_hook_state(): array {
 	return [
 		'loaded' => fixture_infinitewp_loaded(),
-		'backupHook' => false !== has_action( 'added_post_meta', [ ChangeVigilSiteJournal\Capture::class, 'infinitewp_activity_added' ] ),
+		'backupHook' => false !== has_action( 'added_post_meta', [ LanternmoteChangeLog\Capture::class, 'infinitewp_activity_added' ] ),
 	];
 }
 
@@ -1296,7 +1296,7 @@ function fixture_infinitewp_disabled(): array {
 			update_option( 'is_save_activity_log', $original_log_setting, false );
 		}
 	}
-	$events = ChangeVigilSiteJournal\Store::query( [ 'category' => 'infinitewp' ], 10, 0, 0, true );
+	$events = LanternmoteChangeLog\Store::query( [ 'category' => 'infinitewp' ], 10, 0, 0, true );
 	fixture_check( is_array( $events ) );
 	return [ 'supported' => true, 'capturedWhileDisabled' => (bool) $events ];
 }
@@ -1309,7 +1309,7 @@ function fixture_infinitewp_events(): array {
 
 	$user = wp_get_current_user();
 	fixture_check( $user instanceof WP_User && $user->exists() );
-	$last_id = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COALESCE(MAX(id), 0) FROM %i', ChangeVigilSiteJournal\Store::table() ) );
+	$last_id = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COALESCE(MAX(id), 0) FROM %i', LanternmoteChangeLog\Store::table() ) );
 	if ( ! defined( 'IWP_AUTHORISED_CALL' ) ) {
 		define( 'IWP_AUTHORISED_CALL', 1 );
 	}
@@ -1364,12 +1364,12 @@ function fixture_infinitewp_events(): array {
 		}
 	}
 
-	$events = ChangeVigilSiteJournal\Store::query( [ 'category' => 'infinitewp' ], 20, 0, 0, true );
+	$events = LanternmoteChangeLog\Store::query( [ 'category' => 'infinitewp' ], 20, 0, 0, true );
 	fixture_check( is_array( $events ) );
 	$new_events = array_values( array_filter( $events, static fn( array $event ): bool => (int) ( $event['id'] ?? 0 ) > $last_id ) );
 	$backup_events = array_values( array_filter( $new_events, static fn( array $event ): bool => 'infinitewp_backup_completed' === ( $event['action_key'] ?? '' ) ) );
-	$source_events = ChangeVigilSiteJournal\Store::query( [ 'action' => 'content_created', 'item' => 'page:' . (int) $source_probe ], 10, 0, 0, true );
-	$mismatch_events = ChangeVigilSiteJournal\Store::query( [ 'action' => 'content_created', 'item' => 'page:' . (int) $mismatch_probe ], 10, 0, 0, true );
+	$source_events = LanternmoteChangeLog\Store::query( [ 'action' => 'content_created', 'item' => 'page:' . (int) $source_probe ], 10, 0, 0, true );
+	$mismatch_events = LanternmoteChangeLog\Store::query( [ 'action' => 'content_created', 'item' => 'page:' . (int) $mismatch_probe ], 10, 0, 0, true );
 	fixture_check( is_array( $source_events ) && is_array( $mismatch_events ) );
 	$backup = $backup_events[0] ?? null;
 	$details = is_array( $backup ) ? json_decode( (string) ( $backup['details'] ?? '' ), true ) ?: [] : [];
@@ -1475,7 +1475,7 @@ try {
         case 'acf_hook_state':
             wp_send_json( [
                 'loaded' => function_exists( 'acf' ),
-                'registered' => false !== has_filter( 'acf/update_value', [ ChangeVigilSiteJournal\Capture::class, 'acf_value_updated' ] ),
+                'registered' => false !== has_filter( 'acf/update_value', [ LanternmoteChangeLog\Capture::class, 'acf_value_updated' ] ),
             ] );
 
         case 'bbpress_disabled':
@@ -1493,7 +1493,7 @@ try {
         case 'wpforms_hook_state':
             wp_send_json( [
                 'loaded' => defined( 'WPFORMS_VERSION' ),
-                'registered' => false !== has_action( 'wpforms_process_complete', [ ChangeVigilSiteJournal\Capture::class, 'wpforms_entry_submitted' ] ),
+                'registered' => false !== has_action( 'wpforms_process_complete', [ LanternmoteChangeLog\Capture::class, 'wpforms_entry_submitted' ] ),
             ] );
 
         case 'seo_hook_state':
@@ -1716,7 +1716,7 @@ try {
             $multisite_site = wp_insert_site( [
                 'domain' => (string) $multisite_network->domain,
                 'path' => $multisite_path,
-                'title' => 'Change Vigil pilot ' . $multisite_path,
+                'title' => 'Lanternmote pilot ' . $multisite_path,
                 'user_id' => get_current_user_id(),
             ] );
             fixture_check( $multisite_site );
@@ -2023,7 +2023,7 @@ try {
             $mail_headers = is_array( $captured_mail ) ? (array) ( $captured_mail['headers'] ?? [] ) : [];
             $mail_recipients = is_array( $captured_mail ) ? (array) ( $captured_mail['to'] ?? [] ) : [];
             wp_send_json( [
-                'sent' => is_array( $captured_mail ) && str_contains( $mail_body, 'Change Vigil recorded warning events' ),
+                'sent' => is_array( $captured_mail ) && str_contains( $mail_body, 'Lanternmote recorded warning events' ),
                 'containsKnownSummary' => str_contains( $mail_body, 'Warning digest scheduling fixture' ),
                 'plainText' => in_array( 'Content-Type: text/plain; charset=UTF-8', $mail_headers, true ),
                 'summaryOnly' => ! str_contains( $mail_body, 'PRIVATE_DIGEST_DETAIL' ),
@@ -2254,15 +2254,15 @@ try {
             fixture_check( $editor );
             $previous_user = get_current_user_id();
             wp_set_current_user( (int) $editor->ID );
-            $read = rest_do_request( new WP_REST_Request( 'GET', '/change-vigil-site-journal/v1/alerts/rules' ) );
-            $channel_read = rest_do_request( new WP_REST_Request( 'GET', '/change-vigil-site-journal/v1/alerts/channels' ) );
-            $channel_write_request = new WP_REST_Request( 'POST', '/change-vigil-site-journal/v1/alerts/channels' );
+            $read = rest_do_request( new WP_REST_Request( 'GET', '/lanternmote-change-log/v1/alerts/rules' ) );
+            $channel_read = rest_do_request( new WP_REST_Request( 'GET', '/lanternmote-change-log/v1/alerts/channels' ) );
+            $channel_write_request = new WP_REST_Request( 'POST', '/lanternmote-change-log/v1/alerts/channels' );
             $channel_write_request->set_body_params( [] );
             $channel_write = rest_do_request( $channel_write_request );
-            $channel_test_request = new WP_REST_Request( 'POST', '/change-vigil-site-journal/v1/alerts/channels/test' );
+            $channel_test_request = new WP_REST_Request( 'POST', '/lanternmote-change-log/v1/alerts/channels/test' );
             $channel_test_request->set_body_params( [ 'channel' => 'slack' ] );
             $channel_test = rest_do_request( $channel_test_request );
-            $write_request = new WP_REST_Request( 'POST', '/change-vigil-site-journal/v1/alerts/rules' );
+            $write_request = new WP_REST_Request( 'POST', '/lanternmote-change-log/v1/alerts/rules' );
             $write_request->set_body_params( [
                 'name' => 'Unauthorized rule', 'enabled' => true, 'logic' => 'all',
                 'conditions' => [ [ 'field' => 'severity', 'operator' => 'equals', 'value' => 'warning' ] ],
@@ -2603,7 +2603,7 @@ try {
             if ( ! preg_match( '/\Areport-[a-f0-9]{32}\.(?:csv|html)\z/', $archive_name ) ) {
                 wp_send_json_error( 'The report history copy was not found.', 404 );
             }
-            $archive_directory = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'change-vigil-site-journal-' . substr( hash( 'sha256', (string) get_option( 'siteurl' ) . (string) $wpdb->prefix . (string) get_current_blog_id() ), 0, 16 ) . DIRECTORY_SEPARATOR . 'history';
+            $archive_directory = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'lanternmote-change-log-' . substr( hash( 'sha256', (string) get_option( 'siteurl' ) . (string) $wpdb->prefix . (string) get_current_blog_id() ), 0, 16 ) . DIRECTORY_SEPARATOR . 'history';
             $archive_path = $archive_directory . DIRECTORY_SEPARATOR . $archive_name;
             fixture_check( file_exists( $archive_path ) && update_option( ScheduledReports::HISTORY, $history, false ) );
             ScheduledReports::tick();
@@ -2622,7 +2622,7 @@ try {
             wp_send_json( [ 'count' => (int) $count ] );
 
         case 'permissions':
-            $namespace = '/change-vigil-site-journal/v1';
+            $namespace = '/lanternmote-change-log/v1';
             $matrix = [];
             foreach ( [ 'anonymous' => 0, 'editor' => get_user_by( 'login', 'piloteditor' )->ID ] as $label => $user ) {
                 wp_set_current_user( $user );
@@ -2786,11 +2786,11 @@ try {
             $user_id = absint( $_POST['user_id'] ?? 0 );
             $age = min( 30 * DAY_IN_SECONDS, max( 0, absint( $_POST['age'] ?? 0 ) ) );
             $policy_age = min( 30 * DAY_IN_SECONDS, max( 0, absint( $_POST['policy_age'] ?? $age ) ) );
-            $access = new ChangeVigilSiteJournal\SessionAccess( $user_id );
+            $access = new LanternmoteChangeLog\SessionAccess( $user_id );
             $activity = [];
-            $settings = (array) get_option( ChangeVigilSiteJournal\Sessions::SETTINGS, [] );
+            $settings = (array) get_option( LanternmoteChangeLog\Sessions::SETTINGS, [] );
             $settings['idle_enabled_at'] = time() - $policy_age;
-            update_option( ChangeVigilSiteJournal\Sessions::SETTINGS, $settings, false );
+            update_option( LanternmoteChangeLog\Sessions::SETTINGS, $settings, false );
             $sessions = $access->indexed_sessions();
             foreach ( $sessions as $verifier => $session ) {
                 $reference = hash_hmac( 'sha256', (string) $verifier, wp_salt( 'auth' ) );
@@ -2804,9 +2804,9 @@ try {
 
         case 'session_cleanup':
             $user_ids = array_filter( [ absint( $_POST['editor_id'] ?? 0 ), absint( $_POST['site_admin_id'] ?? 0 ) ] );
-            ChangeVigilSiteJournal\Sessions::erase_activity_for_user( get_current_user_id() );
+            LanternmoteChangeLog\Sessions::erase_activity_for_user( get_current_user_id() );
             foreach ( $user_ids as $user_id ) {
-                ChangeVigilSiteJournal\Sessions::erase_activity_for_user( (int) $user_id );
+                LanternmoteChangeLog\Sessions::erase_activity_for_user( (int) $user_id );
                 $session_events = $wpdb->get_col( $wpdb->prepare( 'SELECT id FROM %i WHERE item_kind = %s AND item_key = %s', $table, 'user', (string) $user_id ) );
                 if ( $session_events ) {
                     $ids = array_map( 'intval', $session_events );
@@ -2823,8 +2823,8 @@ try {
                 $wpdb->query( $wpdb->prepare( 'DELETE FROM %i WHERE event_id IN (' . $placeholders . ')', Store::notes_table(), ...$ids ) );
                 $wpdb->query( $wpdb->prepare( 'DELETE FROM %i WHERE id IN (' . $placeholders . ')', $table, ...$ids ) );
             }
-            update_option( ChangeVigilSiteJournal\Sessions::SETTINGS, [ 'track_activity' => false, 'show_browser' => false, 'show_ip' => false ], false );
-            wp_clear_scheduled_hook( ChangeVigilSiteJournal\Sessions::CLEAR_ACTIVITY );
+            update_option( LanternmoteChangeLog\Sessions::SETTINGS, [ 'track_activity' => false, 'show_browser' => false, 'show_ip' => false ], false );
+            wp_clear_scheduled_hook( LanternmoteChangeLog\Sessions::CLEAR_ACTIVITY );
             delete_option( 'cvsj_session_clear_cursor' );
             wp_send_json( [ 'deleted' => count( $user_ids ) ] );
 
@@ -2890,7 +2890,7 @@ try {
                 $samples['filtered'][] = $measure( static fn() => Store::query( $filters, 51 ) );
                 $samples['capture'][] = $measure( static fn() => wp_insert_post( [ 'post_title' => 'Capture timing', 'post_status' => 'publish' ], true ) );
             }
-            remove_action( 'wp_after_insert_post', [ ChangeVigilSiteJournal\Capture::class, 'post' ], 30 );
+            remove_action( 'wp_after_insert_post', [ LanternmoteChangeLog\Capture::class, 'post' ], 30 );
             $baseline = [];
             for ( $i = 0; $i < 25; ++$i ) {
                 $baseline[] = $measure( static fn() => wp_insert_post( [ 'post_title' => 'Capture timing', 'post_status' => 'publish' ], true ) );
@@ -2911,7 +2911,7 @@ try {
 
         case 'uninstall':
             define( 'WP_UNINSTALL_PLUGIN', CVSJ_PLUGIN );
-            $script = WP_PLUGIN_DIR . '/change-vigil-site-journal/uninstall.php';
+            $script = WP_PLUGIN_DIR . '/lanternmote-change-log/uninstall.php';
             $before = Store::latest_id();
             update_option( Store::SAVED_REPORTS, [ [
                 'id' => wp_generate_uuid4(), 'name' => 'Uninstall preservation fixture', 'filters' => [],

@@ -18,7 +18,7 @@ try {
   await page.locator("#user_pass").fill(password);
   await page.locator("#wp-submit").click();
   await page.waitForLoadState("domcontentloaded");
-  await page.goto(base + "/wp-admin/admin.php?page=change-vigil-site-journal");
+  await page.goto(base + "/wp-admin/admin.php?page=lanternmote-change-log");
   const response = await page.request.post(base + "/cvsj-fixture.php", { form: { operation: "component_lifecycle" } });
   assert.equal(response.status(), 200, await response.text());
   const result = await response.json();

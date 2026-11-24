@@ -1,13 +1,13 @@
 <?php
 
-namespace ChangeVigilSiteJournal;
+namespace LanternmoteChangeLog;
 
 defined( 'ABSPATH' ) || exit;
 
 final class Admin {
-    private const ROUTE = 'change-vigil-site-journal/v1';
+    private const ROUTE = 'lanternmote-change-log/v1';
     private const CAPABILITY = 'cvsj_view_activity';
-    private const SLUG = 'change-vigil-site-journal';
+    private const SLUG = 'lanternmote-change-log';
     private const EXPORT_BATCH_SIZE = 250;
     private static string $plugin_file;
     private static string $screen = '';
@@ -34,8 +34,8 @@ final class Admin {
 
     public static function menu(): void {
         self::$screen = add_menu_page(
-            __( 'Change Vigil', 'change-vigil-site-journal' ),
-            __( 'Change Vigil', 'change-vigil-site-journal' ),
+            __( 'Lanternmote', 'lanternmote-change-log' ),
+            __( 'Lanternmote', 'lanternmote-change-log' ),
             self::CAPABILITY, self::SLUG, [ self::class, 'render' ], 'dashicons-list-view', 3
         );
     }
@@ -45,9 +45,9 @@ final class Admin {
             return;
         }
         self::$network_screen = add_menu_page(
-            __( 'Network Change Vigil', 'change-vigil-site-journal' ),
-            __( 'Change Vigil', 'change-vigil-site-journal' ),
-            'manage_network', 'change-vigil-site-journal-network', [ self::class, 'render_network' ], 'dashicons-list-view', 3
+            __( 'Network Lanternmote', 'lanternmote-change-log' ),
+            __( 'Lanternmote', 'lanternmote-change-log' ),
+            'manage_network', 'lanternmote-change-log-network', [ self::class, 'render_network' ], 'dashicons-list-view', 3
         );
     }
 
@@ -58,7 +58,7 @@ final class Admin {
 
         wp_add_dashboard_widget(
             'cvsj_activity_summary',
-            __( 'Activity summary', 'change-vigil-site-journal' ),
+            __( 'Activity summary', 'lanternmote-change-log' ),
             [ self::class, 'render_dashboard_widget' ],
             null,
             null,
@@ -99,21 +99,21 @@ final class Admin {
         $activity_url = add_query_arg( 'page', self::SLUG, admin_url( 'admin.php' ) );
         $admin_bar->add_node( [
             'id' => 'cvsj-live-activity',
-            'title' => __( 'Activity', 'change-vigil-site-journal' ),
+            'title' => __( 'Activity', 'lanternmote-change-log' ),
             'href' => $activity_url,
             'meta' => [ 'class' => 'cvsj-live-activity' ],
         ] );
         $admin_bar->add_node( [
             'id' => 'cvsj-live-activity-feed',
             'parent' => 'cvsj-live-activity',
-            'title' => __( 'Loading recent activity', 'change-vigil-site-journal' ),
+            'title' => __( 'Loading recent activity', 'lanternmote-change-log' ),
             'href' => $activity_url,
             'meta' => [ 'class' => 'cvsj-live-activity-feed' ],
         ] );
         $admin_bar->add_node( [
             'id' => 'cvsj-live-activity-view-all',
             'parent' => 'cvsj-live-activity',
-            'title' => __( 'View all activity', 'change-vigil-site-journal' ),
+            'title' => __( 'View all activity', 'lanternmote-change-log' ),
             'href' => $activity_url,
         ] );
     }
@@ -125,23 +125,23 @@ final class Admin {
 
         $summary = Store::dashboard_summary();
         if ( is_wp_error( $summary ) ) {
-            echo '<div class="cvsj-dashboard-widget"><p class="cvsj-dashboard-error">' . esc_html__( 'Activity data is unavailable. Check Change Vigil settings for diagnostics.', 'change-vigil-site-journal' ) . '</p></div>';
+            echo '<div class="cvsj-dashboard-widget"><p class="cvsj-dashboard-error">' . esc_html__( 'Activity data is unavailable. Check Lanternmote settings for diagnostics.', 'lanternmote-change-log' ) . '</p></div>';
             return;
         }
 
         $activity_url = add_query_arg( 'page', self::SLUG, admin_url( 'admin.php' ) );
         echo '<div class="cvsj-dashboard-widget">';
-        echo '<div class="cvsj-dashboard-header"><div><h3 class="cvsj-dashboard-overview">' . esc_html__( 'At a glance', 'change-vigil-site-journal' ) . '</h3><p class="cvsj-dashboard-intro">' . esc_html__( 'Changes recorded across this site.', 'change-vigil-site-journal' ) . '</p></div>';
-        echo '<a class="button button-primary cvsj-dashboard-action" href="' . esc_url( $activity_url ) . '">' . esc_html__( 'View activity', 'change-vigil-site-journal' ) . '</a></div>';
+        echo '<div class="cvsj-dashboard-header"><div><h3 class="cvsj-dashboard-overview">' . esc_html__( 'At a glance', 'lanternmote-change-log' ) . '</h3><p class="cvsj-dashboard-intro">' . esc_html__( 'Changes recorded across this site.', 'lanternmote-change-log' ) . '</p></div>';
+        echo '<a class="button button-primary cvsj-dashboard-action" href="' . esc_url( $activity_url ) . '">' . esc_html__( 'View activity', 'lanternmote-change-log' ) . '</a></div>';
         echo '<dl class="cvsj-dashboard-metrics">';
-        self::dashboard_metric( __( 'Last 24 hours', 'change-vigil-site-journal' ), $summary['last_day'] );
-        self::dashboard_metric( __( 'Last 7 days', 'change-vigil-site-journal' ), $summary['last_week'] );
-        self::dashboard_metric( __( 'Warnings in 7 days', 'change-vigil-site-journal' ), $summary['warnings'], ! empty( $summary['warnings'] ) );
+        self::dashboard_metric( __( 'Last 24 hours', 'lanternmote-change-log' ), $summary['last_day'] );
+        self::dashboard_metric( __( 'Last 7 days', 'lanternmote-change-log' ), $summary['last_week'] );
+        self::dashboard_metric( __( 'Warnings in 7 days', 'lanternmote-change-log' ), $summary['warnings'], ! empty( $summary['warnings'] ) );
         echo '</dl>';
 
-        echo '<div class="cvsj-dashboard-recent"><h3>' . esc_html__( 'Recent changes', 'change-vigil-site-journal' ) . '</h3>';
+        echo '<div class="cvsj-dashboard-recent"><h3>' . esc_html__( 'Recent changes', 'lanternmote-change-log' ) . '</h3>';
         if ( empty( $summary['events'] ) ) {
-            echo '<p class="cvsj-dashboard-empty">' . esc_html__( 'No activity has been recorded yet. New changes will appear here.', 'change-vigil-site-journal' ) . '</p>';
+            echo '<p class="cvsj-dashboard-empty">' . esc_html__( 'No activity has been recorded yet. New changes will appear here.', 'lanternmote-change-log' ) . '</p>';
         } else {
             echo '<ul>';
             foreach ( $summary['events'] as $event ) {
@@ -152,9 +152,9 @@ final class Admin {
                 $actor = $event['actor_name'];
                 if ( '' === $actor ) {
                     $actor = match ( $event['actor_kind'] ) {
-                        'anonymous' => __( 'Unauthenticated', 'change-vigil-site-journal' ),
-                        'system' => __( 'WordPress background task', 'change-vigil-site-journal' ),
-                        default => __( 'Unknown', 'change-vigil-site-journal' ),
+                        'anonymous' => __( 'Unauthenticated', 'lanternmote-change-log' ),
+                        'system' => __( 'WordPress background task', 'lanternmote-change-log' ),
+                        default => __( 'Unknown', 'lanternmote-change-log' ),
                     };
                 }
                 $timestamp = strtotime( $event['occurred_at'] . ' UTC' );
@@ -196,29 +196,29 @@ final class Admin {
         wp_enqueue_style( 'cvsj-admin', plugins_url( 'build/admin.css', self::$plugin_file ), [ 'cvsj-theme' ], self::asset_version( 'admin.css', $version ) );
         wp_enqueue_script( 'cvsj-admin', plugins_url( 'build/admin.js', self::$plugin_file ), [ 'react', 'react-dom', 'react-jsx-runtime' ], self::asset_version( 'admin.js', $version ), true );
         $item_labels = [
-            'post' => __( 'Post', 'change-vigil-site-journal' ),
-            'page' => __( 'Page', 'change-vigil-site-journal' ),
-            'user' => __( 'Account', 'change-vigil-site-journal' ),
-            'plugin' => __( 'Plugin', 'change-vigil-site-journal' ),
-            'theme' => __( 'Theme', 'change-vigil-site-journal' ),
-            'setting' => __( 'Setting', 'change-vigil-site-journal' ),
-            'login' => __( 'Sign in', 'change-vigil-site-journal' ),
-            'term' => __( 'Term', 'change-vigil-site-journal' ),
-            'comment' => __( 'Comment', 'change-vigil-site-journal' ),
-            'menu' => __( 'Navigation menu', 'change-vigil-site-journal' ),
-            'widget' => __( 'Widget', 'change-vigil-site-journal' ),
-            'order' => __( 'WooCommerce order', 'change-vigil-site-journal' ),
-            'product' => __( 'WooCommerce product', 'change-vigil-site-journal' ),
-            'coupon' => __( 'WooCommerce coupon', 'change-vigil-site-journal' ),
-            'forum' => __( 'bbPress forum', 'change-vigil-site-journal' ),
-            'topic' => __( 'bbPress topic', 'change-vigil-site-journal' ),
-            'reply' => __( 'bbPress reply', 'change-vigil-site-journal' ),
-            'redirect' => __( 'Redirect rule', 'change-vigil-site-journal' ),
-            'table' => __( 'Database table', 'change-vigil-site-journal' ),
-            'file' => __( 'File', 'change-vigil-site-journal' ),
+            'post' => __( 'Post', 'lanternmote-change-log' ),
+            'page' => __( 'Page', 'lanternmote-change-log' ),
+            'user' => __( 'Account', 'lanternmote-change-log' ),
+            'plugin' => __( 'Plugin', 'lanternmote-change-log' ),
+            'theme' => __( 'Theme', 'lanternmote-change-log' ),
+            'setting' => __( 'Setting', 'lanternmote-change-log' ),
+            'login' => __( 'Sign in', 'lanternmote-change-log' ),
+            'term' => __( 'Term', 'lanternmote-change-log' ),
+            'comment' => __( 'Comment', 'lanternmote-change-log' ),
+            'menu' => __( 'Navigation menu', 'lanternmote-change-log' ),
+            'widget' => __( 'Widget', 'lanternmote-change-log' ),
+            'order' => __( 'WooCommerce order', 'lanternmote-change-log' ),
+            'product' => __( 'WooCommerce product', 'lanternmote-change-log' ),
+            'coupon' => __( 'WooCommerce coupon', 'lanternmote-change-log' ),
+            'forum' => __( 'bbPress forum', 'lanternmote-change-log' ),
+            'topic' => __( 'bbPress topic', 'lanternmote-change-log' ),
+            'reply' => __( 'bbPress reply', 'lanternmote-change-log' ),
+            'redirect' => __( 'Redirect rule', 'lanternmote-change-log' ),
+            'table' => __( 'Database table', 'lanternmote-change-log' ),
+            'file' => __( 'File', 'lanternmote-change-log' ),
         ];
         if ( is_multisite() ) {
-            $item_labels['site'] = __( 'Network site', 'change-vigil-site-journal' );
+            $item_labels['site'] = __( 'Network site', 'lanternmote-change-log' );
         }
         $content_types = [];
         foreach ( get_post_types( [ 'public' => true ], 'objects' ) as $post_type => $object ) {
@@ -231,13 +231,13 @@ final class Admin {
                 $content_types[] = $post_type;
             }
         }
-        $item_labels['product'] = __( 'WooCommerce product', 'change-vigil-site-journal' );
-        $item_labels['coupon'] = __( 'WooCommerce coupon', 'change-vigil-site-journal' );
-        $item_labels['forum'] = __( 'bbPress forum', 'change-vigil-site-journal' );
-        $item_labels['topic'] = __( 'bbPress topic', 'change-vigil-site-journal' );
-        $item_labels['reply'] = __( 'bbPress reply', 'change-vigil-site-journal' );
-        $item_labels['wpforms_form'] = __( 'WPForms form', 'change-vigil-site-journal' );
-        $item_labels['pmpro_level'] = __( 'Membership level', 'change-vigil-site-journal' );
+        $item_labels['product'] = __( 'WooCommerce product', 'lanternmote-change-log' );
+        $item_labels['coupon'] = __( 'WooCommerce coupon', 'lanternmote-change-log' );
+        $item_labels['forum'] = __( 'bbPress forum', 'lanternmote-change-log' );
+        $item_labels['topic'] = __( 'bbPress topic', 'lanternmote-change-log' );
+        $item_labels['reply'] = __( 'bbPress reply', 'lanternmote-change-log' );
+        $item_labels['wpforms_form'] = __( 'WPForms form', 'lanternmote-change-log' );
+        $item_labels['pmpro_level'] = __( 'Membership level', 'lanternmote-change-log' );
         $config = [
             'base' => rest_url( self::ROUTE . ( $network_mode ? '/network/' : '/' ) ),
             'nonce' => wp_create_nonce( 'wp_rest' ),
@@ -278,14 +278,14 @@ final class Admin {
         if ( ! self::allowed() ) {
             return;
         }
-        echo '<div id="cvsj-root"><noscript>' . esc_html__( 'Enable JavaScript to use Change Vigil.', 'change-vigil-site-journal' ) . '</noscript></div>';
+        echo '<div id="cvsj-root"><noscript>' . esc_html__( 'Enable JavaScript to use Lanternmote.', 'lanternmote-change-log' ) . '</noscript></div>';
     }
 
     public static function render_network(): void {
         if ( ! self::network_allowed() ) {
             return;
         }
-        echo '<div id="cvsj-root"><noscript>' . esc_html__( 'Enable JavaScript to use Network Change Vigil.', 'change-vigil-site-journal' ) . '</noscript></div>';
+        echo '<div id="cvsj-root"><noscript>' . esc_html__( 'Enable JavaScript to use Network Lanternmote.', 'lanternmote-change-log' ) . '</noscript></div>';
     }
 
     public static function allowed(): bool {
@@ -718,7 +718,7 @@ final class Admin {
     }
 
     private static function bad_filters(): \WP_Error {
-        return new \WP_Error( 'cvsj_filters', __( 'Check the search filters and date range.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+        return new \WP_Error( 'cvsj_filters', __( 'Check the search filters and date range.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
     }
 
     public static function events( \WP_REST_Request $request ): array|\WP_Error {
@@ -755,10 +755,10 @@ final class Admin {
             $actor = (string) $row['actor_name'];
             if ( '' === $actor ) {
                 $actor = match ( $row['actor_kind'] ) {
-                    'anonymous' => __( 'Unauthenticated', 'change-vigil-site-journal' ),
-                    'system' => __( 'WordPress background task', 'change-vigil-site-journal' ),
-                    'cli' => __( 'WP CLI command', 'change-vigil-site-journal' ),
-                    default => __( 'Unknown', 'change-vigil-site-journal' ),
+                    'anonymous' => __( 'Unauthenticated', 'lanternmote-change-log' ),
+                    'system' => __( 'WordPress background task', 'lanternmote-change-log' ),
+                    'cli' => __( 'WP CLI command', 'lanternmote-change-log' ),
+                    default => __( 'Unknown', 'lanternmote-change-log' ),
                 };
             }
             $events[] = [
@@ -775,7 +775,7 @@ final class Admin {
 
     public static function network_events( \WP_REST_Request $request ): array|\WP_Error {
         if ( ! self::network_allowed() ) {
-            return new \WP_Error( 'cvsj_network_forbidden', __( 'Network activity is available to network administrators only.', 'change-vigil-site-journal' ), [ 'status' => 403 ] );
+            return new \WP_Error( 'cvsj_network_forbidden', __( 'Network activity is available to network administrators only.', 'lanternmote-change-log' ), [ 'status' => 403 ] );
         }
         $filters = self::filters( $request, true );
         if ( is_wp_error( $filters ) ) {
@@ -806,7 +806,7 @@ final class Admin {
     public static function network_event( \WP_REST_Request $request ): array|\WP_Error {
         $site_id = absint( $request['site_id'] );
         if ( ! self::network_site_is_current( $site_id ) || ! switch_to_blog( $site_id ) ) {
-            return new \WP_Error( 'cvsj_not_found', __( 'This event is no longer available.', 'change-vigil-site-journal' ), [ 'status' => 404 ] );
+            return new \WP_Error( 'cvsj_not_found', __( 'This event is no longer available.', 'lanternmote-change-log' ), [ 'status' => 404 ] );
         }
         try {
             $row = Store::event( absint( $request['id'] ) );
@@ -834,12 +834,12 @@ final class Admin {
     public static function network_add_note( \WP_REST_Request $request ): array|\WP_Error {
         $site_id = absint( $request['site_id'] );
         if ( ! self::network_site_is_current( $site_id ) || ! switch_to_blog( $site_id ) ) {
-            return new \WP_Error( 'cvsj_not_found', __( 'This event is no longer available.', 'change-vigil-site-journal' ), [ 'status' => 404 ] );
+            return new \WP_Error( 'cvsj_not_found', __( 'This event is no longer available.', 'lanternmote-change-log' ), [ 'status' => 404 ] );
         }
         try {
             $note = $request->get_param( 'note' );
             if ( ! is_string( $note ) ) {
-                return new \WP_Error( 'cvsj_note_invalid', __( 'Enter a note with 1 to 2000 characters.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+                return new \WP_Error( 'cvsj_note_invalid', __( 'Enter a note with 1 to 2000 characters.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
             }
             return Store::add_note( absint( $request['id'] ), $note );
         } finally {
@@ -849,7 +849,7 @@ final class Admin {
 
     public static function network_export( \WP_REST_Request $request ): \WP_REST_Response|\WP_Error {
         if ( ! self::network_allowed() ) {
-            return new \WP_Error( 'cvsj_network_forbidden', __( 'Network activity is available to network administrators only.', 'change-vigil-site-journal' ), [ 'status' => 403 ] );
+            return new \WP_Error( 'cvsj_network_forbidden', __( 'Network activity is available to network administrators only.', 'lanternmote-change-log' ), [ 'status' => 403 ] );
         }
         $filters = self::filters( $request, true );
         if ( is_wp_error( $filters ) ) {
@@ -870,7 +870,7 @@ final class Admin {
 
     public static function network_sites( \WP_REST_Request $request ): array|\WP_Error {
         if ( ! self::network_allowed() ) {
-            return new \WP_Error( 'cvsj_network_forbidden', __( 'Network settings are available to network administrators only.', 'change-vigil-site-journal' ), [ 'status' => 403 ] );
+            return new \WP_Error( 'cvsj_network_forbidden', __( 'Network settings are available to network administrators only.', 'lanternmote-change-log' ), [ 'status' => 403 ] );
         }
         $page = absint( $request->get_param( 'page' ) ?: 1 );
         $search = sanitize_text_field( (string) $request->get_param( 'search' ) );
@@ -918,7 +918,7 @@ final class Admin {
     public static function network_site_settings( \WP_REST_Request $request ): array|\WP_Error {
         $site_id = absint( $request['site_id'] );
         if ( ! self::network_site_is_current( $site_id ) ) {
-            return new \WP_Error( 'cvsj_not_found', __( 'This network site was not found.', 'change-vigil-site-journal' ), [ 'status' => 404 ] );
+            return new \WP_Error( 'cvsj_not_found', __( 'This network site was not found.', 'lanternmote-change-log' ), [ 'status' => 404 ] );
         }
         return self::network_site_summary( $site_id );
     }
@@ -926,33 +926,33 @@ final class Admin {
     public static function save_network_site_settings( \WP_REST_Request $request ): array|\WP_Error {
         $site_id = absint( $request['site_id'] );
         if ( ! self::network_site_is_current( $site_id ) || ! switch_to_blog( $site_id ) ) {
-            return new \WP_Error( 'cvsj_not_found', __( 'This network site was not found.', 'change-vigil-site-journal' ), [ 'status' => 404 ] );
+            return new \WP_Error( 'cvsj_not_found', __( 'This network site was not found.', 'lanternmote-change-log' ), [ 'status' => 404 ] );
         }
         try {
             $input = $request->get_json_params();
             if ( ! is_array( $input ) || array_diff( array_keys( $input ), [ 'retention', 'categories' ] ) ) {
-                return new \WP_Error( 'cvsj_network_settings_invalid', __( 'Check the network site settings.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+                return new \WP_Error( 'cvsj_network_settings_invalid', __( 'Check the network site settings.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
             }
             $table = Store::table();
             global $wpdb;
             if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $table ) ) ) !== $table ) {
-                return new \WP_Error( 'cvsj_storage_unavailable', __( 'Activity storage is not installed for this site.', 'change-vigil-site-journal' ), [ 'status' => 503 ] );
+                return new \WP_Error( 'cvsj_storage_unavailable', __( 'Activity storage is not installed for this site.', 'lanternmote-change-log' ), [ 'status' => 503 ] );
             }
             $settings = Store::settings();
             if ( array_key_exists( 'retention', $input ) ) {
                 if ( ! is_int( $input['retention'] ) || $input['retention'] < 1 || $input['retention'] > 3650 ) {
-                    return new \WP_Error( 'cvsj_network_settings_invalid', __( 'Retention must be between 1 and 3650 days.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+                    return new \WP_Error( 'cvsj_network_settings_invalid', __( 'Retention must be between 1 and 3650 days.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
                 }
                 $settings['retention'] = $input['retention'];
             }
             if ( array_key_exists( 'categories', $input ) ) {
                 if ( ! is_array( $input['categories'] ) ) {
-                    return new \WP_Error( 'cvsj_network_settings_invalid', __( 'Choose valid event categories.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+                    return new \WP_Error( 'cvsj_network_settings_invalid', __( 'Choose valid event categories.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
                 }
                 $category_settings = self::network_category_settings();
                 foreach ( $input['categories'] as $category => $enabled ) {
                     if ( ! is_string( $category ) || ! array_key_exists( $category, $category_settings ) || ! is_bool( $enabled ) ) {
-                        return new \WP_Error( 'cvsj_network_settings_invalid', __( 'Choose valid event categories.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+                        return new \WP_Error( 'cvsj_network_settings_invalid', __( 'Choose valid event categories.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
                     }
                     $settings[ $category_settings[ $category ] ] = $enabled;
                 }
@@ -969,7 +969,7 @@ final class Admin {
 
     private static function network_site_summary( int $site_id ): array|\WP_Error {
         if ( ! self::network_site_is_current( $site_id ) || ! switch_to_blog( $site_id ) ) {
-            return new \WP_Error( 'cvsj_not_found', __( 'This network site was not found.', 'change-vigil-site-journal' ), [ 'status' => 404 ] );
+            return new \WP_Error( 'cvsj_not_found', __( 'This network site was not found.', 'lanternmote-change-log' ), [ 'status' => 404 ] );
         }
         try {
             global $wpdb;
@@ -1019,17 +1019,17 @@ final class Admin {
     /** @return array<string, string> */
     private static function network_category_labels(): array {
         return [
-            'content' => __( 'Posts and pages', 'change-vigil-site-journal' ), 'accounts' => __( 'Accounts and sign ins', 'change-vigil-site-journal' ),
-            'comments' => __( 'Comments', 'change-vigil-site-journal' ), 'taxonomies' => __( 'Categories and tags', 'change-vigil-site-journal' ),
-            'appearance' => __( 'Menus and widgets', 'change-vigil-site-journal' ), 'components' => __( 'Plugins and themes', 'change-vigil-site-journal' ),
-            'settings' => __( 'Site settings', 'change-vigil-site-journal' ), 'woocommerce' => __( 'WooCommerce', 'change-vigil-site-journal' ),
-            'redirection' => __( 'Redirection', 'change-vigil-site-journal' ), 'acf' => __( 'Advanced Custom Fields', 'change-vigil-site-journal' ),
-            'bbpress' => __( 'bbPress', 'change-vigil-site-journal' ), 'wpforms' => __( 'WPForms', 'change-vigil-site-journal' ),
-            'yoast' => __( 'Yoast SEO', 'change-vigil-site-journal' ), 'rank_math' => __( 'Rank Math', 'change-vigil-site-journal' ),
-            'pmpro' => __( 'Paid Memberships Pro', 'change-vigil-site-journal' ), 'termly' => __( 'Termly', 'change-vigil-site-journal' ),
-            'mainwp' => __( 'MainWP', 'change-vigil-site-journal' ), 'infinitewp' => __( 'InfiniteWP', 'change-vigil-site-journal' ),
-            'network' => __( 'Network sites', 'change-vigil-site-journal' ), 'database' => __( 'Database changes', 'change-vigil-site-journal' ),
-            'files' => __( 'File changes', 'change-vigil-site-journal' ),
+            'content' => __( 'Posts and pages', 'lanternmote-change-log' ), 'accounts' => __( 'Accounts and sign ins', 'lanternmote-change-log' ),
+            'comments' => __( 'Comments', 'lanternmote-change-log' ), 'taxonomies' => __( 'Categories and tags', 'lanternmote-change-log' ),
+            'appearance' => __( 'Menus and widgets', 'lanternmote-change-log' ), 'components' => __( 'Plugins and themes', 'lanternmote-change-log' ),
+            'settings' => __( 'Site settings', 'lanternmote-change-log' ), 'woocommerce' => __( 'WooCommerce', 'lanternmote-change-log' ),
+            'redirection' => __( 'Redirection', 'lanternmote-change-log' ), 'acf' => __( 'Advanced Custom Fields', 'lanternmote-change-log' ),
+            'bbpress' => __( 'bbPress', 'lanternmote-change-log' ), 'wpforms' => __( 'WPForms', 'lanternmote-change-log' ),
+            'yoast' => __( 'Yoast SEO', 'lanternmote-change-log' ), 'rank_math' => __( 'Rank Math', 'lanternmote-change-log' ),
+            'pmpro' => __( 'Paid Memberships Pro', 'lanternmote-change-log' ), 'termly' => __( 'Termly', 'lanternmote-change-log' ),
+            'mainwp' => __( 'MainWP', 'lanternmote-change-log' ), 'infinitewp' => __( 'InfiniteWP', 'lanternmote-change-log' ),
+            'network' => __( 'Network sites', 'lanternmote-change-log' ), 'database' => __( 'Database changes', 'lanternmote-change-log' ),
+            'files' => __( 'File changes', 'lanternmote-change-log' ),
         ];
     }
 
@@ -1093,7 +1093,7 @@ final class Admin {
     public static function add_note( \WP_REST_Request $request ): array|\WP_Error {
         $note = $request->get_param( 'note' );
         if ( ! is_string( $note ) ) {
-            return new \WP_Error( 'cvsj_note_invalid', __( 'Enter a note with 1 to 2000 characters.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+            return new \WP_Error( 'cvsj_note_invalid', __( 'Enter a note with 1 to 2000 characters.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
         }
         return Store::add_note( (int) $request['id'], $note );
     }
@@ -1114,7 +1114,7 @@ final class Admin {
         $settings = Store::settings();
         $excluded_items = $request->get_param( 'excluded_items' );
         if ( null !== $excluded_items && ( ! is_array( $excluded_items ) || ! array_is_list( $excluded_items ) || count( $excluded_items ) > 100 || Store::normalize_excluded_items( $excluded_items ) !== $excluded_items ) ) {
-            return new \WP_Error( 'cvsj_excluded_items', __( 'Choose up to 100 valid item exclusions.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+            return new \WP_Error( 'cvsj_excluded_items', __( 'Choose up to 100 valid item exclusions.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
         }
         $settings['retention'] = (int) $request['retention'];
         $settings['erase'] = rest_sanitize_boolean( $request['erase'] );
@@ -1146,8 +1146,8 @@ final class Admin {
     public static function export_settings(): array {
         $metadata = get_file_data( self::$plugin_file, [ 'version' => 'Version' ] );
         return [
-            'plugin' => 'change-vigil-site-journal',
-            'format' => 'change-vigil-site-journal-settings',
+            'plugin' => 'lanternmote-change-log',
+            'format' => 'lanternmote-change-log-settings',
             'schema_version' => 1,
             'plugin_version' => $metadata['version'],
             'exported_at' => gmdate( DATE_ATOM ),
@@ -1159,16 +1159,16 @@ final class Admin {
         $payload = $request->get_json_params();
         $root_keys = [ 'plugin', 'format', 'schema_version', 'plugin_version', 'exported_at', 'settings', 'confirm_prune', 'confirm_erase' ];
         if ( ! is_array( $payload ) || array_diff( array_keys( $payload ), $root_keys )
-            || 'change-vigil-site-journal' !== ( $payload['plugin'] ?? '' )
-            || 'change-vigil-site-journal-settings' !== ( $payload['format'] ?? '' )
+            || 'lanternmote-change-log' !== ( $payload['plugin'] ?? '' )
+            || 'lanternmote-change-log-settings' !== ( $payload['format'] ?? '' )
             || 1 !== ( $payload['schema_version'] ?? null )
             || ! isset( $payload['settings'] ) || ! is_array( $payload['settings'] ) ) {
-            return new \WP_Error( 'cvsj_settings_import', __( 'This file is not a supported Change Vigil settings export.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+            return new \WP_Error( 'cvsj_settings_import', __( 'This file is not a supported Lanternmote settings export.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
         }
 
         foreach ( [ 'confirm_prune', 'confirm_erase' ] as $confirmation ) {
             if ( isset( $payload[ $confirmation ] ) && ! is_bool( $payload[ $confirmation ] ) ) {
-                return new \WP_Error( 'cvsj_settings_import', __( 'The settings confirmation is invalid.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+                return new \WP_Error( 'cvsj_settings_import', __( 'The settings confirmation is invalid.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
             }
         }
 
@@ -1197,47 +1197,47 @@ final class Admin {
         if ( array_diff( array_keys( $settings ), $allowed_settings ) || array_diff( $required_settings, array_keys( $settings ) )
             || ! isset( $settings['retention'] ) || ! is_int( $settings['retention'] ) || $settings['retention'] < 1 || $settings['retention'] > 3650
             || ! isset( $settings['disabled_actions'] ) || ! is_array( $settings['disabled_actions'] ) || ! array_is_list( $settings['disabled_actions'] ) ) {
-            return new \WP_Error( 'cvsj_settings_import', __( 'The settings file contains missing or unsupported values.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+            return new \WP_Error( 'cvsj_settings_import', __( 'The settings file contains missing or unsupported values.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
         }
 
         foreach ( array_diff( $allowed_settings, [ 'retention', 'file_max_size_mb', 'file_scan_interval', 'file_excluded_paths', 'email_alert_event_limit', 'email_alert_categories', 'disabled_actions', 'viewer_roles', 'manager_roles', 'excluded_roles', 'excluded_item_kinds', 'excluded_post_statuses' ] ) as $key ) {
             if ( ! isset( $settings[ $key ] ) || ! is_bool( $settings[ $key ] ) ) {
-                return new \WP_Error( 'cvsj_settings_import', __( 'The settings file contains an invalid option.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+                return new \WP_Error( 'cvsj_settings_import', __( 'The settings file contains an invalid option.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
             }
         }
         if ( ! isset( $settings['file_max_size_mb'] ) || ! is_int( $settings['file_max_size_mb'] ) || $settings['file_max_size_mb'] < 1 || $settings['file_max_size_mb'] > 50
             || ! isset( $settings['file_scan_interval'] ) || ! in_array( $settings['file_scan_interval'], [ 'daily', 'weekly' ], true )
             || ! isset( $settings['file_excluded_paths'] ) || ! is_array( $settings['file_excluded_paths'] ) || ! array_is_list( $settings['file_excluded_paths'] )
             || count( $settings['file_excluded_paths'] ) > 25 || Store::normalize_file_excluded_paths( $settings['file_excluded_paths'] ) !== $settings['file_excluded_paths'] ) {
-            return new \WP_Error( 'cvsj_settings_import', __( 'The settings file contains invalid file monitoring options.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+            return new \WP_Error( 'cvsj_settings_import', __( 'The settings file contains invalid file monitoring options.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
         }
         if ( ! isset( $settings['email_alert_event_limit'] ) || ! is_int( $settings['email_alert_event_limit'] ) || $settings['email_alert_event_limit'] < 1 || $settings['email_alert_event_limit'] > 20
             || ! isset( $settings['email_alert_categories'] ) || ! is_array( $settings['email_alert_categories'] ) || ! array_is_list( $settings['email_alert_categories'] ) ) {
-            return new \WP_Error( 'cvsj_settings_import', __( 'The settings file contains invalid notification options.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+            return new \WP_Error( 'cvsj_settings_import', __( 'The settings file contains invalid notification options.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
         }
         $seen_alert_categories = [];
         foreach ( $settings['email_alert_categories'] as $category ) {
             if ( ! is_string( $category ) || ! array_key_exists( $category, Store::event_groups() ) || isset( $seen_alert_categories[ $category ] ) ) {
-                return new \WP_Error( 'cvsj_settings_import', __( 'The settings file contains an unsupported notification category.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+                return new \WP_Error( 'cvsj_settings_import', __( 'The settings file contains an unsupported notification category.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
             }
             $seen_alert_categories[ $category ] = true;
         }
         $seen_actions = [];
         foreach ( $settings['disabled_actions'] as $action ) {
             if ( ! is_string( $action ) || ! in_array( $action, Capture::action_types(), true ) || isset( $seen_actions[ $action ] ) ) {
-                return new \WP_Error( 'cvsj_settings_import', __( 'The settings file contains an unsupported event type.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+                return new \WP_Error( 'cvsj_settings_import', __( 'The settings file contains an unsupported event type.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
             }
             $seen_actions[ $action ] = true;
         }
         $available_roles = array_keys( wp_roles()->roles );
         foreach ( [ 'viewer_roles', 'manager_roles' ] as $key ) {
             if ( ! isset( $settings[ $key ] ) || ! is_array( $settings[ $key ] ) || ! array_is_list( $settings[ $key ] ) ) {
-                return new \WP_Error( 'cvsj_settings_import', __( 'The settings file contains invalid access roles.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+                return new \WP_Error( 'cvsj_settings_import', __( 'The settings file contains invalid access roles.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
             }
             $seen_roles = [];
             foreach ( $settings[ $key ] as $role ) {
                 if ( ! is_string( $role ) || ! in_array( $role, $available_roles, true ) || isset( $seen_roles[ $role ] ) ) {
-                    return new \WP_Error( 'cvsj_settings_import', __( 'The settings file contains an unsupported access role.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+                    return new \WP_Error( 'cvsj_settings_import', __( 'The settings file contains an unsupported access role.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
                 }
                 $seen_roles[ $role ] = true;
             }
@@ -1248,12 +1248,12 @@ final class Admin {
             'excluded_post_statuses' => Store::available_post_statuses(),
         ] as $key => $allowed_values ) {
             if ( ! isset( $settings[ $key ] ) || ! is_array( $settings[ $key ] ) || ! array_is_list( $settings[ $key ] ) ) {
-                return new \WP_Error( 'cvsj_settings_import', __( 'The settings file contains invalid exclusion rules.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+                return new \WP_Error( 'cvsj_settings_import', __( 'The settings file contains invalid exclusion rules.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
             }
             $seen_values = [];
             foreach ( $settings[ $key ] as $value ) {
                 if ( ! is_string( $value ) || ! in_array( $value, $allowed_values, true ) || isset( $seen_values[ $value ] ) ) {
-                    return new \WP_Error( 'cvsj_settings_import', __( 'The settings file contains an unsupported exclusion rule.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+                    return new \WP_Error( 'cvsj_settings_import', __( 'The settings file contains an unsupported exclusion rule.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
                 }
                 $seen_values[ $value ] = true;
             }
@@ -1261,10 +1261,10 @@ final class Admin {
 
         $current = Store::settings();
         if ( $settings['retention'] < $current['retention'] && empty( $payload['confirm_prune'] ) ) {
-            return new \WP_Error( 'cvsj_settings_prune_confirmation', __( 'Confirm that the shorter retention period may delete older events before importing these settings.', 'change-vigil-site-journal' ), [ 'status' => 409 ] );
+            return new \WP_Error( 'cvsj_settings_prune_confirmation', __( 'Confirm that the shorter retention period may delete older events before importing these settings.', 'lanternmote-change-log' ), [ 'status' => 409 ] );
         }
         if ( ! $current['erase'] && $settings['erase'] && empty( $payload['confirm_erase'] ) ) {
-            return new \WP_Error( 'cvsj_settings_erase_confirmation', __( 'Confirm the uninstall erase option before importing these settings.', 'change-vigil-site-journal' ), [ 'status' => 409 ] );
+            return new \WP_Error( 'cvsj_settings_erase_confirmation', __( 'Confirm the uninstall erase option before importing these settings.', 'lanternmote-change-log' ), [ 'status' => 409 ] );
         }
 
         $settings['excluded_users'] = Store::settings()['excluded_users'];
@@ -1284,7 +1284,7 @@ final class Admin {
         $settings = Store::normalize_settings( $settings );
         $changed = $settings !== $previous_settings;
         if ( $changed && ! update_option( Store::SETTINGS, $settings, false ) && $settings !== Store::settings() ) {
-            return new \WP_Error( 'cvsj_settings', __( 'Settings could not be saved. Try again.', 'change-vigil-site-journal' ), [ 'status' => 503 ] );
+            return new \WP_Error( 'cvsj_settings', __( 'Settings could not be saved. Try again.', 'lanternmote-change-log' ), [ 'status' => 503 ] );
         }
         if ( $changed ) {
             Capture::recording_rules_changed( $previous_settings, $settings );
@@ -1330,7 +1330,7 @@ final class Admin {
             return $columns;
         }
         $title = sanitize_text_field( (string) $request->get_param( 'title' ) );
-        $title = '' !== $title ? wp_html_excerpt( $title, 120, '' ) : __( 'Activity report', 'change-vigil-site-journal' );
+        $title = '' !== $title ? wp_html_excerpt( $title, 120, '' ) : __( 'Activity report', 'lanternmote-change-log' );
         $ceiling = Store::latest_id();
         if ( is_wp_error( $ceiling ) ) {
             return $ceiling;
@@ -1369,7 +1369,7 @@ final class Admin {
         $end = \DateTimeImmutable::createFromFormat( '!Y-m-d', $filters['to'], wp_timezone() )->modify( '+1 day' );
         $days = $start->diff( $end )->days;
         if ( false === $days || $days > Store::settings()['retention'] ) {
-            return new \WP_Error( 'cvsj_report_range', __( 'Choose a date range within the retention period configured for this site.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+            return new \WP_Error( 'cvsj_report_range', __( 'Choose a date range within the retention period configured for this site.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
         }
         $group = sanitize_key( (string) $request->get_param( 'group' ) );
         $interval = sanitize_key( (string) $request->get_param( 'interval' ) );
@@ -1424,12 +1424,12 @@ final class Admin {
             || ( null !== $branding && ! is_bool( $branding ) )
             || ! is_array( $tags ) || count( $tags ) > 5
             || $range_days < 1 || $range_days > Store::settings()['retention'] ) {
-            return new \WP_Error( 'cvsj_saved_report_invalid', __( 'Check the report name, filters, date interval, and site retention period.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+            return new \WP_Error( 'cvsj_saved_report_invalid', __( 'Check the report name, filters, date interval, and site retention period.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
         }
         $filter_request = new \WP_REST_Request( 'GET', '/' . self::ROUTE . '/events' );
         foreach ( $filter_values as $key => $value ) {
             if ( ! is_string( $value ) || strlen( $value ) > 255 ) {
-                return new \WP_Error( 'cvsj_saved_report_invalid', __( 'Report filters must be text values no longer than 255 characters.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+                return new \WP_Error( 'cvsj_saved_report_invalid', __( 'Report filters must be text values no longer than 255 characters.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
             }
             $filter_request->set_param( $key, $value );
         }
@@ -1440,11 +1440,11 @@ final class Admin {
         $clean_tags = [];
         foreach ( $tags as $tag ) {
             if ( ! is_string( $tag ) || strlen( $tag ) > 30 ) {
-                return new \WP_Error( 'cvsj_saved_report_invalid', __( 'Report tags must be text values no longer than 30 characters.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+                return new \WP_Error( 'cvsj_saved_report_invalid', __( 'Report tags must be text values no longer than 30 characters.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
             }
             $tag = trim( sanitize_text_field( $tag ) );
             if ( '' === $tag ) {
-                return new \WP_Error( 'cvsj_saved_report_invalid', __( 'Remove blank report tags.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+                return new \WP_Error( 'cvsj_saved_report_invalid', __( 'Remove blank report tags.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
             }
             if ( ! in_array( strtolower( $tag ), array_map( 'strtolower', $clean_tags ), true ) ) {
                 $clean_tags[] = wp_html_excerpt( $tag, 30, '' );
@@ -1454,7 +1454,7 @@ final class Admin {
         $has_from = isset( $filters['from'] );
         $has_to = isset( $filters['to'] );
         if ( $has_from !== $has_to ) {
-            return new \WP_Error( 'cvsj_saved_report_invalid', __( 'Choose both dates to save a statistics result.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+            return new \WP_Error( 'cvsj_saved_report_invalid', __( 'Choose both dates to save a statistics result.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
         }
         if ( $has_from && $has_to ) {
             $filter_request->set_param( 'group', $group );
@@ -1493,7 +1493,7 @@ final class Admin {
                 continue;
             }
             if ( ! isset( $report['statistics'] ) ) {
-                return new \WP_Error( 'cvsj_statistics_snapshot_missing', __( 'The saved statistics result is no longer available.', 'change-vigil-site-journal' ), [ 'status' => 404 ] );
+                return new \WP_Error( 'cvsj_statistics_snapshot_missing', __( 'The saved statistics result is no longer available.', 'lanternmote-change-log' ), [ 'status' => 404 ] );
             }
             $response = new \WP_REST_Response( [ 'report' => $report, 'format' => $format ] );
             $response->header( 'Content-Type', 'csv' === $format ? 'text/csv; charset=UTF-8' : 'text/html; charset=UTF-8' );
@@ -1505,7 +1505,7 @@ final class Admin {
             }
             return $response;
         }
-        return new \WP_Error( 'cvsj_saved_report_missing', __( 'The saved report was not found.', 'change-vigil-site-journal' ), [ 'status' => 404 ] );
+        return new \WP_Error( 'cvsj_saved_report_missing', __( 'The saved report was not found.', 'lanternmote-change-log' ), [ 'status' => 404 ] );
     }
 
     public static function delete_report_template( \WP_REST_Request $request ): array|\WP_Error {
@@ -1516,11 +1516,11 @@ final class Admin {
     public static function create_report_schedule( \WP_REST_Request $request ): array|\WP_Error {
         $template_id = strtolower( sanitize_text_field( (string) $request->get_param( 'template_id' ) ) );
         if ( ! preg_match( '/\A[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}\z/i', $template_id ) ) {
-            return new \WP_Error( 'cvsj_schedule_invalid', __( 'Choose a saved report before scheduling delivery.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+            return new \WP_Error( 'cvsj_schedule_invalid', __( 'Choose a saved report before scheduling delivery.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
         }
         $recipients = $request->get_param( 'recipients' );
         if ( ! is_array( $recipients ) ) {
-            return new \WP_Error( 'cvsj_schedule_invalid', __( 'Check the delivery frequency, time, and recipient list.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+            return new \WP_Error( 'cvsj_schedule_invalid', __( 'Check the delivery frequency, time, and recipient list.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
         }
         return ScheduledReports::create(
             $template_id,
@@ -1534,7 +1534,7 @@ final class Admin {
     public static function delete_report_schedule( \WP_REST_Request $request ): array|\WP_Error {
         $id = strtolower( (string) $request['id'] );
         if ( ! preg_match( '/\A[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}\z/i', $id ) ) {
-            return new \WP_Error( 'cvsj_schedule_missing', __( 'The scheduled report was not found.', 'change-vigil-site-journal' ), [ 'status' => 404 ] );
+            return new \WP_Error( 'cvsj_schedule_missing', __( 'The scheduled report was not found.', 'lanternmote-change-log' ), [ 'status' => 404 ] );
         }
         $deleted = ScheduledReports::delete( $id );
         return is_wp_error( $deleted ) ? $deleted : [ 'deleted' => true ];
@@ -1543,7 +1543,7 @@ final class Admin {
     public static function delete_report_history( \WP_REST_Request $request ): array|\WP_Error {
         $id = strtolower( (string) $request['id'] );
         if ( ! preg_match( '/\A[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}\z/i', $id ) ) {
-            return new \WP_Error( 'cvsj_report_history_missing', __( 'The report history item was not found.', 'change-vigil-site-journal' ), [ 'status' => 404 ] );
+            return new \WP_Error( 'cvsj_report_history_missing', __( 'The report history item was not found.', 'lanternmote-change-log' ), [ 'status' => 404 ] );
         }
         $deleted = ScheduledReports::delete_history( $id );
         return is_wp_error( $deleted ) ? $deleted : [ 'deleted' => true ];
@@ -1572,7 +1572,7 @@ final class Admin {
 
     public static function save_alert_channels( \WP_REST_Request $request ): array|\WP_Error {
         $input = $request->get_json_params();
-        return is_array( $input ) ? Alerts::save_channels( $input ) : new \WP_Error( 'cvsj_alert_channel_invalid', __( 'The notification settings are invalid.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+        return is_array( $input ) ? Alerts::save_channels( $input ) : new \WP_Error( 'cvsj_alert_channel_invalid', __( 'The notification settings are invalid.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
     }
 
     public static function test_alert_channel( \WP_REST_Request $request ): array|\WP_Error {
@@ -1581,13 +1581,13 @@ final class Admin {
 
     public static function save_alert_rule( \WP_REST_Request $request ): array|\WP_Error {
         $input = $request->get_json_params();
-        return is_array( $input ) ? Alerts::save( $input ) : new \WP_Error( 'cvsj_alert_rule_invalid', __( 'The alert rule is invalid.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+        return is_array( $input ) ? Alerts::save( $input ) : new \WP_Error( 'cvsj_alert_rule_invalid', __( 'The alert rule is invalid.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
     }
 
     public static function toggle_alert_rule( \WP_REST_Request $request ): array|\WP_Error {
         $id = strtolower( (string) $request['id'] );
         if ( ! preg_match( '/\A[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}\z/i', $id ) ) {
-            return new \WP_Error( 'cvsj_alert_rule_missing', __( 'The alert rule was not found.', 'change-vigil-site-journal' ), [ 'status' => 404 ] );
+            return new \WP_Error( 'cvsj_alert_rule_missing', __( 'The alert rule was not found.', 'lanternmote-change-log' ), [ 'status' => 404 ] );
         }
         $saved = Alerts::set_enabled( $id, rest_sanitize_boolean( $request['enabled'] ) );
         return is_wp_error( $saved ) ? $saved : [ 'updated' => true ];
@@ -1596,7 +1596,7 @@ final class Admin {
     public static function delete_alert_rule( \WP_REST_Request $request ): array|\WP_Error {
         $id = strtolower( (string) $request['id'] );
         if ( ! preg_match( '/\A[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}\z/i', $id ) ) {
-            return new \WP_Error( 'cvsj_alert_rule_missing', __( 'The alert rule was not found.', 'change-vigil-site-journal' ), [ 'status' => 404 ] );
+            return new \WP_Error( 'cvsj_alert_rule_missing', __( 'The alert rule was not found.', 'lanternmote-change-log' ), [ 'status' => 404 ] );
         }
         $deleted = Alerts::delete( $id );
         return is_wp_error( $deleted ) ? $deleted : [ 'deleted' => true ];
@@ -1651,41 +1651,41 @@ final class Admin {
         if ( $payload['branding'] ) {
             echo '<p class="report-brand">' . esc_html( get_bloginfo( 'name' ) ) . '</p>';
         }
-        echo '<h1>' . esc_html( (string) $payload['title'] ) . '</h1><p>' . esc_html__( 'Generated', 'change-vigil-site-journal' ) . ': ' . esc_html( wp_date( 'j M Y, H:i:s T' ) ) . '</p><dl class="report-meta">';
+        echo '<h1>' . esc_html( (string) $payload['title'] ) . '</h1><p>' . esc_html__( 'Generated', 'lanternmote-change-log' ) . ': ' . esc_html( wp_date( 'j M Y, H:i:s T' ) ) . '</p><dl class="report-meta">';
         $filter_labels = [
-            'q' => __( 'Search', 'change-vigil-site-journal' ),
-            'from' => __( 'From', 'change-vigil-site-journal' ),
-            'to' => __( 'Through', 'change-vigil-site-journal' ),
-            'actor' => __( 'Actor', 'change-vigil-site-journal' ),
-            'actor_id' => __( 'Actor ID', 'change-vigil-site-journal' ),
-            'actor_kind' => __( 'Actor type', 'change-vigil-site-journal' ),
-            'actor_role' => __( 'Actor role', 'change-vigil-site-journal' ),
-            'source' => __( 'Source', 'change-vigil-site-journal' ),
-            'item' => __( 'Item', 'change-vigil-site-journal' ),
-            'action' => __( 'Event type', 'change-vigil-site-journal' ),
-            'category' => __( 'Category', 'change-vigil-site-journal' ),
-            'severity' => __( 'Severity', 'change-vigil-site-journal' ),
-            'site_id' => __( 'MainWP site ID', 'change-vigil-site-journal' ),
+            'q' => __( 'Search', 'lanternmote-change-log' ),
+            'from' => __( 'From', 'lanternmote-change-log' ),
+            'to' => __( 'Through', 'lanternmote-change-log' ),
+            'actor' => __( 'Actor', 'lanternmote-change-log' ),
+            'actor_id' => __( 'Actor ID', 'lanternmote-change-log' ),
+            'actor_kind' => __( 'Actor type', 'lanternmote-change-log' ),
+            'actor_role' => __( 'Actor role', 'lanternmote-change-log' ),
+            'source' => __( 'Source', 'lanternmote-change-log' ),
+            'item' => __( 'Item', 'lanternmote-change-log' ),
+            'action' => __( 'Event type', 'lanternmote-change-log' ),
+            'category' => __( 'Category', 'lanternmote-change-log' ),
+            'severity' => __( 'Severity', 'lanternmote-change-log' ),
+            'site_id' => __( 'MainWP site ID', 'lanternmote-change-log' ),
         ];
         if ( ! $payload['filters'] ) {
-            echo '<dt>' . esc_html__( 'Filters', 'change-vigil-site-journal' ) . '</dt><dd>' . esc_html__( 'All available activity', 'change-vigil-site-journal' ) . '</dd>';
+            echo '<dt>' . esc_html__( 'Filters', 'lanternmote-change-log' ) . '</dt><dd>' . esc_html__( 'All available activity', 'lanternmote-change-log' ) . '</dd>';
         } else {
             foreach ( $payload['filters'] as $key => $value ) {
                 echo '<dt>' . esc_html( $filter_labels[ $key ] ?? $key ) . '</dt><dd>' . esc_html( (string) $value ) . '</dd>';
             }
         }
-        echo '</dl><table class="report-table"><caption class="screen-reader-text">' . esc_html__( 'Activity events matching the selected filters', 'change-vigil-site-journal' ) . '</caption><thead><tr>';
+        echo '</dl><table class="report-table"><caption class="screen-reader-text">' . esc_html__( 'Activity events matching the selected filters', 'lanternmote-change-log' ) . '</caption><thead><tr>';
         $headings = [
-            'event_id' => __( 'Event ID', 'change-vigil-site-journal' ),
-            'time' => __( 'Time', 'change-vigil-site-journal' ),
-            'actor' => __( 'Actor', 'change-vigil-site-journal' ),
-            'actor_role' => __( 'Role', 'change-vigil-site-journal' ),
-            'source' => __( 'Source', 'change-vigil-site-journal' ),
-            'item' => __( 'Item', 'change-vigil-site-journal' ),
-            'action' => __( 'Event type', 'change-vigil-site-journal' ),
-            'severity' => __( 'Severity', 'change-vigil-site-journal' ),
-            'summary' => __( 'Summary', 'change-vigil-site-journal' ),
-            'details' => __( 'Change details', 'change-vigil-site-journal' ),
+            'event_id' => __( 'Event ID', 'lanternmote-change-log' ),
+            'time' => __( 'Time', 'lanternmote-change-log' ),
+            'actor' => __( 'Actor', 'lanternmote-change-log' ),
+            'actor_role' => __( 'Role', 'lanternmote-change-log' ),
+            'source' => __( 'Source', 'lanternmote-change-log' ),
+            'item' => __( 'Item', 'lanternmote-change-log' ),
+            'action' => __( 'Event type', 'lanternmote-change-log' ),
+            'severity' => __( 'Severity', 'lanternmote-change-log' ),
+            'summary' => __( 'Summary', 'lanternmote-change-log' ),
+            'details' => __( 'Change details', 'lanternmote-change-log' ),
         ];
         foreach ( $payload['columns'] as $column ) {
             $heading = $headings[ $column ] ?? null;
@@ -1702,10 +1702,10 @@ final class Admin {
                 $timestamp = strtotime( $row['occurred_at'] . ' UTC' );
                 $time = wp_date( 'j M Y, H:i:s T', $timestamp );
                 $actor = '' !== $row['actor_name'] ? $row['actor_name'] : match ( $row['actor_kind'] ) {
-                    'anonymous' => __( 'Unauthenticated', 'change-vigil-site-journal' ),
-                    'system' => __( 'WordPress background task', 'change-vigil-site-journal' ),
-                    'cli' => __( 'WP CLI', 'change-vigil-site-journal' ),
-                    default => __( 'Unknown', 'change-vigil-site-journal' ),
+                    'anonymous' => __( 'Unauthenticated', 'lanternmote-change-log' ),
+                    'system' => __( 'WordPress background task', 'lanternmote-change-log' ),
+                    'cli' => __( 'WP CLI', 'lanternmote-change-log' ),
+                    default => __( 'Unknown', 'lanternmote-change-log' ),
                 };
                 $item = $row['item_name'] ?: ucwords( str_replace( '_', ' ', (string) $row['item_kind'] ) );
                 $action = ucwords( str_replace( '_', ' ', (string) $row['action_key'] ) );
@@ -1737,7 +1737,7 @@ final class Admin {
             }
             $rows = Store::query( $payload['filters'], self::EXPORT_BATCH_SIZE, (int) end( $rows )['id'], (int) $payload['ceiling'], true );
             if ( is_wp_error( $rows ) ) {
-                echo '<tr><td colspan="' . esc_attr( (string) count( $payload['columns'] ) ) . '">' . esc_html__( 'Report stopped because activity storage became unavailable. Generate the report again.', 'change-vigil-site-journal' ) . '</td></tr>';
+                echo '<tr><td colspan="' . esc_attr( (string) count( $payload['columns'] ) ) . '">' . esc_html__( 'Report stopped because activity storage became unavailable. Generate the report again.', 'lanternmote-change-log' ) . '</td></tr>';
                 break;
             }
         }
@@ -1768,7 +1768,7 @@ final class Admin {
             $tags = implode( ', ', $report['tags'] ?? [] );
             $base = [ $report['name'], $tags, $statistics['from'], $statistics['to'] ];
             fputcsv( $out, [ 'Report', 'Tags', 'From', 'Through', 'Group', 'Events' ], ',', '"', '' );
-            fputcsv( $out, array_map( [ self::class, 'csv_cell' ], [ ...$base, __( 'Total', 'change-vigil-site-journal' ), $statistics['total'] ] ), ',', '"', '' );
+            fputcsv( $out, array_map( [ self::class, 'csv_cell' ], [ ...$base, __( 'Total', 'lanternmote-change-log' ), $statistics['total'] ] ), ',', '"', '' );
             foreach ( $statistics['rows'] as $row ) {
                 fputcsv( $out, array_map( [ self::class, 'csv_cell' ], [ ...$base, self::statistics_row_label( $statistics['group'], $row['label'] ), $row['total'] ] ), ',', '"', '' );
             }
@@ -1778,13 +1778,13 @@ final class Admin {
         }
 
         echo '<!doctype html><html lang="' . esc_attr( str_replace( '_', '-', determine_locale() ) ) . '"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' . esc_html( (string) $report['name'] ) . '</title><style>body{font:14px/1.5 system-ui,sans-serif;color:#172033;margin:32px}h1{font-size:24px;margin:0 0 8px}p{color:#526078}.report-meta{margin:24px 0;padding:16px;background:#f4f6fa;border-radius:8px}.report-meta dt{font-weight:700}.report-meta dd{margin:0 0 8px}.report-table{border-collapse:collapse;width:100%;font-size:13px}.report-table th,.report-table td{border:1px solid #d7dce5;padding:8px;text-align:left}.report-table th{background:#f4f6fa}.report-table tr:nth-child(even){background:#fafbfc}</style></head><body><main>';
-        echo '<h1>' . esc_html( (string) $report['name'] ) . '</h1><p>' . esc_html__( 'Generated', 'change-vigil-site-journal' ) . ': ' . esc_html( wp_date( 'j M Y, H:i:s T' ) ) . '</p><dl class="report-meta">';
-        echo '<dt>' . esc_html__( 'Date range', 'change-vigil-site-journal' ) . '</dt><dd>' . esc_html( $statistics['from'] . ' to ' . $statistics['to'] ) . '</dd>';
-        echo '<dt>' . esc_html__( 'Grouped by', 'change-vigil-site-journal' ) . '</dt><dd>' . esc_html( self::statistics_group_label( $statistics['group'] ) ) . '</dd>';
+        echo '<h1>' . esc_html( (string) $report['name'] ) . '</h1><p>' . esc_html__( 'Generated', 'lanternmote-change-log' ) . ': ' . esc_html( wp_date( 'j M Y, H:i:s T' ) ) . '</p><dl class="report-meta">';
+        echo '<dt>' . esc_html__( 'Date range', 'lanternmote-change-log' ) . '</dt><dd>' . esc_html( $statistics['from'] . ' to ' . $statistics['to'] ) . '</dd>';
+        echo '<dt>' . esc_html__( 'Grouped by', 'lanternmote-change-log' ) . '</dt><dd>' . esc_html( self::statistics_group_label( $statistics['group'] ) ) . '</dd>';
         if ( $report['tags'] ) {
-            echo '<dt>' . esc_html__( 'Tags', 'change-vigil-site-journal' ) . '</dt><dd>' . esc_html( implode( ', ', $report['tags'] ) ) . '</dd>';
+            echo '<dt>' . esc_html__( 'Tags', 'lanternmote-change-log' ) . '</dt><dd>' . esc_html( implode( ', ', $report['tags'] ) ) . '</dd>';
         }
-        echo '<dt>' . esc_html__( 'Total events', 'change-vigil-site-journal' ) . '</dt><dd>' . esc_html( number_format_i18n( $statistics['total'] ) ) . '</dd></dl><table class="report-table"><caption>' . esc_html__( 'Activity totals by group', 'change-vigil-site-journal' ) . '</caption><thead><tr><th scope="col">' . esc_html( self::statistics_group_label( $statistics['group'] ) ) . '</th><th scope="col">' . esc_html__( 'Events', 'change-vigil-site-journal' ) . '</th></tr></thead><tbody>';
+        echo '<dt>' . esc_html__( 'Total events', 'lanternmote-change-log' ) . '</dt><dd>' . esc_html( number_format_i18n( $statistics['total'] ) ) . '</dd></dl><table class="report-table"><caption>' . esc_html__( 'Activity totals by group', 'lanternmote-change-log' ) . '</caption><thead><tr><th scope="col">' . esc_html( self::statistics_group_label( $statistics['group'] ) ) . '</th><th scope="col">' . esc_html__( 'Events', 'lanternmote-change-log' ) . '</th></tr></thead><tbody>';
         foreach ( $statistics['rows'] as $row ) {
             echo '<tr><th scope="row">' . esc_html( self::statistics_row_label( $statistics['group'], $row['label'] ) ) . '</th><td>' . esc_html( number_format_i18n( $row['total'] ) ) . '</td></tr>';
         }
@@ -1794,39 +1794,39 @@ final class Admin {
 
     private static function statistics_group_label( string $group ): string {
         return [
-            'category' => __( 'Event category', 'change-vigil-site-journal' ),
-            'action' => __( 'Event type', 'change-vigil-site-journal' ),
-            'severity' => __( 'Severity', 'change-vigil-site-journal' ),
-            'actor_role' => __( 'Actor role', 'change-vigil-site-journal' ),
-            'source' => __( 'Request source', 'change-vigil-site-journal' ),
-            'day' => __( 'Date', 'change-vigil-site-journal' ),
-        ][ $group ] ?? __( 'Group', 'change-vigil-site-journal' );
+            'category' => __( 'Event category', 'lanternmote-change-log' ),
+            'action' => __( 'Event type', 'lanternmote-change-log' ),
+            'severity' => __( 'Severity', 'lanternmote-change-log' ),
+            'actor_role' => __( 'Actor role', 'lanternmote-change-log' ),
+            'source' => __( 'Request source', 'lanternmote-change-log' ),
+            'day' => __( 'Date', 'lanternmote-change-log' ),
+        ][ $group ] ?? __( 'Group', 'lanternmote-change-log' );
     }
 
     private static function statistics_row_label( string $group, string $label ): string {
         if ( 'category' === $group ) {
             return [
-                'content' => __( 'Posts and pages', 'change-vigil-site-journal' ),
-                'accounts' => __( 'Accounts and sign ins', 'change-vigil-site-journal' ),
-                'comments' => __( 'Comments', 'change-vigil-site-journal' ),
-                'taxonomies' => __( 'Categories and tags', 'change-vigil-site-journal' ),
-                'appearance' => __( 'Menus and widgets', 'change-vigil-site-journal' ),
-                'components' => __( 'Plugins and themes', 'change-vigil-site-journal' ),
-                'settings' => __( 'Site settings', 'change-vigil-site-journal' ),
-                'network' => __( 'Network sites', 'change-vigil-site-journal' ),
-                'database' => __( 'Database', 'change-vigil-site-journal' ),
-                'files' => __( 'File changes', 'change-vigil-site-journal' ),
-                'woocommerce' => __( 'WooCommerce', 'change-vigil-site-journal' ),
-                'redirection' => __( 'Redirection', 'change-vigil-site-journal' ),
-                'acf' => __( 'Advanced Custom Fields', 'change-vigil-site-journal' ),
-                'bbpress' => __( 'bbPress', 'change-vigil-site-journal' ),
-                'wpforms' => __( 'WPForms', 'change-vigil-site-journal' ),
-                'yoast' => __( 'Yoast SEO', 'change-vigil-site-journal' ),
-                'rank_math' => __( 'Rank Math', 'change-vigil-site-journal' ),
-                'pmpro' => __( 'Paid Memberships Pro', 'change-vigil-site-journal' ),
-                'termly' => __( 'Termly', 'change-vigil-site-journal' ),
-                'mainwp' => __( 'MainWP', 'change-vigil-site-journal' ),
-                'infinitewp' => __( 'InfiniteWP', 'change-vigil-site-journal' ),
+                'content' => __( 'Posts and pages', 'lanternmote-change-log' ),
+                'accounts' => __( 'Accounts and sign ins', 'lanternmote-change-log' ),
+                'comments' => __( 'Comments', 'lanternmote-change-log' ),
+                'taxonomies' => __( 'Categories and tags', 'lanternmote-change-log' ),
+                'appearance' => __( 'Menus and widgets', 'lanternmote-change-log' ),
+                'components' => __( 'Plugins and themes', 'lanternmote-change-log' ),
+                'settings' => __( 'Site settings', 'lanternmote-change-log' ),
+                'network' => __( 'Network sites', 'lanternmote-change-log' ),
+                'database' => __( 'Database', 'lanternmote-change-log' ),
+                'files' => __( 'File changes', 'lanternmote-change-log' ),
+                'woocommerce' => __( 'WooCommerce', 'lanternmote-change-log' ),
+                'redirection' => __( 'Redirection', 'lanternmote-change-log' ),
+                'acf' => __( 'Advanced Custom Fields', 'lanternmote-change-log' ),
+                'bbpress' => __( 'bbPress', 'lanternmote-change-log' ),
+                'wpforms' => __( 'WPForms', 'lanternmote-change-log' ),
+                'yoast' => __( 'Yoast SEO', 'lanternmote-change-log' ),
+                'rank_math' => __( 'Rank Math', 'lanternmote-change-log' ),
+                'pmpro' => __( 'Paid Memberships Pro', 'lanternmote-change-log' ),
+                'termly' => __( 'Termly', 'lanternmote-change-log' ),
+                'mainwp' => __( 'MainWP', 'lanternmote-change-log' ),
+                'infinitewp' => __( 'InfiniteWP', 'lanternmote-change-log' ),
             ][ $label ] ?? $label;
         }
         if ( 'actor_role' === $group ) {
@@ -1834,10 +1834,10 @@ final class Admin {
             return $roles[ $label ] ?? $label;
         }
         if ( 'source' === $group ) {
-            return [ 'admin' => __( 'WordPress admin', 'change-vigil-site-journal' ), 'rest' => __( 'REST API', 'change-vigil-site-journal' ), 'cron' => __( 'WordPress cron', 'change-vigil-site-journal' ), 'cli' => __( 'WP CLI', 'change-vigil-site-journal' ), 'xmlrpc' => __( 'XML RPC', 'change-vigil-site-journal' ), 'frontend' => __( 'Front end', 'change-vigil-site-journal' ), 'infinitewp' => 'InfiniteWP', 'unknown' => __( 'Unknown', 'change-vigil-site-journal' ) ][ $label ] ?? $label;
+            return [ 'admin' => __( 'WordPress admin', 'lanternmote-change-log' ), 'rest' => __( 'REST API', 'lanternmote-change-log' ), 'cron' => __( 'WordPress cron', 'lanternmote-change-log' ), 'cli' => __( 'WP CLI', 'lanternmote-change-log' ), 'xmlrpc' => __( 'XML RPC', 'lanternmote-change-log' ), 'frontend' => __( 'Front end', 'lanternmote-change-log' ), 'infinitewp' => 'InfiniteWP', 'unknown' => __( 'Unknown', 'lanternmote-change-log' ) ][ $label ] ?? $label;
         }
         if ( 'severity' === $group ) {
-            return [ 'info' => __( 'Info', 'change-vigil-site-journal' ), 'notice' => __( 'Notice', 'change-vigil-site-journal' ), 'warning' => __( 'Warning', 'change-vigil-site-journal' ) ][ $label ] ?? $label;
+            return [ 'info' => __( 'Info', 'lanternmote-change-log' ), 'notice' => __( 'Notice', 'lanternmote-change-log' ), 'warning' => __( 'Warning', 'lanternmote-change-log' ) ][ $label ] ?? $label;
         }
         if ( 'action' === $group ) {
             return ucwords( str_replace( '_', ' ', $label ) );
@@ -1919,7 +1919,7 @@ final class Admin {
             $lines[] = (string) $field . ': ' . (string) $values[0] . ' → ' . (string) $values[1];
         }
         if ( ! empty( $details['content_changed'] ) ) {
-            $lines[] = __( 'Content changed; compare WordPress revisions when available.', 'change-vigil-site-journal' );
+            $lines[] = __( 'Content changed; compare WordPress revisions when available.', 'lanternmote-change-log' );
         }
         return [
             implode( '; ', $lines ),

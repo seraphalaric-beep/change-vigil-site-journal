@@ -1,6 +1,6 @@
 <?php
 
-namespace ChangeVigilSiteJournal;
+namespace LanternmoteChangeLog;
 
 defined( 'ABSPATH' ) || exit;
 

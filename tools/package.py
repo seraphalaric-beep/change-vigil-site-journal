@@ -7,7 +7,7 @@ from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 ROOT = Path(__file__).resolve().parents[1]
-SLUG = "change-vigil-site-journal"
+SLUG = "lanternmote-change-log"
 PLUGIN = ROOT / SLUG
 version = re.search(r"^ \* Version: (\S+)$", (PLUGIN / f"{SLUG}.php").read_text(), re.M)[1]
 manifest = json.loads((ROOT / "package.json").read_text())

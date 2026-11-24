@@ -35,8 +35,8 @@ try {
   await page.locator("#user_pass").fill(password);
   await page.locator("#wp-submit").click();
   await page.waitForLoadState("domcontentloaded");
-  await page.goto(base + "/wp-admin/admin.php?page=change-vigil-site-journal");
-  await page.getByRole("heading", { name: "Change Vigil", exact: true }).waitFor();
+  await page.goto(base + "/wp-admin/admin.php?page=lanternmote-change-log");
+  await page.getByRole("heading", { name: "Lanternmote", exact: true }).waitFor();
 
   const settings = await api("settings");
   assert.equal(settings.status, 200);

@@ -1,6 +1,6 @@
 # Security
 
-Change Vigil Site Journal is a 1.2.2 pilot release. Install it on a disposable or staging site while the project gathers feedback. Release verification for this version is recorded in PILOT.md.
+Lanternmote Change Log is a 1.2.3 pilot release. Install it on a disposable or staging site while the project gathers feedback. Release verification for this version is recorded in PILOT.md.
 
 The plugin requires the WordPress `manage_options` capability for event reads, exports, and settings changes. Event data stays in the local WordPress database. The pilot excludes passwords, tokens, full request bodies, and IP addresses.
 

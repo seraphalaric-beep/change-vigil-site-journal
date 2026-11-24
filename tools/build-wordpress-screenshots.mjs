@@ -121,7 +121,7 @@ const html = `<!doctype html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Change Vigil Site Journal preview</title>
+  <title>Lanternmote Change Log preview</title>
   <style>
     html, body { min-height: 100%; margin: 0; }
     body { background: #f0f0f1; color: #1d2327; font: 14px/1.5 system-ui, sans-serif; }
@@ -139,7 +139,7 @@ const html = `<!doctype html>
   <section id="cvsj_activity_summary" class="widget-preview" aria-label="Activity summary dashboard widget">
     <h1 class="hndle">Activity summary</h1>
     <div class="cvsj-dashboard-widget">
-      <div class="cvsj-dashboard-header"><div><h3 class="cvsj-dashboard-overview">At a glance</h3><p class="cvsj-dashboard-intro">Changes recorded across this site.</p></div><a class="button button-primary cvsj-dashboard-action" href="/?page=change-vigil-site-journal">View activity</a></div>
+      <div class="cvsj-dashboard-header"><div><h3 class="cvsj-dashboard-overview">At a glance</h3><p class="cvsj-dashboard-intro">Changes recorded across this site.</p></div><a class="button button-primary cvsj-dashboard-action" href="/?page=lanternmote-change-log">View activity</a></div>
       <dl class="cvsj-dashboard-metrics">
         <div class="cvsj-dashboard-metric"><dt>Last 24 hours</dt><dd>8</dd></div>
         <div class="cvsj-dashboard-metric"><dt>Last 7 days</dt><dd>23</dd></div>
@@ -170,8 +170,8 @@ const actions = [
 const server = createServer((request, response) => {
   const pathname = new URL(request.url, "http://127.0.0.1").pathname;
   const files = {
-    "/": ["text/html; charset=utf-8", `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Change Vigil</title><style>html,body{margin:0}body{background:#f4f5f7}</style><link rel="stylesheet" href="/theme.css"><link rel="stylesheet" href="/admin.css"></head><body><div id="cvsj-root"></div><script>
-      window.cvsjSettings={base:location.origin+'/wp-json/change-vigil-site-journal/v1/',nonce:'preview',actions:${JSON.stringify(actions)},severities:['info','notice','warning'],version:'${version}',canManage:true,sessionsAllowed:true,roles:{administrator:'Administrator',editor:'Editor',author:'Author',contributor:'Contributor',subscriber:'Subscriber'},timezone:'UTC'};
+    "/": ["text/html; charset=utf-8", `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lanternmote</title><style>html,body{margin:0}body{background:#f4f5f7}</style><link rel="stylesheet" href="/theme.css"><link rel="stylesheet" href="/admin.css"></head><body><div id="cvsj-root"></div><script>
+      window.cvsjSettings={base:location.origin+'/wp-json/lanternmote-change-log/v1/',nonce:'preview',actions:${JSON.stringify(actions)},severities:['info','notice','warning'],version:'${version}',canManage:true,sessionsAllowed:true,roles:{administrator:'Administrator',editor:'Editor',author:'Author',contributor:'Contributor',subscriber:'Subscriber'},timezone:'UTC'};
       const activityEvents=${JSON.stringify(events)};
       const activityDetail=${JSON.stringify(detail)};
       window.fetch=async input=>{const raw=typeof input==='string'?input:(input instanceof URL?input.href:input.url);const url=new URL(raw,location.href);const path=url.pathname.replace(/\\/+$/,'');let value;if(path.endsWith('/events/42'))value=activityDetail;else if(path.endsWith('/events'))value={events:activityEvents,next:null};else if(path.endsWith('/settings'))value={settings:${JSON.stringify(previewSettings)},health:{available:true,write_error:null,cleanup_error:null,next_cleanup:'16 Nov 2026, 11:30',oldest:'16 Nov 2026, 08:42',space:'1.24 MB',last_cleanup:'16 Nov 2026, 10:30'}};else if(path.endsWith('/alerts/channels'))value={channels:{slack_configured:false,sms_configured:false,sms_recipient_count:0}};else if(path.endsWith('/alerts/rules'))value={rules:[],presets:[],fields:[]};else if(path.endsWith('/users'))value={matches:[],selected:[]};else value={};return new Response(JSON.stringify(value),{status:200,headers:{'Content-Type':'application/json'}})};
@@ -214,8 +214,8 @@ async function capture() {
     page.on("console", message => { if (message.type() === "error") console.error(`Browser console: ${message.text()}`); });
     page.on("pageerror", error => console.error(`Browser error: ${error.stack}`));
     page.on("requestfailed", request => console.error(`Request failed: ${request.url()}, ${request.failure()?.errorText ?? "unknown"}`));
-    await page.goto(`${base}/?page=change-vigil-site-journal&q=Housing+Guide`);
-    await page.getByRole("heading", { name: "Change Vigil", exact: true }).waitFor();
+    await page.goto(`${base}/?page=lanternmote-change-log&q=Housing+Guide`);
+    await page.getByRole("heading", { name: "Lanternmote", exact: true }).waitFor();
     await page.getByRole("button", { name: /Changed.*Housing Guide.*Published to Draft/ }).waitFor();
     await page.evaluate(() => document.fonts.ready.then(() => undefined));
     await page.locator(".cvsj-app").screenshot({ path: join(output, "screenshot-1.png") });
@@ -233,11 +233,11 @@ async function capture() {
 
     const settings = await browser.newPage({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 1 });
     settings.setDefaultTimeout(6000);
-    await settings.goto(`${base}/?page=change-vigil-site-journal&view=settings`);
+    await settings.goto(`${base}/?page=lanternmote-change-log&view=settings`);
     await settings.getByRole("heading", { name: "Log health", exact: true }).waitFor();
-    await settings.getByText(`Change Vigil Site Journal · Version ${version}`).waitFor();
+    await settings.getByText(`Lanternmote Change Log · Version ${version}`).waitFor();
     await settings.evaluate(() => document.fonts.ready.then(() => undefined));
-    await settings.locator(".cvsj-app").screenshot({ path: join(output, "screenshot-4.png") });
+    await settings.screenshot({ path: join(output, "screenshot-4.png"), animations: "disabled", clip: { x: 0, y: 0, width: 1050, height: 975 } });
     await settings.close();
     await page.close();
     for (const name of ["screenshot-1.png", "screenshot-2.png", "screenshot-3.png", "screenshot-4.png"]) {

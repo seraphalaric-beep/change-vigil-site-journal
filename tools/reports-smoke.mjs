@@ -57,8 +57,8 @@ try {
   await page.locator("#user_pass").fill(password);
   await page.locator("#wp-submit").click();
   await page.waitForLoadState("domcontentloaded");
-  await page.goto(base + "/wp-admin/admin.php?page=change-vigil-site-journal");
-  await page.getByRole("heading", { name: "Change Vigil", exact: true }).waitFor();
+  await page.goto(base + "/wp-admin/admin.php?page=lanternmote-change-log");
+  await page.getByRole("heading", { name: "Lanternmote", exact: true }).waitFor();
 
   const oldFixtureCleanup = await page.request.post(base + "/cvsj-fixture.php", { form: { operation: "report_html_cleanup_all" } });
   assert.equal(oldFixtureCleanup.status(), 200, await oldFixtureCleanup.text());
@@ -198,7 +198,7 @@ try {
   assert.match(htmlStatistics.body, /Site settings/);
   assert.doesNotMatch(htmlStatistics.body, /<img|onerror=|<script/i);
 
-  const reportsNav = page.getByRole("navigation", { name: "Change Vigil", exact: true });
+  const reportsNav = page.getByRole("navigation", { name: "Lanternmote", exact: true });
   await reportsNav.getByRole("link", { name: "Reports", exact: true }).click();
   await page.getByRole("heading", { name: "Activity statistics", exact: true }).waitFor();
   await page.getByRole("button", { name: "View saved result", exact: true }).click();

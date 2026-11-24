@@ -50,8 +50,8 @@ async function fixtureCall(operation, fields = {}) {
 
 try {
   await signIn();
-  await page.goto(base + "/wp-admin/admin.php?page=change-vigil-site-journal");
-  await page.getByRole("heading", { name: "Change Vigil", exact: true }).waitFor();
+  await page.goto(base + "/wp-admin/admin.php?page=lanternmote-change-log");
+  await page.getByRole("heading", { name: "Lanternmote", exact: true }).waitFor();
   const settings = await api("settings");
   assert.equal(settings.status, 200);
   fixture = await fixtureCall("investigation_filters_seed");
@@ -101,7 +101,7 @@ try {
   assert.equal((await api("events", { item_id: "x".repeat(192) })).status, 400, "Oversized exact item identifiers are rejected.");
 
   const shared = new URL("/wp-admin/admin.php", base);
-  shared.searchParams.set("page", "change-vigil-site-journal");
+  shared.searchParams.set("page", "lanternmote-change-log");
   shared.searchParams.set("event_id", String(target.id));
   shared.searchParams.set("item_kind", target.kind);
   shared.searchParams.set("item_id", target.item_id);

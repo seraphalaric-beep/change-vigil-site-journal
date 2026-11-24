@@ -50,14 +50,14 @@ async function fixtureCall(operation, fields = {}) {
 
 try {
   await signIn();
-  await page.goto(base + "/wp-admin/admin.php?page=change-vigil-site-journal");
-  await page.getByRole("heading", { name: "Change Vigil", exact: true }).waitFor();
+  await page.goto(base + "/wp-admin/admin.php?page=lanternmote-change-log");
+  await page.getByRole("heading", { name: "Lanternmote", exact: true }).waitFor();
   const settingsResponse = await api("settings");
   assert.equal(settingsResponse.status, 200);
   originalSettings = settingsResponse.data.settings;
   fixture = await fixtureCall("bulk_seed");
-  await page.goto(base + "/wp-admin/admin.php?page=change-vigil-site-journal");
-  await page.getByRole("heading", { name: "Change Vigil", exact: true }).waitFor();
+  await page.goto(base + "/wp-admin/admin.php?page=lanternmote-change-log");
+  await page.getByRole("heading", { name: "Lanternmote", exact: true }).waitFor();
 
   async function applyToEvent(id, action) {
     await page.getByLabel(`Select event ${id}`).check();
@@ -110,7 +110,7 @@ try {
   assert.equal(exportedSettings.status, 200);
   assert.ok(!Object.hasOwn(exportedSettings.data.settings, "excluded_items"), "Exact item exclusions stay local to this site during settings export.");
 
-  const nav = page.getByRole("navigation", { name: "Change Vigil", exact: true });
+  const nav = page.getByRole("navigation", { name: "Lanternmote", exact: true });
   await nav.getByRole("link", { name: "Settings", exact: true }).click();
   await page.getByText("Recording exclusions", { exact: true }).waitFor();
   const excludedItems = page.locator(".cvsj-selected-exclusions").filter({ hasText: "Excluded items" });

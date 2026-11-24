@@ -62,8 +62,8 @@ try {
   await page.locator("#user_pass").fill(password);
   await page.locator("#wp-submit").click();
   await page.waitForLoadState("domcontentloaded");
-  await page.goto(base + "/wp-admin/admin.php?page=change-vigil-site-journal");
-  await page.getByRole("heading", { name: "Change Vigil", exact: true }).waitFor();
+  await page.goto(base + "/wp-admin/admin.php?page=lanternmote-change-log");
+  await page.getByRole("heading", { name: "Lanternmote", exact: true }).waitFor();
   const original = await api("settings");
   assert.equal(original.status, 200);
   originalSettings = original.data.settings;
@@ -75,8 +75,8 @@ try {
   pluginWasActive = 0 < await row.locator(".deactivate a").count();
   await setPluginActive(true);
 
-  await page.goto(base + "/wp-admin/admin.php?page=change-vigil-site-journal");
-  await page.getByRole("heading", { name: "Change Vigil", exact: true }).waitFor();
+  await page.goto(base + "/wp-admin/admin.php?page=lanternmote-change-log");
+  await page.getByRole("heading", { name: "Lanternmote", exact: true }).waitFor();
   const defaults = await api("settings");
   assert.equal(defaults.status, 200);
   assert.equal(defaults.data.settings.pmpro, false, "Paid Memberships Pro recording must default off");
@@ -137,7 +137,7 @@ try {
   assert.equal(olderImport.data.settings.pmpro, false, "An older export should default the new integration to off");
   assert.equal((await api("settings", { data: enabled })).status, 200, "The integration should be re enabled after the compatibility check");
 
-  await page.goto(base + `/wp-admin/admin.php?page=change-vigil-site-journal&category=pmpro&item=${encodeURIComponent(`user:${probe.userId}`)}`);
+  await page.goto(base + `/wp-admin/admin.php?page=lanternmote-change-log&category=pmpro&item=${encodeURIComponent(`user:${probe.userId}`)}`);
   const activityTable = page.getByRole("table", { name: "Activity events" });
   await activityTable.waitFor();
   await page.getByRole("button", { name: /Membership access changed/ }).first().click();
@@ -148,14 +148,14 @@ try {
   await page.keyboard.press("Escape");
   await dialog.waitFor({ state: "hidden" });
 
-  await page.getByRole("navigation", { name: "Change Vigil" }).getByRole("link", { name: "Settings", exact: true }).click();
+  await page.getByRole("navigation", { name: "Lanternmote" }).getByRole("link", { name: "Settings", exact: true }).click();
   const integration = page.getByRole("checkbox", { name: /Paid Memberships Pro/ });
   assert.equal(await integration.isChecked(), true);
   await page.getByText(/Membership access can reveal personal information/i).waitFor();
   await page.screenshot({ path: ".tmp/pmpro-settings.png", fullPage: true });
 
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto(base + `/wp-admin/admin.php?page=change-vigil-site-journal&category=pmpro`);
+  await page.goto(base + `/wp-admin/admin.php?page=lanternmote-change-log&category=pmpro`);
   await page.getByRole("table", { name: "Activity events" }).waitFor();
   const dimensions = await page.evaluate(() => ({ viewport: innerWidth, document: document.documentElement.scrollWidth }));
   assert.ok(dimensions.document <= dimensions.viewport + 1, `Horizontal overflow at narrow width: ${JSON.stringify(dimensions)}`);
@@ -165,8 +165,8 @@ try {
   console.log("Paid Memberships Pro opt in, level lifecycle, membership changes, unchanged saves, REST, CSV, privacy, details, and narrow layout checks passed");
 } finally {
   if (originalSettings) {
-    await page.goto(base + "/wp-admin/admin.php?page=change-vigil-site-journal");
-    await page.getByRole("heading", { name: "Change Vigil", exact: true }).waitFor();
+    await page.goto(base + "/wp-admin/admin.php?page=lanternmote-change-log");
+    await page.getByRole("heading", { name: "Lanternmote", exact: true }).waitFor();
     await api("settings", { data: originalSettings });
   }
   await setPluginActive(pluginWasActive);

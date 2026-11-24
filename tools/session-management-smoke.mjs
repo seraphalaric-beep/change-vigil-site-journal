@@ -58,8 +58,8 @@ try {
   await signIn(page, "pilotadmin", password);
   fixture = await fixtureCall("session_seed");
   await fixtureCall("toolbar_seed");
-  await page.goto(base + "/wp-admin/admin.php?page=change-vigil-site-journal");
-  await page.getByRole("heading", { name: "Change Vigil", exact: true }).waitFor();
+  await page.goto(base + "/wp-admin/admin.php?page=lanternmote-change-log");
+  await page.getByRole("heading", { name: "Lanternmote", exact: true }).waitFor();
   const toolbarMenu = page.locator("#wp-admin-bar-cvsj-live-activity");
   assert.equal(await toolbarMenu.count(), 1, "Permitted activity viewers see the WordPress toolbar entry.");
   await toolbarMenu.hover();
@@ -81,13 +81,13 @@ try {
   await toolbarEvents.first().click();
   await page.locator(".cvsj-sheet").waitFor();
   await page.getByText(`Event ${toolbarEventUrl.searchParams.get("event")}`, { exact: false }).waitFor();
-  await page.goto(base + "/wp-admin/admin.php?page=change-vigil-site-journal");
-  await page.getByRole("heading", { name: "Change Vigil", exact: true }).waitFor();
-  const nav = page.getByRole("navigation", { name: "Change Vigil", exact: true });
+  await page.goto(base + "/wp-admin/admin.php?page=lanternmote-change-log");
+  await page.getByRole("heading", { name: "Lanternmote", exact: true }).waitFor();
+  const nav = page.getByRole("navigation", { name: "Lanternmote", exact: true });
   await nav.getByRole("link", { name: "Sessions", exact: true }).click();
   await page.getByRole("heading", { name: "User sessions", exact: true }).waitFor();
   assert.match(page.url(), /[?&]view=sessions/);
-  await page.getByText(`Change Vigil Site Journal, Version ${version}`, { exact: true }).waitFor();
+  await page.getByText(`Lanternmote Change Log, Version ${version}`, { exact: true }).waitFor();
 
   const defaultSettings = await api("sessions/settings");
   assert.equal(defaultSettings.status, 200);

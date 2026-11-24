@@ -15,7 +15,7 @@ $manifest = Get-Content -Raw -LiteralPath (Join-Path $project 'package.json') | 
 if ($Archive) {
     $archive = (Resolve-Path -LiteralPath $Archive).Path
 } else {
-    $archive = Join-Path $project ("release/change-vigil-site-journal.{0}.zip" -f $manifest.version)
+    $archive = Join-Path $project ("release/lanternmote-change-log.{0}.zip" -f $manifest.version)
 }
 if (-not (Test-Path -LiteralPath $archive -PathType Leaf)) { throw "Build the installable archive first: $archive" }
 if ($Database -notmatch '^cvsj_[a-z0-9_]+$') { throw 'Use a disposable cvsj_ database.' }

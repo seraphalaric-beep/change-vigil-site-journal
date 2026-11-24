@@ -1,9 +1,9 @@
-# Change Vigil Site Journal pilot guide
+# Lanternmote Change Log pilot guide
 
 ## Install and investigate
 
 1. On a disposable or staging site running WordPress 6.9 or later and PHP 8.3 or later, open **Plugins**, then **Add New Plugin**, then **Upload Plugin**.
-2. Upload the installable ZIP from the [GitHub 1.2.2 release](https://github.com/seraphalaric-beep/change-vigil-site-journal/releases/tag/v1.2.2), install it, and activate it. Confirm Settings shows version 1.2.2. The main Dashboard shows activity counts and recent changes. Open **Change Vigil** near the top of the admin menu to investigate.
+2. Upload the installable ZIP from the local `release/lanternmote-change-log.1.2.3.zip`, install it, and activate it. Confirm Settings shows version 1.2.3. The main Dashboard shows activity counts and recent changes. Open **Lanternmote** near the top of the admin menu to investigate.
 3. Create a test page named **Housing Guide**, publish it, and move it back to Draft. Add a few unrelated edits to make the list realistic.
 4. Ask another administrator to start on the Activity screen with only the page name, without a date, user, or event hint. Record the elapsed time and whether they correctly find the unexpected change, identify the user, and verify the previous status without help. Pass if all are correct in under 30 seconds.
 5. Open an event, check the previous and new values, and try the actor and affected item links. Combine search with the Action and Severity filters, reload the URL, and verify that CSV export contains every matching row and any captured previous and new values.
@@ -39,7 +39,7 @@ Deactivation and deletion preserve history by default. To remove the stored hist
 
 From the workspace, run `npm ci` and `npm run package`. This builds the admin interface and writes the installable ZIP under `release`. The archive contains the frontend source, dependency lock, and third party license notices.
 
-To build a candidate without replacing a checked in release ZIP, run `npm run build` and `python tools/package.py --output-dir .tmp/pilot-release`, then pass `-Archive .tmp/pilot-release/change-vigil-site-journal.<version>.zip` to `tools/start-pilot.ps1`.
+To build a candidate without replacing a checked in release ZIP, run `npm run build` and `python tools/package.py --output-dir .tmp/pilot-release`, then pass `-Archive .tmp/pilot-release/lanternmote-change-log.<version>.zip` to `tools/start-pilot.ps1`.
 
 The automated pilot uses a disposable WordPress installation, MariaDB, PHP, and Chrome. The setup script needs an extracted copy of WordPress, a native PHP executable, and an empty database whose name starts with `cvsj_`. Start the disposable site with `tools/start-pilot.ps1`, then run `npm run test:pilot -- <loopback URL> <test password> full`. The fixture is used only in the disposable test environment. Screenshots are written to `test-results`.
 
@@ -120,3 +120,17 @@ The `tools/coexistence-smoke.php` check confirmed both versions recorded the tes
 WordPress Plugin Check's directory category returned zero errors and 27 advisory warnings about direct or uncached database calls. The official readme validator returned only a note about the optional donation link. The full name and slug returned no obvious conflicting match in a public search, which is an initial screen.
 
 The [1.2.2 release](https://github.com/seraphalaric-beep/change-vigil-site-journal/releases/tag/v1.2.2) contains the CI ZIP. All 123 archive entries matched the local build after normalising text line endings. The published download's SHA256 matches the CI artifact, `c415ce8990d78912eba523d099a4d0e38e7532723329f2d621eee0cbd6ee66c2`.
+
+## 1.2.3 directory review candidate
+
+`npm run package` built `release/lanternmote-change-log.1.2.3.zip`. The installable ZIP uses the `lanternmote-change-log` slug and the Settings footer shows 1.2.3. PHP syntax checks passed for all 11 plugin PHP files, `npm audit --omit=dev` found no production dependency vulnerabilities, and `git diff --check` passed. WordPress Plugin Check's directory category reported zero errors and 27 advisory database warnings. The official readme validator flagged only the optional donation link before the Settings screenshot caption was revised.
+
+`tools/quality.mjs` and `tools/pilot.mjs` passed on WordPress 7.1.4, PHP 8.5.12 and MariaDB 11.4.13. The former verified access controls and reported zero browser errors and zero violations in 12 axe scans at widths of 320 to 1440 pixels. The pilot verified capture, filters, details, exports, retention, cleanup failures and uninstall. With 100,000 events, the first page and filtered REST requests took 177 ms and 323 ms at the 95th percentile. The scripted investigation took 1.213 seconds. The separate Dashboard regression comparison was skipped by request, and the automated timing does not measure an unaided administrator. The final ZIP differs from the build installed for these tests only in the readme screenshot caption.
+
+A manual upgrade scenario exercised with a local script verified that deactivating 1.2.2 and activating 1.2.3 preserved the seeded event, retained the 83 day setting, and restored the scheduled cleanup. An attempt to activate the new release while the previous release was active was rejected.
+
+The final ZIP was installed on a clean WordPress 6.9.11 site with PHP 8.3.36 and MariaDB 11.4.13. All 123 installed files matched the archive. `tools/quality.mjs` passed with zero browser errors and zero violations in 12 axe scans. Anonymous access returned 401 and the three editor requests returned 403. The full pilot suite was run on WordPress 7.1.4, with the minimum supported environment covered by the clean install and browser suite.
+
+The directory asset ZIP contains the Lucide icon and its PNG variants, both WordPress banner sizes, four screenshots from the current interface with sample event data, and the icon license. The numbered screenshots match the readme captions. The asset ZIP was checked against the source files, and the banner and Settings artwork were visually inspected.
+
+The final upload ZIP has SHA256 `e88402c5a11bf467d32054e7f2719b63d2311bdfd2083c4a44ecf52c821c4aba`.

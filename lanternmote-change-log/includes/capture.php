@@ -1,6 +1,6 @@
 <?php
 
-namespace ChangeVigilSiteJournal;
+namespace LanternmoteChangeLog;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -420,12 +420,12 @@ final class Capture {
     }
 
     private static function termly_connection_event( string $action, string $summary ): void {
-        self::record( $action, 'setting', 'termly_connection', __( 'Termly connection', 'change-vigil-site-journal' ), $summary, [], 'termly_disconnected' === $action ? 'warning' : 'notice' );
+        self::record( $action, 'setting', 'termly_connection', __( 'Termly connection', 'lanternmote-change-log' ), $summary, [], 'termly_disconnected' === $action ? 'warning' : 'notice' );
     }
 
     public static function termly_api_key_added( string $option, mixed $value ): void {
         if ( 'termly_api_key' === $option && is_scalar( $value ) && '' !== (string) $value ) {
-            self::termly_connection_event( 'termly_connected', __( 'Connected the site to Termly', 'change-vigil-site-journal' ) );
+            self::termly_connection_event( 'termly_connected', __( 'Connected the site to Termly', 'lanternmote-change-log' ) );
         }
     }
 
@@ -439,11 +439,11 @@ final class Capture {
             return;
         }
         if ( '' === $after ) {
-            self::termly_connection_event( 'termly_disconnected', __( 'Disconnected the site from Termly', 'change-vigil-site-journal' ) );
+            self::termly_connection_event( 'termly_disconnected', __( 'Disconnected the site from Termly', 'lanternmote-change-log' ) );
         } elseif ( '' === $before ) {
-            self::termly_connection_event( 'termly_connected', __( 'Connected the site to Termly', 'change-vigil-site-journal' ) );
+            self::termly_connection_event( 'termly_connected', __( 'Connected the site to Termly', 'lanternmote-change-log' ) );
         } else {
-            self::termly_connection_event( 'termly_connected', __( 'Changed the Termly connection', 'change-vigil-site-journal' ) );
+            self::termly_connection_event( 'termly_connected', __( 'Changed the Termly connection', 'lanternmote-change-log' ) );
         }
     }
 
@@ -457,21 +457,21 @@ final class Capture {
     public static function termly_api_key_deleted( string $option ): void {
         if ( 'termly_api_key' === $option && self::$termly_api_key_was_present_before_delete ) {
             self::$termly_api_key_was_present_before_delete = false;
-            self::termly_connection_event( 'termly_disconnected', __( 'Disconnected the site from Termly', 'change-vigil-site-journal' ) );
+            self::termly_connection_event( 'termly_disconnected', __( 'Disconnected the site from Termly', 'lanternmote-change-log' ) );
         }
     }
 
     private static function termly_toggle_value( mixed $value ): ?string {
         if ( is_bool( $value ) || is_numeric( $value ) ) {
-            return (bool) $value ? __( 'On', 'change-vigil-site-journal' ) : __( 'Off', 'change-vigil-site-journal' );
+            return (bool) $value ? __( 'On', 'lanternmote-change-log' ) : __( 'Off', 'lanternmote-change-log' );
         }
         if ( is_string( $value ) ) {
             $value = strtolower( trim( $value ) );
             if ( in_array( $value, [ '1', 'yes', 'on', 'true' ], true ) ) {
-                return __( 'On', 'change-vigil-site-journal' );
+                return __( 'On', 'lanternmote-change-log' );
             }
             if ( in_array( $value, [ '0', 'no', 'off', 'false', '' ], true ) ) {
-                return __( 'Off', 'change-vigil-site-journal' );
+                return __( 'Off', 'lanternmote-change-log' );
             }
         }
         return null;
@@ -485,16 +485,16 @@ final class Capture {
         }
         self::record( $action, 'setting', 'termly_' . sanitize_key( $label ), 'Termly ' . $label,
             // translators: %s is the name or label of the affected record.
-            sprintf( __( 'Changed the status of the Termly %s', 'change-vigil-site-journal' ), strtolower( $label ) ),
+            sprintf( __( 'Changed the status of the Termly %s', 'lanternmote-change-log' ), strtolower( $label ) ),
             [ 'changes' => [ $label => [ $before, $after ] ] ], 'notice' );
     }
 
     public static function termly_banner_updated( mixed $old, mixed $new, string $option ): void {
-        self::termly_toggle_event( 'termly_banner_changed', __( 'consent banner', 'change-vigil-site-journal' ), $old, $new );
+        self::termly_toggle_event( 'termly_banner_changed', __( 'consent banner', 'lanternmote-change-log' ), $old, $new );
     }
 
     public static function termly_autoblocker_updated( mixed $old, mixed $new, string $option ): void {
-        self::termly_toggle_event( 'termly_autoblocker_changed', __( 'automatic blocker', 'change-vigil-site-journal' ), $old, $new );
+        self::termly_toggle_event( 'termly_autoblocker_changed', __( 'automatic blocker', 'lanternmote-change-log' ), $old, $new );
     }
 
     private static function termly_site_scan_values( mixed $value ): array {
@@ -505,7 +505,7 @@ final class Capture {
             return [ 'enabled' => null, 'frequency' => null, 'robots_txt' => null ];
         }
         $frequency = isset( $value['frequency'] ) && in_array( $value['frequency'], [ 'trimonthly', 'monthly', 'weekly' ], true ) ? $value['frequency'] : null;
-        $labels = [ 'trimonthly' => __( 'Every three months', 'change-vigil-site-journal' ), 'monthly' => __( 'Monthly', 'change-vigil-site-journal' ), 'weekly' => __( 'Weekly', 'change-vigil-site-journal' ) ];
+        $labels = [ 'trimonthly' => __( 'Every three months', 'lanternmote-change-log' ), 'monthly' => __( 'Monthly', 'lanternmote-change-log' ), 'weekly' => __( 'Weekly', 'lanternmote-change-log' ) ];
         return [
             'enabled' => self::termly_toggle_value( $value['enabled'] ?? false ),
             'frequency' => $frequency ? $labels[ $frequency ] : null,
@@ -517,17 +517,17 @@ final class Capture {
         $before = self::termly_site_scan_values( $old );
         $after = self::termly_site_scan_values( $new );
         $changes = [];
-        foreach ( [ 'enabled' => __( 'Automatic scans', 'change-vigil-site-journal' ), 'frequency' => __( 'Scan frequency', 'change-vigil-site-journal' ) ] as $key => $label ) {
+        foreach ( [ 'enabled' => __( 'Automatic scans', 'lanternmote-change-log' ), 'frequency' => __( 'Scan frequency', 'lanternmote-change-log' ) ] as $key => $label ) {
             if ( null !== $before[ $key ] && null !== $after[ $key ] && $before[ $key ] !== $after[ $key ] ) {
                 $changes[ $label ] = [ $before[ $key ], $after[ $key ] ];
             }
         }
         if ( $changes ) {
-            self::record( 'termly_scan_schedule_changed', 'setting', 'termly_scan_schedule', __( 'Termly scan schedule', 'change-vigil-site-journal' ),
-                __( 'Changed Termly automatic scan settings', 'change-vigil-site-journal' ), [ 'changes' => $changes ], 'notice' );
+            self::record( 'termly_scan_schedule_changed', 'setting', 'termly_scan_schedule', __( 'Termly scan schedule', 'lanternmote-change-log' ),
+                __( 'Changed Termly automatic scan settings', 'lanternmote-change-log' ), [ 'changes' => $changes ], 'notice' );
         }
         if ( null !== $before['robots_txt'] && null !== $after['robots_txt'] && $before['robots_txt'] !== $after['robots_txt'] ) {
-            self::termly_toggle_event( 'termly_robot_allowlist_changed', __( 'scanner allow list', 'change-vigil-site-journal' ), $before['robots_txt'], $after['robots_txt'] );
+            self::termly_toggle_event( 'termly_robot_allowlist_changed', __( 'scanner allow list', 'lanternmote-change-log' ), $before['robots_txt'], $after['robots_txt'] );
         }
     }
 
@@ -585,12 +585,12 @@ final class Capture {
             ? sanitize_key( $meta_value['what'] )
             : '';
         $scope_labels = [
-            'full'  => __( 'Files and database', 'change-vigil-site-journal' ),
-            'db'    => __( 'Database only', 'change-vigil-site-journal' ),
-            'files' => __( 'Files only', 'change-vigil-site-journal' ),
+            'full'  => __( 'Files and database', 'lanternmote-change-log' ),
+            'db'    => __( 'Database only', 'lanternmote-change-log' ),
+            'files' => __( 'Files only', 'lanternmote-change-log' ),
         ];
         $details = isset( $scope_labels[ $scope ] )
-            ? [ 'changes' => [ __( 'Backup scope', 'change-vigil-site-journal' ) => [ __( 'Not recorded', 'change-vigil-site-journal' ), $scope_labels[ $scope ] ] ] ]
+            ? [ 'changes' => [ __( 'Backup scope', 'lanternmote-change-log' ) => [ __( 'Not recorded', 'lanternmote-change-log' ), $scope_labels[ $scope ] ] ] ]
             : [];
 
         self::record(
@@ -598,8 +598,8 @@ final class Capture {
             'backup',
             (string) $post_id,
             // translators: %d is the ID of the affected item.
-            sprintf( __( 'InfiniteWP backup #%d', 'change-vigil-site-journal' ), $post_id ),
-            __( 'Completed an InfiniteWP backup', 'change-vigil-site-journal' ),
+            sprintf( __( 'InfiniteWP backup #%d', 'lanternmote-change-log' ), $post_id ),
+            __( 'Completed an InfiniteWP backup', 'lanternmote-change-log' ),
             $details,
             'notice',
             $actor,
@@ -679,7 +679,7 @@ final class Capture {
             return;
         }
         // translators: %d is the ID of the affected item.
-        $name = sprintf( __( 'MainWP child site #%d', 'change-vigil-site-journal' ), $id );
+        $name = sprintf( __( 'MainWP child site #%d', 'lanternmote-change-log' ), $id );
         self::record( $action, 'mainwp_site', $id, $name, sprintf( $format, $id ), $details, $severity );
     }
 
@@ -689,30 +689,30 @@ final class Capture {
             return;
         }
         // translators: %d is the ID of the affected item.
-        $name = sprintf( __( 'MainWP client #%d', 'change-vigil-site-journal' ), $id );
+        $name = sprintf( __( 'MainWP client #%d', 'lanternmote-change-log' ), $id );
         self::record( $action, 'mainwp_client', $id, $name, sprintf( $format, $id ), $details, $severity );
     }
 
     public static function mainwp_site_added( mixed $site_id, mixed $site ): void {
         // translators: %d is the ID of the affected item.
-        self::mainwp_site_event( 'mainwp_site_added', $site_id, __( 'Added MainWP child site #%d', 'change-vigil-site-journal' ) );
+        self::mainwp_site_event( 'mainwp_site_added', $site_id, __( 'Added MainWP child site #%d', 'lanternmote-change-log' ) );
     }
 
     public static function mainwp_site_updated( mixed $site_id, mixed $data ): void {
         // translators: %d is the ID of the affected item.
-        self::mainwp_site_event( 'mainwp_site_updated', $site_id, __( 'Changed MainWP child site #%d', 'change-vigil-site-journal' ) );
+        self::mainwp_site_event( 'mainwp_site_updated', $site_id, __( 'Changed MainWP child site #%d', 'lanternmote-change-log' ) );
     }
 
     public static function mainwp_site_deleted( mixed $site ): void {
         // translators: %d is the ID of the affected item.
-        self::mainwp_site_event( 'mainwp_site_deleted', $site, __( 'Removed MainWP child site #%d', 'change-vigil-site-journal' ), 'warning' );
+        self::mainwp_site_event( 'mainwp_site_deleted', $site, __( 'Removed MainWP child site #%d', 'lanternmote-change-log' ), 'warning' );
     }
 
     public static function mainwp_site_suspended( mixed $site, mixed $suspended ): void {
         $is_suspended = in_array( $suspended, [ true, 1, '1' ], true );
         $action = $is_suspended ? 'mainwp_site_suspended' : 'mainwp_site_resumed';
         // translators: %d is the ID of the affected item.
-        $summary = $is_suspended ? __( 'Suspended MainWP child site #%d', 'change-vigil-site-journal' ) : __( 'Resumed MainWP child site #%d', 'change-vigil-site-journal' );
+        $summary = $is_suspended ? __( 'Suspended MainWP child site #%d', 'lanternmote-change-log' ) : __( 'Resumed MainWP child site #%d', 'lanternmote-change-log' );
         self::mainwp_site_event( $action, $site, $summary, $is_suspended ? 'warning' : 'notice' );
     }
 
@@ -724,8 +724,8 @@ final class Capture {
         }
         $action = $succeeded ? 'mainwp_site_sync_succeeded' : 'mainwp_site_sync_failed';
         // translators: %d is the ID of the affected item.
-        $summary = $succeeded ? __( 'Synchronized MainWP child site #%d', 'change-vigil-site-journal' ) : __( 'MainWP child site #%d synchronization failed', 'change-vigil-site-journal' );
-        $details = [ 'changes' => [ __( 'Synchronization', 'change-vigil-site-journal' ) => [ __( 'Not recorded', 'change-vigil-site-journal' ), $succeeded ? __( 'Completed', 'change-vigil-site-journal' ) : __( 'Failed', 'change-vigil-site-journal' ) ] ] ];
+        $summary = $succeeded ? __( 'Synchronized MainWP child site #%d', 'lanternmote-change-log' ) : __( 'MainWP child site #%d synchronization failed', 'lanternmote-change-log' );
+        $details = [ 'changes' => [ __( 'Synchronization', 'lanternmote-change-log' ) => [ __( 'Not recorded', 'lanternmote-change-log' ), $succeeded ? __( 'Completed', 'lanternmote-change-log' ) : __( 'Failed', 'lanternmote-change-log' ) ] ] ];
         self::mainwp_site_event( $action, $site, $summary, $succeeded ? 'info' : 'warning', $details );
     }
 
@@ -733,20 +733,20 @@ final class Capture {
         $is_created = in_array( $created, [ true, 1, '1' ], true );
         $action = $is_created ? 'mainwp_client_created' : 'mainwp_client_updated';
         // translators: %d is the ID of the affected item.
-        $summary = $is_created ? __( 'Created MainWP client #%d', 'change-vigil-site-journal' ) : __( 'Changed MainWP client #%d', 'change-vigil-site-journal' );
+        $summary = $is_created ? __( 'Created MainWP client #%d', 'lanternmote-change-log' ) : __( 'Changed MainWP client #%d', 'lanternmote-change-log' );
         self::mainwp_client_event( $action, $client, $summary );
     }
 
     public static function mainwp_client_deleted( mixed $client, mixed $snapshot_info = null ): void {
         // translators: %d is the ID of the affected item.
-        self::mainwp_client_event( 'mainwp_client_deleted', $client, __( 'Deleted MainWP client #%d', 'change-vigil-site-journal' ), 'warning' );
+        self::mainwp_client_event( 'mainwp_client_deleted', $client, __( 'Deleted MainWP client #%d', 'lanternmote-change-log' ), 'warning' );
     }
 
     public static function mainwp_client_suspend( mixed $client, mixed $suspended ): void {
         $is_suspended = in_array( $suspended, [ true, 1, '1' ], true );
         $action = $is_suspended ? 'mainwp_client_suspended' : 'mainwp_client_resumed';
         // translators: %d is the ID of the affected item.
-        $summary = $is_suspended ? __( 'Suspended MainWP client #%d', 'change-vigil-site-journal' ) : __( 'Resumed MainWP client #%d', 'change-vigil-site-journal' );
+        $summary = $is_suspended ? __( 'Suspended MainWP client #%d', 'lanternmote-change-log' ) : __( 'Resumed MainWP client #%d', 'lanternmote-change-log' );
         self::mainwp_client_event( $action, $client, $summary, $is_suspended ? 'warning' : 'notice' );
     }
 
@@ -795,16 +795,16 @@ final class Capture {
                 continue;
             }
 
-            $before_value = $before ? implode( ', ', $before ) : __( 'None', 'change-vigil-site-journal' );
-            $after_value = $after ? implode( ', ', $after ) : __( 'None', 'change-vigil-site-journal' );
+            $before_value = $before ? implode( ', ', $before ) : __( 'None', 'lanternmote-change-log' );
+            $after_value = $after ? implode( ', ', $after ) : __( 'None', 'lanternmote-change-log' );
             self::record(
                 'membership_changed',
                 'user',
                 $user_id,
                 // translators: %d is the ID of the affected item.
-                sprintf( __( 'Account #%d', 'change-vigil-site-journal' ), $user_id ),
+                sprintf( __( 'Account #%d', 'lanternmote-change-log' ), $user_id ),
                 // translators: %d is the ID of the affected item.
-                sprintf( __( 'Changed Paid Memberships Pro access for account #%d', 'change-vigil-site-journal' ), $user_id ),
+                sprintf( __( 'Changed Paid Memberships Pro access for account #%d', 'lanternmote-change-log' ), $user_id ),
                 [ 'changes' => [ 'Membership level IDs' => [ (string) $before_value, (string) $after_value ] ] ],
                 'warning'
             );
@@ -858,10 +858,10 @@ final class Capture {
         }
 
         // translators: %d is the ID of the affected item.
-        $name = sprintf( __( 'Membership level #%d', 'change-vigil-site-journal' ), $id );
+        $name = sprintf( __( 'Membership level #%d', 'lanternmote-change-log' ), $id );
         self::record( 'membership_level_created', 'pmpro_level', $id, $name,
             // translators: %d is the ID of the affected item.
-            sprintf( __( 'Created Paid Memberships Pro level #%d', 'change-vigil-site-journal' ), $id ), [], 'notice' );
+            sprintf( __( 'Created Paid Memberships Pro level #%d', 'lanternmote-change-log' ), $id ), [], 'notice' );
     }
 
     public static function pmpro_level_before_update( mixed $level ): void {
@@ -882,11 +882,11 @@ final class Capture {
         }
 
         // translators: %d is the ID of the affected item.
-        $name = sprintf( __( 'Membership level #%d', 'change-vigil-site-journal' ), $id );
+        $name = sprintf( __( 'Membership level #%d', 'lanternmote-change-log' ), $id );
         self::record( 'membership_level_updated', 'pmpro_level', $id, $name,
             // translators: %d is the ID of the affected item.
-            sprintf( __( 'Changed Paid Memberships Pro level #%d', 'change-vigil-site-journal' ), $id ),
-            [ 'changes' => [ 'Level configuration' => [ __( 'Not recorded', 'change-vigil-site-journal' ), __( 'Changed', 'change-vigil-site-journal' ) ] ] ], 'notice' );
+            sprintf( __( 'Changed Paid Memberships Pro level #%d', 'lanternmote-change-log' ), $id ),
+            [ 'changes' => [ 'Level configuration' => [ __( 'Not recorded', 'lanternmote-change-log' ), __( 'Changed', 'lanternmote-change-log' ) ] ] ], 'notice' );
     }
 
     public static function pmpro_level_deleted( mixed $level_id ): void {
@@ -896,10 +896,10 @@ final class Capture {
         }
 
         // translators: %d is the ID of the affected item.
-        $name = sprintf( __( 'Membership level #%d', 'change-vigil-site-journal' ), $id );
+        $name = sprintf( __( 'Membership level #%d', 'lanternmote-change-log' ), $id );
         self::record( 'membership_level_deleted', 'pmpro_level', $id, $name,
             // translators: %d is the ID of the affected item.
-            sprintf( __( 'Deleted Paid Memberships Pro level #%d', 'change-vigil-site-journal' ), $id ), [], 'warning' );
+            sprintf( __( 'Deleted Paid Memberships Pro level #%d', 'lanternmote-change-log' ), $id ), [], 'warning' );
     }
 
     private static function seo_plugin_active( string $provider ): bool {
@@ -983,8 +983,8 @@ final class Capture {
     }
 
     public static function flush_seo_changes(): void {
-        $not_recorded = __( 'Not recorded', 'change-vigil-site-journal' );
-        $changed = __( 'Changed', 'change-vigil-site-journal' );
+        $not_recorded = __( 'Not recorded', 'lanternmote-change-log' );
+        $changed = __( 'Changed', 'lanternmote-change-log' );
         foreach ( self::$seo_changes as $provider => $posts ) {
             if ( ! Store::settings()[ $provider ] || ! self::seo_plugin_active( $provider ) ) {
                 continue;
@@ -1012,12 +1012,12 @@ final class Capture {
                 $name = self::redacted_text( $post->post_title, 220 );
                 if ( '' === $name ) {
                     // translators: %1$s is the type of the affected item; %2$d is the ID of the affected item.
-                    $name = sprintf( __( '%1$s #%2$d', 'change-vigil-site-journal' ), self::post_type_label( $post->post_type ), $post->ID );
+                    $name = sprintf( __( '%1$s #%2$d', 'lanternmote-change-log' ), self::post_type_label( $post->post_type ), $post->ID );
                 }
                 $count = count( $changes );
                 $summary = sprintf(
                     // translators: %1$d is the number of changed fields; %2$s is the field label; %3$s is the content type; %4$s is the content item title.
-                    _n( 'Changed %1$d %2$s field on %3$s “%4$s”', 'Changed %1$d %2$s fields on %3$s “%4$s”', $count, 'change-vigil-site-journal' ),
+                    _n( 'Changed %1$d %2$s field on %3$s “%4$s”', 'Changed %1$d %2$s fields on %3$s “%4$s”', $count, 'lanternmote-change-log' ),
                     $count,
                     $plugin,
                     self::post_type_label( $post->post_type ),
@@ -1040,7 +1040,7 @@ final class Capture {
             }
             self::record( $action, 'setting', $provider . '-seo', $plugin,
                 // translators: %s is the plugin or component name.
-                sprintf( __( 'Changed %s settings', 'change-vigil-site-journal' ), $plugin ), [ 'changes' => $changes ], 'notice' );
+                sprintf( __( 'Changed %s settings', 'lanternmote-change-log' ), $plugin ), [ 'changes' => $changes ], 'notice' );
         }
         self::$seo_settings_changes = [];
     }
@@ -1052,14 +1052,14 @@ final class Capture {
     private static function wpforms_form_name( \WP_Post $post ): string {
         $title = self::redacted_text( $post->post_title, 220 );
         // translators: %d is the ID of the affected item.
-        return $title ?: sprintf( __( 'Form #%d', 'change-vigil-site-journal' ), $post->ID );
+        return $title ?: sprintf( __( 'Form #%d', 'lanternmote-change-log' ), $post->ID );
     }
 
     private static function wpforms_actor(): array {
         if ( is_user_logged_in() || wp_doing_cron() || ( defined( 'WP_CLI' ) && (bool) constant( 'WP_CLI' ) ) ) {
             return self::actor();
         }
-        return [ 'anonymous', 0, __( 'Anonymous visitor', 'change-vigil-site-journal' ) ];
+        return [ 'anonymous', 0, __( 'Anonymous visitor', 'lanternmote-change-log' ) ];
     }
 
     private static function wpforms_form_post( int $id, \WP_Post $post, bool $update, ?\WP_Post $before ): void {
@@ -1074,7 +1074,7 @@ final class Capture {
         if ( $created ) {
             self::record( 'wpforms_form_created', 'wpforms_form', $id, $name,
                 // translators: %s is the form name.
-                sprintf( __( 'Created WPForms form “%s”', 'change-vigil-site-journal' ), $name ),
+                sprintf( __( 'Created WPForms form “%s”', 'lanternmote-change-log' ), $name ),
                 [ 'changes' => [ 'Title' => [ '', $name ], 'Status' => [ '', self::text( $post->post_status, 80 ) ] ] ], 'notice' );
             return;
         }
@@ -1092,7 +1092,7 @@ final class Capture {
             $changes['Author'] = [ self::post_field_value( 'post_author', (string) $before->post_author ), self::post_field_value( 'post_author', (string) $post->post_author ) ];
         }
         if ( $before->post_content !== $post->post_content || $before->post_excerpt !== $post->post_excerpt ) {
-            $changes['Form definition'] = [ __( 'Not recorded', 'change-vigil-site-journal' ), __( 'Changed', 'change-vigil-site-journal' ) ];
+            $changes['Form definition'] = [ __( 'Not recorded', 'lanternmote-change-log' ), __( 'Changed', 'lanternmote-change-log' ) ];
         }
         if ( ! $changes ) {
             return;
@@ -1111,19 +1111,19 @@ final class Capture {
         }
         if ( isset( $changes['Title'] ) && '' !== $changes['Title'][0] ) {
             // translators: %1$s is the previous item name; %2$s is the new item name.
-            $summary = sprintf( __( 'Renamed WPForms form from “%1$s” to “%2$s”', 'change-vigil-site-journal' ), $changes['Title'][0], $changes['Title'][1] );
+            $summary = sprintf( __( 'Renamed WPForms form from “%1$s” to “%2$s”', 'lanternmote-change-log' ), $changes['Title'][0], $changes['Title'][1] );
         } elseif ( 'wpforms_form_trashed' === $action ) {
             // translators: %s is the form name.
-            $summary = sprintf( __( 'Moved WPForms form “%s” to Trash', 'change-vigil-site-journal' ), $name );
+            $summary = sprintf( __( 'Moved WPForms form “%s” to Trash', 'lanternmote-change-log' ), $name );
         } elseif ( 'wpforms_form_restored' === $action ) {
             // translators: %s is the form name.
-            $summary = sprintf( __( 'Restored WPForms form “%s” from Trash', 'change-vigil-site-journal' ), $name );
+            $summary = sprintf( __( 'Restored WPForms form “%s” from Trash', 'lanternmote-change-log' ), $name );
         } elseif ( 'wpforms_form_status_changed' === $action ) {
             // translators: %s is the form name.
-            $summary = sprintf( __( 'Changed the status of WPForms form “%s”', 'change-vigil-site-journal' ), $name );
+            $summary = sprintf( __( 'Changed the status of WPForms form “%s”', 'lanternmote-change-log' ), $name );
         } else {
             // translators: %s is the form name.
-            $summary = sprintf( __( 'Changed WPForms form “%s”', 'change-vigil-site-journal' ), $name );
+            $summary = sprintf( __( 'Changed WPForms form “%s”', 'lanternmote-change-log' ), $name );
         }
         self::record( $action, 'wpforms_form', $id, $name, $summary, [ 'changes' => $changes ], $severity );
     }
@@ -1146,8 +1146,8 @@ final class Capture {
         $name = self::wpforms_form_name( $form );
         self::record( 'wpforms_entry_submitted', 'wpforms_form', $form_id, $name,
             // translators: %s is the form name.
-            sprintf( __( 'Received a submission for WPForms form “%s”', 'change-vigil-site-journal' ), $name ),
-            [ 'changes' => [ 'Submission' => [ '', __( 'Received', 'change-vigil-site-journal' ) ] ] ], 'info', self::wpforms_actor() );
+            sprintf( __( 'Received a submission for WPForms form “%s”', 'lanternmote-change-log' ), $name ),
+            [ 'changes' => [ 'Submission' => [ '', __( 'Received', 'lanternmote-change-log' ) ] ] ], 'info', self::wpforms_actor() );
     }
 
     public static function acf_value_updated( mixed $value, mixed $post_id, array $field, mixed $original ): mixed {
@@ -1243,11 +1243,11 @@ final class Capture {
         $type = isset( $field['type'] ) && is_string( $field['type'] ) ? sanitize_key( $field['type'] ) : '';
         $sensitive = '/(?:e[\s_-]?mail|password|passcode|secret|token|api[\s_-]?key|contact|phone|mobile|address|street|postal|postcode|zip|first[\s_-]?name|last[\s_-]?name|full[\s_-]?name|social[\s_-]?security|ssn|credit[\s_-]?card|bank|account|passport|national[\s_-]?insurance|pps|tax[\s_-]?(?:id|number)|health|medical|diagnosis|patient|religion|ethnicity|biometric|salary|(?:^|[^a-z0-9])(?:name|dob|birth)(?:$|[^a-z0-9]))/i';
         if ( in_array( $type, [ 'email', 'password' ], true ) || preg_match( $sensitive, $label . ' ' . $name ) ) {
-            return __( 'Sensitive custom field', 'change-vigil-site-journal' );
+            return __( 'Sensitive custom field', 'lanternmote-change-log' );
         }
 
         $label = self::redacted_text( $label, 96 );
-        return '' !== $label ? $label : __( 'Custom field', 'change-vigil-site-journal' );
+        return '' !== $label ? $label : __( 'Custom field', 'lanternmote-change-log' );
     }
 
     public static function flush_acf_changes(): void {
@@ -1256,8 +1256,8 @@ final class Capture {
             return;
         }
 
-        $not_recorded = __( 'Not recorded', 'change-vigil-site-journal' );
-        $changed = __( 'Changed', 'change-vigil-site-journal' );
+        $not_recorded = __( 'Not recorded', 'lanternmote-change-log' );
+        $changed = __( 'Changed', 'lanternmote-change-log' );
         foreach ( self::$acf_changes as $post_id => $pending ) {
             $post = get_post( (int) $post_id );
             if ( ! $post instanceof \WP_Post || empty( $pending['fields'] ) ) {
@@ -1281,12 +1281,12 @@ final class Capture {
             $name = self::text( get_the_title( $post ), 255 );
             if ( '' === $name ) {
                 // translators: %1$s is the type of the affected item; %2$d is the ID of the affected item.
-                $name = sprintf( __( '%1$s #%2$d', 'change-vigil-site-journal' ), self::post_type_label( $post->post_type ), $post->ID );
+                $name = sprintf( __( '%1$s #%2$d', 'lanternmote-change-log' ), self::post_type_label( $post->post_type ), $post->ID );
             }
             $kind = $post->post_type;
             $summary = sprintf(
                 // translators: %1$d is the number of changed fields; %2$s is the content type; %3$s is the content item title.
-                _n( 'Changed %1$d custom field on %2$s “%3$s”', 'Changed %1$d custom fields on %2$s “%3$s”', count( $changes ), 'change-vigil-site-journal' ),
+                _n( 'Changed %1$d custom field on %2$s “%3$s”', 'Changed %1$d custom fields on %2$s “%3$s”', count( $changes ), 'lanternmote-change-log' ),
                 count( $changes ),
                 self::post_type_label( $post->post_type ),
                 $name
@@ -1406,9 +1406,9 @@ final class Capture {
                 continue;
             }
             try {
-                $verb = $exists ? __( 'Created', 'change-vigil-site-journal' ) : __( 'Deleted', 'change-vigil-site-journal' );
+                $verb = $exists ? __( 'Created', 'lanternmote-change-log' ) : __( 'Deleted', 'lanternmote-change-log' );
                 // translators: %1$s is the database action; %2$s is the database table name.
-                $summary = sprintf( __( '%1$s database table “%2$s”', 'change-vigil-site-journal' ), $verb, $table['name'] );
+                $summary = sprintf( __( '%1$s database table “%2$s”', 'lanternmote-change-log' ), $verb, $table['name'] );
                 $details = [ 'operation' => $exists ? 'created' : 'deleted' ];
                 if ( $table['network_id'] ) {
                     $details['network_id'] = (int) $table['network_id'];
@@ -1424,38 +1424,38 @@ final class Capture {
     }
 
     public static function site_email_request_added( string $option, mixed $value ): void {
-        self::record_email_change( 'admin_email_change_requested', 'setting', 'admin_email', __( 'Site administrator email', 'change-vigil-site-journal' ), false );
+        self::record_email_change( 'admin_email_change_requested', 'setting', 'admin_email', __( 'Site administrator email', 'lanternmote-change-log' ), false );
     }
 
     public static function site_email_request_updated( mixed $old_value, mixed $value, string $option ): void {
-        self::record_email_change( 'admin_email_change_requested', 'setting', 'admin_email', __( 'Site administrator email', 'change-vigil-site-journal' ), false );
+        self::record_email_change( 'admin_email_change_requested', 'setting', 'admin_email', __( 'Site administrator email', 'lanternmote-change-log' ), false );
     }
 
     public static function site_email_changed( mixed $old_value, mixed $value, string $option ): void {
         if ( $old_value !== $value ) {
-            self::record_email_change( 'admin_email_changed', 'setting', 'admin_email', __( 'Site administrator email', 'change-vigil-site-journal' ), false );
+            self::record_email_change( 'admin_email_changed', 'setting', 'admin_email', __( 'Site administrator email', 'lanternmote-change-log' ), false );
         }
     }
 
     public static function network_email_request_added( string $option, mixed $value, int $network_id ): void {
-        self::record_email_change( 'network_admin_email_change_requested', 'setting', $network_id . ':admin_email', __( 'Network administrator email', 'change-vigil-site-journal' ), true );
+        self::record_email_change( 'network_admin_email_change_requested', 'setting', $network_id . ':admin_email', __( 'Network administrator email', 'lanternmote-change-log' ), true );
     }
 
     public static function network_email_request_updated( string $option, mixed $value, mixed $old_value, int $network_id ): void {
-        self::record_email_change( 'network_admin_email_change_requested', 'setting', $network_id . ':admin_email', __( 'Network administrator email', 'change-vigil-site-journal' ), true );
+        self::record_email_change( 'network_admin_email_change_requested', 'setting', $network_id . ':admin_email', __( 'Network administrator email', 'lanternmote-change-log' ), true );
     }
 
     public static function network_email_changed( string $option, mixed $value, mixed $old_value, int $network_id ): void {
         if ( $old_value !== $value ) {
-            self::record_email_change( 'network_admin_email_changed', 'setting', $network_id . ':admin_email', __( 'Network administrator email', 'change-vigil-site-journal' ), true );
+            self::record_email_change( 'network_admin_email_changed', 'setting', $network_id . ':admin_email', __( 'Network administrator email', 'lanternmote-change-log' ), true );
         }
     }
 
     private static function record_email_change( string $action, string $kind, string $key, string $name, bool $network ): void {
-        $verb = str_contains( $action, 'requested' ) ? __( 'Requested', 'change-vigil-site-journal' ) : __( 'Changed', 'change-vigil-site-journal' );
-        $scope = $network ? __( 'network', 'change-vigil-site-journal' ) : __( 'site', 'change-vigil-site-journal' );
+        $verb = str_contains( $action, 'requested' ) ? __( 'Requested', 'lanternmote-change-log' ) : __( 'Changed', 'lanternmote-change-log' );
+        $scope = $network ? __( 'network', 'lanternmote-change-log' ) : __( 'site', 'lanternmote-change-log' );
         // translators: %1$s is the name or label of the affected record; %2$s is the name or label of the affected record.
-        self::record( $action, $kind, $key, $name, sprintf( __( '%1$s %2$s administrator email change', 'change-vigil-site-journal' ), $verb, $scope ), [ 'confirmation_required' => str_contains( $action, 'requested' ) ], 'notice' );
+        self::record( $action, $kind, $key, $name, sprintf( __( '%1$s %2$s administrator email change', 'lanternmote-change-log' ), $verb, $scope ), [ 'confirmation_required' => str_contains( $action, 'requested' ) ], 'notice' );
     }
 
     public static function network_setting_added( string $option, mixed $value, int $network_id ): void {
@@ -1476,15 +1476,15 @@ final class Capture {
             return;
         }
         $label = match ( $option ) {
-            'registration' => __( 'New site registration', 'change-vigil-site-journal' ),
-            'registrationnotification' => __( 'Registration notifications', 'change-vigil-site-journal' ),
-            'add_new_users' => __( 'Add new users', 'change-vigil-site-journal' ),
-            'upload_space' => __( 'Network upload limit', 'change-vigil-site-journal' ),
-            'blog_upload_space' => __( 'Site upload limit', 'change-vigil-site-journal' ),
-            'fileupload_maxk' => __( 'File upload limit', 'change-vigil-site-journal' ),
-            'WPLANG' => __( 'Network language', 'change-vigil-site-journal' ),
-            'global_terms_enabled' => __( 'Global terms', 'change-vigil-site-journal' ),
-            'ms_files_rewriting' => __( 'Legacy media URL rewriting', 'change-vigil-site-journal' ),
+            'registration' => __( 'New site registration', 'lanternmote-change-log' ),
+            'registrationnotification' => __( 'Registration notifications', 'lanternmote-change-log' ),
+            'add_new_users' => __( 'Add new users', 'lanternmote-change-log' ),
+            'upload_space' => __( 'Network upload limit', 'lanternmote-change-log' ),
+            'blog_upload_space' => __( 'Site upload limit', 'lanternmote-change-log' ),
+            'fileupload_maxk' => __( 'File upload limit', 'lanternmote-change-log' ),
+            'WPLANG' => __( 'Network language', 'lanternmote-change-log' ),
+            'global_terms_enabled' => __( 'Global terms', 'lanternmote-change-log' ),
+            'ms_files_rewriting' => __( 'Legacy media URL rewriting', 'lanternmote-change-log' ),
             default => '',
         };
         self::record(
@@ -1493,7 +1493,7 @@ final class Capture {
             $network_id . ':' . $option,
             $label,
             // translators: %s is the network setting label.
-            sprintf( __( 'Changed network setting “%s”', 'change-vigil-site-journal' ), $label ),
+            sprintf( __( 'Changed network setting “%s”', 'lanternmote-change-log' ), $label ),
             [ 'changes' => [ $label => [ $previous, $next ] ], 'network_id' => $network_id ],
             'notice'
         );
@@ -1502,18 +1502,18 @@ final class Capture {
     private static function safe_network_setting_value( string $option, mixed $value ): string {
         if ( is_bool( $value ) || in_array( $option, [ 'registrationnotification', 'add_new_users', 'global_terms_enabled', 'ms_files_rewriting' ], true ) ) {
             if ( in_array( $value, [ true, 1, '1', 'yes' ], true ) ) {
-                return __( 'Enabled', 'change-vigil-site-journal' );
+                return __( 'Enabled', 'lanternmote-change-log' );
             }
-            return in_array( $value, [ false, 0, '0', 'no', '' ], true ) ? __( 'Disabled', 'change-vigil-site-journal' ) : __( 'Other', 'change-vigil-site-journal' );
+            return in_array( $value, [ false, 0, '0', 'no', '' ], true ) ? __( 'Disabled', 'lanternmote-change-log' ) : __( 'Other', 'lanternmote-change-log' );
         }
         if ( in_array( $option, [ 'upload_space', 'blog_upload_space', 'fileupload_maxk' ], true ) ) {
             return (string) absint( $value );
         }
         if ( 'registration' === $option ) {
-            return in_array( $value, [ 'none', 'user', 'blog', 'all' ], true ) ? (string) $value : __( 'Other', 'change-vigil-site-journal' );
+            return in_array( $value, [ 'none', 'user', 'blog', 'all' ], true ) ? (string) $value : __( 'Other', 'lanternmote-change-log' );
         }
         if ( 'WPLANG' === $option && ( ! is_string( $value ) || 1 !== preg_match( '/\A[a-z]{2,3}(?:_[A-Z]{2})?(?:@[a-z]+)?\z/', $value ) ) ) {
-            return __( 'Other', 'change-vigil-site-journal' );
+            return __( 'Other', 'lanternmote-change-log' );
         }
         return self::text( is_scalar( $value ) ? (string) $value : '', 120 );
     }
@@ -1531,7 +1531,7 @@ final class Capture {
             $network_id . ':' . $site_id,
             $name,
             // translators: %s is the site name or label.
-            sprintf( __( 'Created network site “%s”', 'change-vigil-site-journal' ), $name ),
+            sprintf( __( 'Created network site “%s”', 'lanternmote-change-log' ), $name ),
             [ 'network_id' => $network_id, 'site_id' => $site_id ],
             'notice'
         );
@@ -1550,7 +1550,7 @@ final class Capture {
         $site_id = (int) $site->blog_id;
         $network_id = (int) $site->site_id;
         // translators: %d is the site ID.
-        $name = self::$deleting_site_names[ $site_id ] ?? sprintf( __( 'Site %d', 'change-vigil-site-journal' ), $site_id );
+        $name = self::$deleting_site_names[ $site_id ] ?? sprintf( __( 'Site %d', 'lanternmote-change-log' ), $site_id );
         unset( self::$deleting_site_names[ $site_id ] );
         self::record(
             'site_deleted',
@@ -1558,7 +1558,7 @@ final class Capture {
             $network_id . ':' . $site_id,
             $name,
             // translators: %s is the site name or label.
-            sprintf( __( 'Deleted network site “%s”', 'change-vigil-site-journal' ), $name ),
+            sprintf( __( 'Deleted network site “%s”', 'lanternmote-change-log' ), $name ),
             [ 'network_id' => $network_id, 'site_id' => $site_id ],
             'warning'
         );
@@ -1570,11 +1570,11 @@ final class Capture {
         }
         $changes = [];
         foreach ( [
-            'public' => __( 'Visibility', 'change-vigil-site-journal' ),
-            'archived' => __( 'Archived', 'change-vigil-site-journal' ),
-            'mature' => __( 'Mature', 'change-vigil-site-journal' ),
-            'spam' => __( 'Spam', 'change-vigil-site-journal' ),
-            'deleted' => __( 'Marked for deletion', 'change-vigil-site-journal' ),
+            'public' => __( 'Visibility', 'lanternmote-change-log' ),
+            'archived' => __( 'Archived', 'lanternmote-change-log' ),
+            'mature' => __( 'Mature', 'lanternmote-change-log' ),
+            'spam' => __( 'Spam', 'lanternmote-change-log' ),
+            'deleted' => __( 'Marked for deletion', 'lanternmote-change-log' ),
         ] as $property => $label ) {
             $old_value = (int) $previous->$property;
             $new_value = (int) $site->$property;
@@ -1582,8 +1582,8 @@ final class Capture {
                 continue;
             }
             $changes[ $label ] = [
-                'public' === $property ? ( $old_value ? __( 'Public', 'change-vigil-site-journal' ) : __( 'Private', 'change-vigil-site-journal' ) ) : ( $old_value ? __( 'Yes', 'change-vigil-site-journal' ) : __( 'No', 'change-vigil-site-journal' ) ),
-                'public' === $property ? ( $new_value ? __( 'Public', 'change-vigil-site-journal' ) : __( 'Private', 'change-vigil-site-journal' ) ) : ( $new_value ? __( 'Yes', 'change-vigil-site-journal' ) : __( 'No', 'change-vigil-site-journal' ) ),
+                'public' === $property ? ( $old_value ? __( 'Public', 'lanternmote-change-log' ) : __( 'Private', 'lanternmote-change-log' ) ) : ( $old_value ? __( 'Yes', 'lanternmote-change-log' ) : __( 'No', 'lanternmote-change-log' ) ),
+                'public' === $property ? ( $new_value ? __( 'Public', 'lanternmote-change-log' ) : __( 'Private', 'lanternmote-change-log' ) ) : ( $new_value ? __( 'Yes', 'lanternmote-change-log' ) : __( 'No', 'lanternmote-change-log' ) ),
             ];
         }
         if ( ! $changes ) {
@@ -1592,17 +1592,17 @@ final class Capture {
         $site_id = (int) $site->blog_id;
         $network_id = (int) $site->site_id;
         $name = self::network_site_name( $site );
-        $sensitive_status_change = isset( $changes[ __( 'Archived', 'change-vigil-site-journal' ) ] )
-            || isset( $changes[ __( 'Mature', 'change-vigil-site-journal' ) ] )
-            || isset( $changes[ __( 'Spam', 'change-vigil-site-journal' ) ] )
-            || isset( $changes[ __( 'Marked for deletion', 'change-vigil-site-journal' ) ] );
+        $sensitive_status_change = isset( $changes[ __( 'Archived', 'lanternmote-change-log' ) ] )
+            || isset( $changes[ __( 'Mature', 'lanternmote-change-log' ) ] )
+            || isset( $changes[ __( 'Spam', 'lanternmote-change-log' ) ] )
+            || isset( $changes[ __( 'Marked for deletion', 'lanternmote-change-log' ) ] );
         self::record(
             'site_status_changed',
             'site',
             $network_id . ':' . $site_id,
             $name,
             // translators: %s is the plugin or component name.
-            sprintf( __( 'Changed network site settings for “%s”', 'change-vigil-site-journal' ), $name ),
+            sprintf( __( 'Changed network site settings for “%s”', 'lanternmote-change-log' ), $name ),
             [ 'changes' => $changes, 'network_id' => $network_id, 'site_id' => $site_id ],
             $sensitive_status_change ? 'notice' : 'info'
         );
@@ -1612,7 +1612,7 @@ final class Capture {
         $name = get_blog_option( (int) $site->blog_id, 'blogname', '' );
         return self::text( is_scalar( $name ) ? (string) $name : '', 200 )
             // translators: %d is the site ID.
-            ?: sprintf( __( 'Site %d', 'change-vigil-site-journal' ), (int) $site->blog_id );
+            ?: sprintf( __( 'Site %d', 'lanternmote-change-log' ), (int) $site->blog_id );
     }
 
     private static function text( string $value, int $length = 240 ): string {
@@ -1687,7 +1687,7 @@ final class Capture {
             return [ 'system', 0, '' ];
         }
         if ( defined( 'WP_CLI' ) && (bool) constant( 'WP_CLI' ) ) {
-            return [ 'cli', 0, __( 'WP CLI', 'change-vigil-site-journal' ) ];
+            return [ 'cli', 0, __( 'WP CLI', 'lanternmote-change-log' ) ];
         }
         return [ 'unknown', 0, '' ];
     }
@@ -1759,19 +1759,19 @@ final class Capture {
             return;
         }
         $name = self::bbpress_item_name( $forum, 'forum' );
-        $label = 'status' === $field ? __( 'Status', 'change-vigil-site-journal' ) : __( 'Type', 'change-vigil-site-journal' );
+        $label = 'status' === $field ? __( 'Status', 'lanternmote-change-log' ) : __( 'Type', 'lanternmote-change-log' );
         $format = static function ( string $value ) use ( $field ): string {
             if ( 'status' === $field ) {
-                return 'closed' === $value ? __( 'Closed', 'change-vigil-site-journal' ) : __( 'Open', 'change-vigil-site-journal' );
+                return 'closed' === $value ? __( 'Closed', 'lanternmote-change-log' ) : __( 'Open', 'lanternmote-change-log' );
             }
-            return 'category' === $value ? __( 'Category', 'change-vigil-site-journal' ) : __( 'Forum', 'change-vigil-site-journal' );
+            return 'category' === $value ? __( 'Category', 'lanternmote-change-log' ) : __( 'Forum', 'lanternmote-change-log' );
         };
         $action = 'status' === $field ? 'forum_status_changed' : 'forum_edited';
         $summary = 'status' === $field
             // translators: %s is the forum item name.
-            ? sprintf( __( 'Changed the status of bbPress forum “%s”', 'change-vigil-site-journal' ), $name )
+            ? sprintf( __( 'Changed the status of bbPress forum “%s”', 'lanternmote-change-log' ), $name )
             // translators: %s is the forum item name.
-            : sprintf( __( 'Changed the type of bbPress forum “%s”', 'change-vigil-site-journal' ), $name );
+            : sprintf( __( 'Changed the type of bbPress forum “%s”', 'lanternmote-change-log' ), $name );
         self::record( $action, 'forum', $forum_id, $name, $summary,
             [ 'changes' => [ $label => [ $format( $before ), $format( $after ) ] ] ], 'notice' );
     }
@@ -1799,7 +1799,7 @@ final class Capture {
         $super = function_exists( 'bbp_is_topic_super_sticky' ) && bbp_is_topic_super_sticky( $topic_id );
         self::$bbpress_topic_sticky_before[ $topic_id ] = [
             'sticky' => bbp_is_topic_sticky( $topic_id ),
-            'label' => $super ? __( 'Super sticky', 'change-vigil-site-journal' ) : __( 'Sticky', 'change-vigil-site-journal' ),
+            'label' => $super ? __( 'Super sticky', 'lanternmote-change-log' ) : __( 'Sticky', 'lanternmote-change-log' ),
         ];
     }
 
@@ -1807,7 +1807,7 @@ final class Capture {
         if ( ! $success || ! Store::settings()['bbpress'] ) {
             return;
         }
-        self::bbpress_topic_sticky_changed( $topic_id, 'topic_stickied', __( 'Not sticky', 'change-vigil-site-journal' ), $super ? __( 'Super sticky', 'change-vigil-site-journal' ) : __( 'Sticky', 'change-vigil-site-journal' ) );
+        self::bbpress_topic_sticky_changed( $topic_id, 'topic_stickied', __( 'Not sticky', 'lanternmote-change-log' ), $super ? __( 'Super sticky', 'lanternmote-change-log' ) : __( 'Sticky', 'lanternmote-change-log' ) );
     }
 
     public static function bbpress_topic_unstuck( int $topic_id, bool $success ): void {
@@ -1816,7 +1816,7 @@ final class Capture {
         if ( ! $success || ! is_array( $before ) || empty( $before['sticky'] ) || ! Store::settings()['bbpress'] ) {
             return;
         }
-        self::bbpress_topic_sticky_changed( $topic_id, 'topic_unstickied', (string) $before['label'], __( 'Not sticky', 'change-vigil-site-journal' ) );
+        self::bbpress_topic_sticky_changed( $topic_id, 'topic_unstickied', (string) $before['label'], __( 'Not sticky', 'lanternmote-change-log' ) );
     }
 
     private static function bbpress_topic_sticky_changed( int $topic_id, string $action, string $before, string $after ): void {
@@ -1827,43 +1827,43 @@ final class Capture {
         $name = self::bbpress_item_name( $topic, 'topic' );
         $summary = 'topic_stickied' === $action
             // translators: %s is the forum item name.
-            ? sprintf( __( 'Made bbPress topic “%s” sticky', 'change-vigil-site-journal' ), $name )
+            ? sprintf( __( 'Made bbPress topic “%s” sticky', 'lanternmote-change-log' ), $name )
             // translators: %s is the forum item name.
-            : sprintf( __( 'Removed sticky status from bbPress topic “%s”', 'change-vigil-site-journal' ), $name );
+            : sprintf( __( 'Removed sticky status from bbPress topic “%s”', 'lanternmote-change-log' ), $name );
         self::record( $action, 'topic', $topic_id, $name, $summary,
             [ 'changes' => [ 'Sticky' => [ $before, $after ] ] ], 'notice' );
     }
 
     private static function bbpress_kind_label( string $kind ): string {
         return [
-            'forum' => __( 'forum', 'change-vigil-site-journal' ),
-            'topic' => __( 'topic', 'change-vigil-site-journal' ),
-            'reply' => __( 'reply', 'change-vigil-site-journal' ),
-        ][ $kind ] ?? __( 'forum item', 'change-vigil-site-journal' );
+            'forum' => __( 'forum', 'lanternmote-change-log' ),
+            'topic' => __( 'topic', 'lanternmote-change-log' ),
+            'reply' => __( 'reply', 'lanternmote-change-log' ),
+        ][ $kind ] ?? __( 'forum item', 'lanternmote-change-log' );
     }
 
     private static function bbpress_reference( int $id ): string {
         if ( $id < 1 ) {
-            return __( 'None', 'change-vigil-site-journal' );
+            return __( 'None', 'lanternmote-change-log' );
         }
         $post = get_post( $id );
         if ( ! $post instanceof \WP_Post ) {
             // translators: %d is the ID of the affected item.
-            return sprintf( __( 'Item ID %d', 'change-vigil-site-journal' ), $id );
+            return sprintf( __( 'Item ID %d', 'lanternmote-change-log' ), $id );
         }
-        $title = self::redacted_text( $post->post_title, 140 ) ?: __( '(Untitled)', 'change-vigil-site-journal' );
+        $title = self::redacted_text( $post->post_title, 140 ) ?: __( '(Untitled)', 'lanternmote-change-log' );
         // translators: %1$s is the name or label of the affected record; %2$d is the ID of the affected item.
-        return sprintf( __( '%1$s (item ID %2$d)', 'change-vigil-site-journal' ), $title, $id );
+        return sprintf( __( '%1$s (item ID %2$d)', 'lanternmote-change-log' ), $title, $id );
     }
 
     private static function bbpress_item_name( \WP_Post $post, string $kind ): string {
         if ( 'reply' === $kind ) {
             // translators: %d is the ID of the affected item.
-            return sprintf( __( 'Reply #%d', 'change-vigil-site-journal' ), $post->ID );
+            return sprintf( __( 'Reply #%d', 'lanternmote-change-log' ), $post->ID );
         }
         $title = self::redacted_text( $post->post_title, 220 );
         // translators: %1$s is the type of the affected item; %2$d is the ID of the affected item.
-        return $title ?: sprintf( __( '%1$s #%2$d', 'change-vigil-site-journal' ), ucfirst( self::bbpress_kind_label( $kind ) ), $post->ID );
+        return $title ?: sprintf( __( '%1$s #%2$d', 'lanternmote-change-log' ), ucfirst( self::bbpress_kind_label( $kind ) ), $post->ID );
     }
 
     private static function bbpress_context_changes( \WP_Post $post, string $kind ): array {
@@ -1908,7 +1908,7 @@ final class Capture {
             || ( defined( 'WP_CLI' ) && (bool) constant( 'WP_CLI' ) ) ) {
             return null;
         }
-        return [ 'anonymous', 0, __( 'Anonymous visitor', 'change-vigil-site-journal' ) ];
+        return [ 'anonymous', 0, __( 'Anonymous visitor', 'lanternmote-change-log' ) ];
     }
 
     private static function bbpress_post( int $id, \WP_Post $post, bool $update, ?\WP_Post $before ): void {
@@ -1935,10 +1935,10 @@ final class Capture {
                 $topic_id = function_exists( 'bbp_get_reply_topic_id' ) ? absint( bbp_get_reply_topic_id( $id ) ) : 0;
                 $topic_id = $topic_id ?: absint( $post->post_parent );
                 // translators: %1$d is the ID of the affected item; %2$s is the related topic name or ID.
-                $summary = sprintf( __( 'Added bbPress reply #%1$d to %2$s', 'change-vigil-site-journal' ), $id, $topic_id ? self::bbpress_reference( $topic_id ) : __( 'a topic', 'change-vigil-site-journal' ) );
+                $summary = sprintf( __( 'Added bbPress reply #%1$d to %2$s', 'lanternmote-change-log' ), $id, $topic_id ? self::bbpress_reference( $topic_id ) : __( 'a topic', 'lanternmote-change-log' ) );
             } else {
                 // translators: %1$s is the name or label of the affected record; %2$s is the name or label of the affected record.
-                $summary = sprintf( __( 'Created bbPress %1$s “%2$s”', 'change-vigil-site-journal' ), self::bbpress_kind_label( $kind ), $name );
+                $summary = sprintf( __( 'Created bbPress %1$s “%2$s”', 'lanternmote-change-log' ), self::bbpress_kind_label( $kind ), $name );
             }
             self::record( $action, $kind, $id, $name, $summary, [ 'changes' => $changes ], 'notice', self::bbpress_actor( $post, true ) );
             return;
@@ -1961,7 +1961,7 @@ final class Capture {
             $changes['Author'] = [ self::post_field_value( 'post_author', (string) $before->post_author ), self::post_field_value( 'post_author', (string) $post->post_author ) ];
         }
         if ( $before->post_content !== $post->post_content || $before->post_excerpt !== $post->post_excerpt ) {
-            $changes['Content'] = [ __( 'Not recorded', 'change-vigil-site-journal' ), __( 'Changed', 'change-vigil-site-journal' ) ];
+            $changes['Content'] = [ __( 'Not recorded', 'lanternmote-change-log' ), __( 'Changed', 'lanternmote-change-log' ) ];
         }
         if ( ! $changes ) {
             return;
@@ -1983,26 +1983,26 @@ final class Capture {
             $topic_id = function_exists( 'bbp_get_reply_topic_id' ) ? absint( bbp_get_reply_topic_id( $id ) ) : 0;
             $topic_id = $topic_id ?: absint( $post->post_parent );
             // translators: %1$d is the ID of the affected item; %2$s is the related topic name or ID.
-            $subject = sprintf( __( 'bbPress reply #%1$d in %2$s', 'change-vigil-site-journal' ), $id, $topic_id ? self::bbpress_reference( $topic_id ) : __( 'a topic', 'change-vigil-site-journal' ) );
+            $subject = sprintf( __( 'bbPress reply #%1$d in %2$s', 'lanternmote-change-log' ), $id, $topic_id ? self::bbpress_reference( $topic_id ) : __( 'a topic', 'lanternmote-change-log' ) );
         } else {
             // translators: %1$s is the name or label of the affected record; %2$s is the name or label of the affected record.
-            $subject = sprintf( __( 'bbPress %1$s “%2$s”', 'change-vigil-site-journal' ), self::bbpress_kind_label( $kind ), $name );
+            $subject = sprintf( __( 'bbPress %1$s “%2$s”', 'lanternmote-change-log' ), self::bbpress_kind_label( $kind ), $name );
         }
         if ( 'forum_trashed' === $action || 'topic_trashed' === $action || 'reply_trashed' === $action ) {
             // translators: %s is the name or label of the affected record.
-            $summary = sprintf( __( 'Moved %s to Trash', 'change-vigil-site-journal' ), $subject );
+            $summary = sprintf( __( 'Moved %s to Trash', 'lanternmote-change-log' ), $subject );
         } elseif ( 'forum_restored' === $action || 'topic_restored' === $action || 'reply_restored' === $action ) {
             // translators: %s is the name or label of the affected record.
-            $summary = sprintf( __( 'Restored %s from Trash', 'change-vigil-site-journal' ), $subject );
+            $summary = sprintf( __( 'Restored %s from Trash', 'lanternmote-change-log' ), $subject );
         } elseif ( str_ends_with( $action, '_status_changed' ) ) {
             // translators: %s is the name or label of the affected record.
-            $summary = sprintf( __( 'Changed the status of %s', 'change-vigil-site-journal' ), $subject );
+            $summary = sprintf( __( 'Changed the status of %s', 'lanternmote-change-log' ), $subject );
         } elseif ( isset( $changes['Title'] ) && '' !== $changes['Title'][0] ) {
             // translators: %1$s is the name or label of the affected record; %2$s is the name or label of the affected record; %3$s is the name or label of the affected record.
-            $summary = sprintf( __( 'Renamed bbPress %1$s from “%2$s” to “%3$s”', 'change-vigil-site-journal' ), self::bbpress_kind_label( $kind ), $changes['Title'][0], $changes['Title'][1] );
+            $summary = sprintf( __( 'Renamed bbPress %1$s from “%2$s” to “%3$s”', 'lanternmote-change-log' ), self::bbpress_kind_label( $kind ), $changes['Title'][0], $changes['Title'][1] );
         } else {
             // translators: %s is the name or label of the affected record.
-            $summary = sprintf( __( 'Edited %s', 'change-vigil-site-journal' ), $subject );
+            $summary = sprintf( __( 'Edited %s', 'lanternmote-change-log' ), $subject );
         }
         self::record( $action, $kind, $id, $name, $summary, [ 'changes' => $changes ], $severity );
     }
@@ -2081,7 +2081,7 @@ final class Capture {
         $path = sanitize_text_field( wp_check_invalid_utf8( $path, true ) );
         $path = substr( str_replace( '\\', '/', $path ), 0, 500 );
         $key = hash( 'sha256', $path );
-        self::record( $action, 'file', $key, '' === $path ? __( 'Site files', 'change-vigil-site-journal' ) : $path, $summary, $details, $severity );
+        self::record( $action, 'file', $key, '' === $path ? __( 'Site files', 'lanternmote-change-log' ) : $path, $summary, $details, $severity );
     }
 
     public static function session_ended( \WP_User $user, int $count, bool $all ): void {
@@ -2091,9 +2091,9 @@ final class Capture {
         $action = $all ? 'sessions_ended' : 'session_ended';
         $summary = $all
             // translators: %1$d is the number of sessions; %2$s is the account name.
-            ? sprintf( _n( 'Ended all %1$d session for “%2$s”', 'Ended all %1$d sessions for “%2$s”', $count, 'change-vigil-site-journal' ), $count, $user->user_login )
+            ? sprintf( _n( 'Ended all %1$d session for “%2$s”', 'Ended all %1$d sessions for “%2$s”', $count, 'lanternmote-change-log' ), $count, $user->user_login )
             // translators: %s is the name or label of the affected record.
-            : sprintf( __( 'Ended a session for “%s”', 'change-vigil-site-journal' ), $user->user_login );
+            : sprintf( __( 'Ended a session for “%s”', 'lanternmote-change-log' ), $user->user_login );
         self::record( $action, 'user', (int) $user->ID, $user->user_login, $summary, [ 'session_count' => $count ], 'warning' );
     }
 
@@ -2101,10 +2101,10 @@ final class Capture {
         if ( $count < 1 || ! in_array( $policy, [ 'concurrent', 'idle' ], true ) ) {
             return;
         }
-        $reason = 'idle' === $policy ? __( 'idle expiry', 'change-vigil-site-journal' ) : __( 'session limit', 'change-vigil-site-journal' );
+        $reason = 'idle' === $policy ? __( 'idle expiry', 'lanternmote-change-log' ) : __( 'session limit', 'lanternmote-change-log' );
         // translators: %1$d is the number of sessions; %2$s is the name or label of the affected record.
-        $summary = sprintf( __( 'Session policy ended %1$d session(s) for “%2$s”', 'change-vigil-site-journal' ), $count, $user->user_login );
-        self::record( 'session_policy_ended', 'user', (int) $user->ID, $user->user_login, $summary, [ 'session_count' => $count, 'policy' => $reason ], 'warning', [ 'system', 0, __( 'WordPress session policy', 'change-vigil-site-journal' ) ] );
+        $summary = sprintf( __( 'Session policy ended %1$d session(s) for “%2$s”', 'lanternmote-change-log' ), $count, $user->user_login );
+        self::record( 'session_policy_ended', 'user', (int) $user->ID, $user->user_login, $summary, [ 'session_count' => $count, 'policy' => $reason ], 'warning', [ 'system', 0, __( 'WordPress session policy', 'lanternmote-change-log' ) ] );
     }
 
     public static function session_settings_changed( array $settings ): void {
@@ -2112,8 +2112,8 @@ final class Capture {
             'session_policy_changed',
             'setting',
             'session_management',
-            __( 'Session management', 'change-vigil-site-journal' ),
-            __( 'Changed session privacy and enforcement settings', 'change-vigil-site-journal' ),
+            __( 'Session management', 'lanternmote-change-log' ),
+            __( 'Changed session privacy and enforcement settings', 'lanternmote-change-log' ),
             [
                 'activity_tracking' => (bool) $settings['track_activity'],
                 'browser_details' => (bool) $settings['show_browser'],
@@ -2158,19 +2158,19 @@ final class Capture {
     private static function woocommerce_item_name( \WP_Post $post, string $kind ): string {
         if ( 'coupon' === $kind ) {
             // translators: %d is the ID of the affected item.
-            return sprintf( __( 'Coupon #%d', 'change-vigil-site-journal' ), $post->ID );
+            return sprintf( __( 'Coupon #%d', 'lanternmote-change-log' ), $post->ID );
         }
         if ( 'product_variation' === $post->post_type ) {
             // translators: %d is the ID of the affected item.
-            return sprintf( __( 'Product variation #%d', 'change-vigil-site-journal' ), $post->ID );
+            return sprintf( __( 'Product variation #%d', 'lanternmote-change-log' ), $post->ID );
         }
         // translators: %d is the ID of the affected item.
-        return self::redacted_text( $post->post_title ) ?: sprintf( __( 'Product #%d', 'change-vigil-site-journal' ), $post->ID );
+        return self::redacted_text( $post->post_title ) ?: sprintf( __( 'Product #%d', 'lanternmote-change-log' ), $post->ID );
     }
 
     private static function redacted_text( string $value, int $length = 180 ): string {
         $value = self::text( $value, $length );
-        $value = preg_replace( '/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/iu', __( '[email redacted]', 'change-vigil-site-journal' ), $value ) ?? $value;
+        $value = preg_replace( '/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/iu', __( '[email redacted]', 'lanternmote-change-log' ), $value ) ?? $value;
         return self::truncate( $value, $length );
     }
 
@@ -2194,14 +2194,14 @@ final class Capture {
         } else {
             if ( $before->post_title !== $post->post_title ) {
                 $changes[ 'coupon' === $kind ? 'Coupon code' : 'Title' ] = 'coupon' === $kind
-                    ? [ __( 'Not recorded', 'change-vigil-site-journal' ), __( 'Changed', 'change-vigil-site-journal' ) ]
+                    ? [ __( 'Not recorded', 'lanternmote-change-log' ), __( 'Changed', 'lanternmote-change-log' ) ]
                     : [ self::redacted_text( $before->post_title, 180 ), self::redacted_text( $post->post_title, 180 ) ];
             }
             if ( $before->post_status !== $post->post_status ) {
                 $changes['Status'] = [ self::text( $before->post_status, 80 ), self::text( $post->post_status, 80 ) ];
             }
             if ( $before->post_content !== $post->post_content || $before->post_excerpt !== $post->post_excerpt ) {
-                $changes['Description'] = [ __( 'Not recorded', 'change-vigil-site-journal' ), __( 'Changed', 'change-vigil-site-journal' ) ];
+                $changes['Description'] = [ __( 'Not recorded', 'lanternmote-change-log' ), __( 'Changed', 'lanternmote-change-log' ) ];
             }
         }
         if ( ! $created && ! $changes ) {
@@ -2278,22 +2278,22 @@ final class Capture {
         if ( is_array( $value ) && in_array( $meta_key, [ 'product_ids', 'exclude_product_ids', 'product_categories', 'exclude_product_categories' ], true ) ) {
             $ids = array_values( array_unique( array_filter( array_map( 'absint', array_filter( $value, 'is_scalar' ) ) ) ) );
             sort( $ids, SORT_NUMERIC );
-            return implode( ', ', array_slice( $ids, 0, 60 ) ) ?: __( 'None', 'change-vigil-site-journal' );
+            return implode( ', ', array_slice( $ids, 0, 60 ) ) ?: __( 'None', 'lanternmote-change-log' );
         }
         if ( is_string( $value ) && in_array( $meta_key, [ 'product_ids', 'exclude_product_ids', 'product_categories', 'exclude_product_categories' ], true ) ) {
             $ids = array_values( array_unique( array_filter( array_map( 'absint', preg_split( '/[,\s]+/', $value ) ?: [] ) ) ) );
             sort( $ids, SORT_NUMERIC );
-            return implode( ', ', array_slice( $ids, 0, 60 ) ) ?: __( 'None', 'change-vigil-site-journal' );
+            return implode( ', ', array_slice( $ids, 0, 60 ) ) ?: __( 'None', 'lanternmote-change-log' );
         }
 
         if ( in_array( $meta_key, [ '_manage_stock', '_sold_individually', '_featured', '_virtual', '_downloadable', 'individual_use', 'free_shipping', 'exclude_sale_items' ], true ) ) {
             if ( is_bool( $value ) || is_numeric( $value ) || is_string( $value ) ) {
                 $normalized = strtolower( trim( (string) $value ) );
                 if ( in_array( $normalized, [ 'yes', 'true', '1', 'on' ], true ) ) {
-                    return __( 'Enabled', 'change-vigil-site-journal' );
+                    return __( 'Enabled', 'lanternmote-change-log' );
                 }
                 if ( in_array( $normalized, [ '', 'no', 'false', '0', 'off' ], true ) ) {
-                    return __( 'Disabled', 'change-vigil-site-journal' );
+                    return __( 'Disabled', 'lanternmote-change-log' );
                 }
             }
             return null;
@@ -2304,7 +2304,7 @@ final class Capture {
         }
         $value = (string) $value;
         if ( '' === $value ) {
-            return __( 'None', 'change-vigil-site-journal' );
+            return __( 'None', 'lanternmote-change-log' );
         }
         if ( in_array( $meta_key, [ '_regular_price', '_sale_price', '_stock', '_low_stock_amount', '_weight', '_length', '_width', '_height', 'coupon_amount', 'usage_limit', 'usage_limit_per_user', 'limit_usage_to_x_items', 'minimum_amount', 'maximum_amount' ], true ) ) {
             return is_numeric( $value ) ? self::text( $value, 100 ) : null;
@@ -2401,9 +2401,9 @@ final class Capture {
             $action = 'coupon' === $kind ? 'coupon_created' : 'product_created';
             $summary = 'coupon' === $kind
                 // translators: %d is the ID of the affected item.
-                ? sprintf( __( 'Created WooCommerce coupon #%d', 'change-vigil-site-journal' ), $id )
+                ? sprintf( __( 'Created WooCommerce coupon #%d', 'lanternmote-change-log' ), $id )
                 // translators: %s is the product name.
-                : sprintf( __( 'Created WooCommerce product “%s”', 'change-vigil-site-journal' ), $name );
+                : sprintf( __( 'Created WooCommerce product “%s”', 'lanternmote-change-log' ), $name );
             self::record( $action, $kind, $id, $name, $summary, $changes ? [ 'changes' => $changes ] : [], 'notice' );
             return;
         }
@@ -2419,37 +2419,37 @@ final class Capture {
             $action = $prefix . '_trashed';
             $summary = 'coupon' === $kind
                 // translators: %d is the ID of the affected item.
-                ? sprintf( __( 'Moved WooCommerce coupon #%d to Trash', 'change-vigil-site-journal' ), $id )
+                ? sprintf( __( 'Moved WooCommerce coupon #%d to Trash', 'lanternmote-change-log' ), $id )
                 // translators: %s is the product name.
-                : sprintf( __( 'Moved WooCommerce product “%s” to Trash', 'change-vigil-site-journal' ), $name );
+                : sprintf( __( 'Moved WooCommerce product “%s” to Trash', 'lanternmote-change-log' ), $name );
             $severity = 'warning';
         } elseif ( 'trash' === $old_status && 'trash' !== $new_status ) {
             $action = $prefix . '_restored';
             $summary = 'coupon' === $kind
                 // translators: %d is the ID of the affected item.
-                ? sprintf( __( 'Restored WooCommerce coupon #%d from Trash', 'change-vigil-site-journal' ), $id )
+                ? sprintf( __( 'Restored WooCommerce coupon #%d from Trash', 'lanternmote-change-log' ), $id )
                 // translators: %s is the product name.
-                : sprintf( __( 'Restored WooCommerce product “%s” from Trash', 'change-vigil-site-journal' ), $name );
+                : sprintf( __( 'Restored WooCommerce product “%s” from Trash', 'lanternmote-change-log' ), $name );
             $severity = 'notice';
         } elseif ( is_array( $status ) ) {
             $action = $prefix . '_status_changed';
             $summary = 'coupon' === $kind
                 // translators: %1$d is the ID of the affected item; %2$s is the previous status; %3$s is the new status.
-                ? sprintf( __( 'Changed WooCommerce coupon #%1$d status from %2$s to %3$s', 'change-vigil-site-journal' ), $id, $old_status, $new_status )
+                ? sprintf( __( 'Changed WooCommerce coupon #%1$d status from %2$s to %3$s', 'lanternmote-change-log' ), $id, $old_status, $new_status )
                 // translators: %1$s is the product name; %2$s is the previous status; %3$s is the new status.
-                : sprintf( __( 'Changed WooCommerce product “%1$s” status from %2$s to %3$s', 'change-vigil-site-journal' ), $name, $old_status, $new_status );
+                : sprintf( __( 'Changed WooCommerce product “%1$s” status from %2$s to %3$s', 'lanternmote-change-log' ), $name, $old_status, $new_status );
             $severity = 'notice';
         } else {
             $action = $prefix . '_edited';
             if ( 'coupon' === $kind ) {
                 // translators: %d is the ID of the affected item.
-                $summary = sprintf( __( 'Updated WooCommerce coupon #%d', 'change-vigil-site-journal' ), $id );
+                $summary = sprintf( __( 'Updated WooCommerce coupon #%d', 'lanternmote-change-log' ), $id );
             } elseif ( isset( $changes['Title'] ) ) {
                 // translators: %s is the product name.
-                $summary = sprintf( __( 'Renamed WooCommerce product to “%s”', 'change-vigil-site-journal' ), $name );
+                $summary = sprintf( __( 'Renamed WooCommerce product to “%s”', 'lanternmote-change-log' ), $name );
             } else {
                 // translators: %s is the product name.
-                $summary = sprintf( __( 'Updated WooCommerce product “%s”', 'change-vigil-site-journal' ), $name );
+                $summary = sprintf( __( 'Updated WooCommerce product “%s”', 'lanternmote-change-log' ), $name );
             }
             $severity = 'info';
         }
@@ -2469,15 +2469,15 @@ final class Capture {
             }
             $normalized = strtolower( trim( (string) $value ) );
             if ( in_array( $normalized, [ 'yes', 'true', '1', 'on' ], true ) ) {
-                return __( 'Enabled', 'change-vigil-site-journal' );
+                return __( 'Enabled', 'lanternmote-change-log' );
             }
             if ( in_array( $normalized, [ '', 'no', 'false', '0', 'off' ], true ) ) {
-                return __( 'Disabled', 'change-vigil-site-journal' );
+                return __( 'Disabled', 'lanternmote-change-log' );
             }
             return null;
         }
         if ( in_array( $option, [ 'woocommerce_notify_low_stock', 'woocommerce_notify_no_stock' ], true ) ) {
-            return empty( $value ) ? __( 'Not configured', 'change-vigil-site-journal' ) : __( 'Configured', 'change-vigil-site-journal' );
+            return empty( $value ) ? __( 'Not configured', 'lanternmote-change-log' ) : __( 'Configured', 'lanternmote-change-log' );
         }
         if ( in_array( $option, [ 'woocommerce_all_except_countries', 'woocommerce_specific_allowed_countries', 'woocommerce_specific_ship_to_countries' ], true ) ) {
             if ( is_string( $value ) ) {
@@ -2498,13 +2498,13 @@ final class Capture {
             }
             $countries = array_values( array_unique( $countries ) );
             sort( $countries, SORT_STRING );
-            return $countries ? implode( ', ', $countries ) : __( 'None', 'change-vigil-site-journal' );
+            return $countries ? implode( ', ', $countries ) : __( 'None', 'lanternmote-change-log' );
         }
         if ( in_array( $option, [ 'woocommerce_shop_page_id', 'woocommerce_cart_page_id', 'woocommerce_checkout_page_id', 'woocommerce_myaccount_page_id', 'woocommerce_terms_page_id' ], true ) ) {
             return is_numeric( $value ) && absint( $value ) > 0
                 // translators: %d is the ID or count described by the event summary.
-                ? sprintf( __( 'Page ID %d', 'change-vigil-site-journal' ), absint( $value ) )
-                : __( 'Not selected', 'change-vigil-site-journal' );
+                ? sprintf( __( 'Page ID %d', 'lanternmote-change-log' ), absint( $value ) )
+                : __( 'Not selected', 'lanternmote-change-log' );
         }
         if ( in_array( $option, [ 'woocommerce_price_num_decimals', 'woocommerce_hold_stock_minutes', 'woocommerce_notify_low_stock_amount', 'woocommerce_notify_no_stock_amount' ], true ) ) {
             return is_numeric( $value ) && abs( (float) $value ) <= 1000000 ? self::text( (string) $value, 40 ) : null;
@@ -2536,12 +2536,12 @@ final class Capture {
             }
             if ( '' === $normalized ) {
                 if ( 'woocommerce_ship_to_countries' === $option ) {
-                    return __( 'Same as countries sold to', 'change-vigil-site-journal' );
+                    return __( 'Same as countries sold to', 'lanternmote-change-log' );
                 }
                 if ( 'woocommerce_default_customer_address' === $option ) {
-                    return __( 'No location by default', 'change-vigil-site-journal' );
+                    return __( 'No location by default', 'lanternmote-change-log' );
                 }
-                return __( 'Not set', 'change-vigil-site-journal' );
+                return __( 'Not set', 'lanternmote-change-log' );
             }
             return $normalized;
         }
@@ -2558,9 +2558,9 @@ final class Capture {
             }
             $tax_class = sanitize_key( (string) $value );
             if ( in_array( $tax_class, [ '', 'inherit' ], true ) ) {
-                return __( 'Inherit', 'change-vigil-site-journal' );
+                return __( 'Inherit', 'lanternmote-change-log' );
             }
-            return 'standard' === $tax_class ? __( 'Standard', 'change-vigil-site-journal' ) : __( 'Custom tax class', 'change-vigil-site-journal' );
+            return 'standard' === $tax_class ? __( 'Standard', 'lanternmote-change-log' ) : __( 'Custom tax class', 'lanternmote-change-log' );
         }
         return null;
     }
@@ -2583,10 +2583,10 @@ final class Capture {
             return;
         }
         $label = self::WOOCOMMERCE_SETTING_OPTIONS[ $option ];
-        $name = __( 'WooCommerce', 'change-vigil-site-journal' ) . ': ' . $label;
+        $name = __( 'WooCommerce', 'lanternmote-change-log' ) . ': ' . $label;
         self::record( 'woocommerce_setting_changed', 'setting', $option, $name,
             // translators: %s is the name or label of the affected record.
-            sprintf( __( 'Changed WooCommerce setting “%s”', 'change-vigil-site-journal' ), $label ),
+            sprintf( __( 'Changed WooCommerce setting “%s”', 'lanternmote-change-log' ), $label ),
             [ 'changes' => [ $label => [ $before, $after ] ] ], 'notice' );
     }
 
@@ -2613,7 +2613,7 @@ final class Capture {
             || wp_is_post_autosave( $id ) ) {
             return;
         }
-        $name = self::text( $post->post_title ) ?: __( '(Untitled)', 'change-vigil-site-journal' );
+        $name = self::text( $post->post_title ) ?: __( '(Untitled)', 'lanternmote-change-log' );
         $details = [];
         if ( ! $update || ! $before || 'auto-draft' === $before->post_status ) {
             $changes = [
@@ -2624,7 +2624,7 @@ final class Capture {
                 $changes['Publish date'] = [ '', self::post_date_value( $post ) ];
             }
             /* translators: %s: item title. */
-            self::record( 'content_created', $post->post_type, $id, $name, sprintf( __( 'Created “%s”', 'change-vigil-site-journal' ), $name ), [ 'changes' => $changes ] );
+            self::record( 'content_created', $post->post_type, $id, $name, sprintf( __( 'Created “%s”', 'lanternmote-change-log' ), $name ), [ 'changes' => $changes ] );
             return;
         }
         foreach ( [
@@ -2660,37 +2660,37 @@ final class Capture {
 
         $action = 'content_edited';
         /* translators: %s: item title. */
-        $summary = sprintf( __( 'Edited “%s”', 'change-vigil-site-journal' ), $name );
+        $summary = sprintf( __( 'Edited “%s”', 'lanternmote-change-log' ), $name );
         if ( 'trash' === $post->post_status && 'trash' !== $before->post_status ) {
             $action = 'content_trashed';
             /* translators: %s: item title. */
-            $summary = sprintf( __( 'Moved “%s” to Trash', 'change-vigil-site-journal' ), $name );
+            $summary = sprintf( __( 'Moved “%s” to Trash', 'lanternmote-change-log' ), $name );
         } elseif ( 'trash' === $before->post_status && 'trash' !== $post->post_status ) {
             $action = 'content_restored';
             /* translators: %s: item title. */
-            $summary = sprintf( __( 'Restored “%s” from Trash', 'change-vigil-site-journal' ), $name );
+            $summary = sprintf( __( 'Restored “%s” from Trash', 'lanternmote-change-log' ), $name );
         } elseif ( isset( $details['changes']['Status'] ) ) {
             $action = 'content_status';
             $old_label = get_post_status_object( $before->post_status )->label ?? $before->post_status;
             $new_label = get_post_status_object( $post->post_status )->label ?? $post->post_status;
             /* translators: 1: item title, 2: previous status, 3: new status. */
-            $summary = sprintf( __( 'Changed “%1$s” from %2$s to %3$s', 'change-vigil-site-journal' ), $name, $old_label, $new_label );
+            $summary = sprintf( __( 'Changed “%1$s” from %2$s to %3$s', 'lanternmote-change-log' ), $name, $old_label, $new_label );
         } elseif ( isset( $details['changes']['Publish date'] ) ) {
             /* translators: %s: item title. */
-            $summary = sprintf( __( 'Changed the publish date for “%s”', 'change-vigil-site-journal' ), $name );
+            $summary = sprintf( __( 'Changed the publish date for “%s”', 'lanternmote-change-log' ), $name );
         } elseif ( isset( $details['changes']['Author'] ) ) {
             /* translators: %s: item title. */
-            $summary = sprintf( __( 'Changed the author for “%s”', 'change-vigil-site-journal' ), $name );
+            $summary = sprintf( __( 'Changed the author for “%s”', 'lanternmote-change-log' ), $name );
         } elseif ( isset( $details['changes']['Parent item'] ) ) {
             /* translators: %s: item title. */
-            $summary = sprintf( __( 'Changed the parent for “%s”', 'change-vigil-site-journal' ), $name );
+            $summary = sprintf( __( 'Changed the parent for “%s”', 'lanternmote-change-log' ), $name );
         } elseif ( isset( $details['changes']['Title'] ) && '' !== $details['changes']['Title'][0] ) {
             /* translators: 1: previous title, 2: new title. */
-            $summary = sprintf( __( 'Renamed “%1$s” to “%2$s”', 'change-vigil-site-journal' ), $details['changes']['Title'][0], $name );
+            $summary = sprintf( __( 'Renamed “%1$s” to “%2$s”', 'lanternmote-change-log' ), $details['changes']['Title'][0], $name );
         }
         if ( isset( $details['changes']['Title'] ) && '' !== $details['changes']['Title'][0] ) {
             /* translators: 1: previous title, 2: new title. */
-            $rename = sprintf( __( 'Renamed “%1$s” to “%2$s”', 'change-vigil-site-journal' ), $details['changes']['Title'][0], $name );
+            $rename = sprintf( __( 'Renamed “%1$s” to “%2$s”', 'lanternmote-change-log' ), $details['changes']['Title'][0], $name );
             if ( $summary !== $rename ) {
                 $summary = $rename . '. ' . $summary;
             }
@@ -2704,7 +2704,7 @@ final class Capture {
         }
         $changes = [];
         if ( ! $update || ! $before || 'auto-draft' === $before->post_status ) {
-            $changes['Menu item'] = [ '', self::text( $post->post_title, 180 ) ?: __( '(Untitled)', 'change-vigil-site-journal' ) ];
+            $changes['Menu item'] = [ '', self::text( $post->post_title, 180 ) ?: __( '(Untitled)', 'lanternmote-change-log' ) ];
         } else {
             foreach ( [ 'post_title' => 'Menu item', 'post_status' => 'Status', 'menu_order' => 'Position' ] as $field => $label ) {
                 $old_value = (string) $before->$field;
@@ -2720,7 +2720,7 @@ final class Capture {
         self::$pending_menu_items[ $id ] = [
             'action' => ( ! $update || ! $before || 'auto-draft' === $before->post_status ) ? 'menu_item_added' : 'menu_item_updated',
             'changes' => $changes,
-            'title' => self::text( $post->post_title, 180 ) ?: __( '(Untitled)', 'change-vigil-site-journal' ),
+            'title' => self::text( $post->post_title, 180 ) ?: __( '(Untitled)', 'lanternmote-change-log' ),
         ];
     }
 
@@ -2731,12 +2731,12 @@ final class Capture {
         $pending = self::$pending_menu_items[ $menu_item_id ];
         unset( self::$pending_menu_items[ $menu_item_id ] );
         $menu = wp_get_nav_menu_object( $menu_id );
-        $menu_name = $menu && ! is_wp_error( $menu ) ? self::text( $menu->name, 180 ) : __( 'Navigation menu', 'change-vigil-site-journal' );
+        $menu_name = $menu && ! is_wp_error( $menu ) ? self::text( $menu->name, 180 ) : __( 'Navigation menu', 'lanternmote-change-log' );
         $summary = 'menu_item_added' === $pending['action']
             // translators: %1$s is the menu or menu item name; %2$s is the menu or menu item name.
-            ? sprintf( __( 'Added “%1$s” to navigation menu “%2$s”', 'change-vigil-site-journal' ), $pending['title'], $menu_name )
+            ? sprintf( __( 'Added “%1$s” to navigation menu “%2$s”', 'lanternmote-change-log' ), $pending['title'], $menu_name )
             // translators: %1$s is the menu or menu item name; %2$s is the menu or menu item name.
-            : sprintf( __( 'Updated “%1$s” in navigation menu “%2$s”', 'change-vigil-site-journal' ), $pending['title'], $menu_name );
+            : sprintf( __( 'Updated “%1$s” in navigation menu “%2$s”', 'lanternmote-change-log' ), $pending['title'], $menu_name );
         self::record( $pending['action'], 'menu', $menu_id, $menu_name, $summary,
             [ 'changes' => $pending['changes'] ], 'menu_item_added' === $pending['action'] ? 'notice' : 'info' );
     }
@@ -2745,21 +2745,21 @@ final class Capture {
         if ( 'post_parent' === $field ) {
             $parent_id = absint( $value );
             if ( ! $parent_id ) {
-                return __( 'None', 'change-vigil-site-journal' );
+                return __( 'None', 'lanternmote-change-log' );
             }
             $parent = get_post( $parent_id );
             if ( $parent instanceof \WP_Post ) {
-                $title = self::text( $parent->post_title, 180 ) ?: __( '(Untitled)', 'change-vigil-site-journal' );
+                $title = self::text( $parent->post_title, 180 ) ?: __( '(Untitled)', 'lanternmote-change-log' );
                 return $title . ' (item ID ' . $parent_id . ')';
             }
             /* translators: %d: affected item ID. */
-            return sprintf( __( 'Item ID %d', 'change-vigil-site-journal' ), $parent_id );
+            return sprintf( __( 'Item ID %d', 'lanternmote-change-log' ), $parent_id );
         }
 
         if ( 'post_author' === $field ) {
             $author_id = absint( $value );
             if ( ! $author_id ) {
-                return __( 'None', 'change-vigil-site-journal' );
+                return __( 'None', 'lanternmote-change-log' );
             }
             $author = get_userdata( $author_id );
             if ( $author ) {
@@ -2767,7 +2767,7 @@ final class Capture {
                 return $name . ' (user ID ' . $author_id . ')';
             }
             /* translators: %d: affected user ID. */
-            return sprintf( __( 'User ID %d', 'change-vigil-site-journal' ), $author_id );
+            return sprintf( __( 'User ID %d', 'lanternmote-change-log' ), $author_id );
         }
 
         return self::text( $value );
@@ -2780,8 +2780,8 @@ final class Capture {
             $menu = $menu_id ? wp_get_nav_menu_object( $menu_id ) : null;
             self::$deleting_menu_items[ $id ] = [
                 'menu_id' => $menu_id,
-                'menu_name' => $menu && ! is_wp_error( $menu ) ? self::text( $menu->name, 180 ) : __( 'Navigation menu', 'change-vigil-site-journal' ),
-                'title' => self::text( $post->post_title, 180 ) ?: __( '(Untitled)', 'change-vigil-site-journal' ),
+                'menu_name' => $menu && ! is_wp_error( $menu ) ? self::text( $menu->name, 180 ) : __( 'Navigation menu', 'lanternmote-change-log' ),
+                'title' => self::text( $post->post_title, 180 ) ?: __( '(Untitled)', 'lanternmote-change-log' ),
             ];
             return;
         }
@@ -2822,8 +2822,8 @@ final class Capture {
             unset( self::$deleting_wpforms_forms[ $id ] );
             self::record( 'wpforms_form_deleted', 'wpforms_form', $id, $name,
                 // translators: %s is the form name.
-                sprintf( __( 'Deleted WPForms form “%s”', 'change-vigil-site-journal' ), $name ),
-                [ 'changes' => [ 'Item' => [ __( 'Existing', 'change-vigil-site-journal' ), __( 'Deleted', 'change-vigil-site-journal' ) ] ] ], 'warning' );
+                sprintf( __( 'Deleted WPForms form “%s”', 'lanternmote-change-log' ), $name ),
+                [ 'changes' => [ 'Item' => [ __( 'Existing', 'lanternmote-change-log' ), __( 'Deleted', 'lanternmote-change-log' ) ] ] ], 'warning' );
             return;
         }
         if ( isset( self::$deleting_bbpress_items[ $id ] ) ) {
@@ -2832,10 +2832,10 @@ final class Capture {
             $kind = (string) $item['kind'];
             $name = (string) $item['name'];
             $changes = (array) $item['changes'];
-            $changes['Item'] = [ __( 'Existing', 'change-vigil-site-journal' ), __( 'Deleted', 'change-vigil-site-journal' ) ];
+            $changes['Item'] = [ __( 'Existing', 'lanternmote-change-log' ), __( 'Deleted', 'lanternmote-change-log' ) ];
             self::record( $kind . '_deleted', $kind, $id, $name,
                 // translators: %1$s is the name or label of the affected record; %2$s is the name or label of the affected record.
-                sprintf( __( 'Deleted bbPress %1$s “%2$s”', 'change-vigil-site-journal' ), self::bbpress_kind_label( $kind ), $name ),
+                sprintf( __( 'Deleted bbPress %1$s “%2$s”', 'lanternmote-change-log' ), self::bbpress_kind_label( $kind ), $name ),
                 [ 'changes' => $changes ], 'warning' );
             return;
         }
@@ -2847,11 +2847,11 @@ final class Capture {
             $action = 'coupon' === $kind ? 'coupon_deleted' : 'product_deleted';
             $summary = 'coupon' === $kind
                 // translators: %d is the ID of the affected item.
-                ? sprintf( __( 'Deleted WooCommerce coupon #%d', 'change-vigil-site-journal' ), $id )
+                ? sprintf( __( 'Deleted WooCommerce coupon #%d', 'lanternmote-change-log' ), $id )
                 // translators: %s is the product name.
-                : sprintf( __( 'Deleted WooCommerce product “%s”', 'change-vigil-site-journal' ), $name );
+                : sprintf( __( 'Deleted WooCommerce product “%s”', 'lanternmote-change-log' ), $name );
             self::record( $action, $kind, $id, $name, $summary,
-                [ 'changes' => [ 'Item' => [ __( 'Existing', 'change-vigil-site-journal' ), __( 'Deleted', 'change-vigil-site-journal' ) ] ] ], 'warning' );
+                [ 'changes' => [ 'Item' => [ __( 'Existing', 'lanternmote-change-log' ), __( 'Deleted', 'lanternmote-change-log' ) ] ] ], 'warning' );
             return;
         }
         if ( 'nav_menu_item' !== $post->post_type || empty( self::$deleting_menu_items[ $id ] ) ) {
@@ -2862,7 +2862,7 @@ final class Capture {
         $menu_id = $item['menu_id'] ?: $id;
         self::record( 'menu_item_deleted', 'menu', $menu_id, $item['menu_name'],
             // translators: %1$s is the menu or menu item name; %2$s is the menu or menu item name.
-            sprintf( __( 'Removed “%1$s” from navigation menu “%2$s”', 'change-vigil-site-journal' ), $item['title'], $item['menu_name'] ),
+            sprintf( __( 'Removed “%1$s” from navigation menu “%2$s”', 'lanternmote-change-log' ), $item['title'], $item['menu_name'] ),
             [ 'changes' => [ 'Menu item' => [ $item['title'], '' ] ] ], 'warning' );
     }
 
@@ -3047,12 +3047,12 @@ final class Capture {
         }
         $menu_id = absint( $menus[0] );
         $menu = wp_get_nav_menu_object( $menu_id );
-        $menu_name = $menu && ! is_wp_error( $menu ) ? self::text( $menu->name, 180 ) : __( 'Navigation menu', 'change-vigil-site-journal' );
-        $title = self::text( $post->post_title, 180 ) ?: __( '(Untitled)', 'change-vigil-site-journal' );
+        $menu_name = $menu && ! is_wp_error( $menu ) ? self::text( $menu->name, 180 ) : __( 'Navigation menu', 'lanternmote-change-log' );
+        $title = self::text( $post->post_title, 180 ) ?: __( '(Untitled)', 'lanternmote-change-log' );
         self::record( 'menu_item_updated', 'menu', $menu_id, $menu_name,
             // translators: %1$s is the menu or menu item name; %2$s is the menu or menu item name.
-            sprintf( __( 'Updated the destination for “%1$s” in navigation menu “%2$s”', 'change-vigil-site-journal' ), $title, $menu_name ),
-            [ 'changes' => [ 'Link destination' => [ __( 'Previous destination', 'change-vigil-site-journal' ), __( 'Updated destination', 'change-vigil-site-journal' ) ] ] ], 'info' );
+            sprintf( __( 'Updated the destination for “%1$s” in navigation menu “%2$s”', 'lanternmote-change-log' ), $title, $menu_name ),
+            [ 'changes' => [ 'Link destination' => [ __( 'Previous destination', 'lanternmote-change-log' ), __( 'Updated destination', 'lanternmote-change-log' ) ] ] ], 'info' );
     }
 
     private static function record_post_meta_change( int $post_id, string $meta_key, mixed $previous, mixed $value ): void {
@@ -3069,10 +3069,10 @@ final class Capture {
         if ( $before === $after ) {
             return;
         }
-        $name = self::text( $post->post_title ) ?: __( '(Untitled)', 'change-vigil-site-journal' );
+        $name = self::text( $post->post_title ) ?: __( '(Untitled)', 'lanternmote-change-log' );
         $summary = sprintf(
             /* translators: 1: changed field, 2: page or post title. */
-            __( 'Changed %1$s for “%2$s”', 'change-vigil-site-journal' ),
+            __( 'Changed %1$s for “%2$s”', 'lanternmote-change-log' ),
             $label,
             $name
         );
@@ -3090,7 +3090,7 @@ final class Capture {
         if ( '_wp_page_template' === $meta_key ) {
             $template = is_scalar( $value ) ? (string) $value : '';
             return '' === $template || 'default' === $template
-                ? __( 'Default', 'change-vigil-site-journal' )
+                ? __( 'Default', 'lanternmote-change-log' )
                 : self::text( $template );
         }
         $attachment_id = is_numeric( $value ) ? absint( $value ) : 0;
@@ -3103,10 +3103,10 @@ final class Capture {
             : '';
         if ( $title ) {
             /* translators: 1: media item title, 2: media item ID. */
-            return sprintf( __( '%1$s (media item %2$d)', 'change-vigil-site-journal' ), $title, $attachment_id );
+            return sprintf( __( '%1$s (media item %2$d)', 'lanternmote-change-log' ), $title, $attachment_id );
         }
         /* translators: %d: media item ID. */
-        return sprintf( __( 'Media item %d', 'change-vigil-site-journal' ), $attachment_id );
+        return sprintf( __( 'Media item %d', 'lanternmote-change-log' ), $attachment_id );
     }
 
     private static function revision_pair( int $id, \WP_Post $before, \WP_Post $after ): array {
@@ -3140,14 +3140,14 @@ final class Capture {
 
     private static function term_value( string $taxonomy, int $term_id ): string {
         if ( ! $term_id ) {
-            return __( 'None', 'change-vigil-site-journal' );
+            return __( 'None', 'lanternmote-change-log' );
         }
         $term = get_term( $term_id, $taxonomy );
         if ( $term instanceof \WP_Term && ! is_wp_error( $term ) ) {
             return self::text( $term->name, 180 ) . ' (term ID ' . $term_id . ')';
         }
         /* translators: %d: taxonomy term ID. */
-        return sprintf( __( 'Term ID %d', 'change-vigil-site-journal' ), $term_id );
+        return sprintf( __( 'Term ID %d', 'lanternmote-change-log' ), $term_id );
     }
 
     public static function term_created( int $term_id, int $tt_id, string $taxonomy ): void {
@@ -3158,7 +3158,7 @@ final class Capture {
                     $name = self::text( $term->name, 180 );
                     self::record( 'menu_created', 'menu', $term_id, $name,
                         // translators: %s is the menu or menu item name.
-                        sprintf( __( 'Created navigation menu “%s”', 'change-vigil-site-journal' ), $name ),
+                        sprintf( __( 'Created navigation menu “%s”', 'lanternmote-change-log' ), $name ),
                         [ 'changes' => [ 'Name' => [ '', $name ] ] ], 'notice' );
                 }
             }
@@ -3171,7 +3171,7 @@ final class Capture {
         $name = self::text( $term->name, 180 );
         self::record( 'term_created', 'term', $taxonomy . ':' . $term_id, $name,
             // translators: %1$s is the name or label of the affected record; %2$s is the name or label of the affected record.
-            sprintf( __( 'Created %1$s “%2$s”', 'change-vigil-site-journal' ), self::taxonomy_label( $taxonomy ), $name ),
+            sprintf( __( 'Created %1$s “%2$s”', 'lanternmote-change-log' ), self::taxonomy_label( $taxonomy ), $name ),
             [ 'taxonomy' => $taxonomy, 'changes' => [ 'Name' => [ '', $name ], 'Slug' => [ '', self::text( $term->slug, 180 ) ] ] ], 'notice' );
     }
 
@@ -3221,7 +3221,7 @@ final class Capture {
                 $name = self::text( $term->name, 180 );
                 self::record( 'menu_updated', 'menu', $term_id, $name,
                     // translators: %s is the menu or menu item name.
-                    sprintf( __( 'Updated navigation menu “%s”', 'change-vigil-site-journal' ), $name ),
+                    sprintf( __( 'Updated navigation menu “%s”', 'lanternmote-change-log' ), $name ),
                     [ 'changes' => $changes ], 'notice' );
             }
             return;
@@ -3253,7 +3253,7 @@ final class Capture {
         $name = self::text( $term->name, 180 );
         self::record( 'term_edited', 'term', $key, $name,
             // translators: %1$s is the name or label of the affected record; %2$s is the name or label of the affected record.
-            sprintf( __( 'Updated %1$s “%2$s”', 'change-vigil-site-journal' ), self::taxonomy_label( $taxonomy ), $name ),
+            sprintf( __( 'Updated %1$s “%2$s”', 'lanternmote-change-log' ), self::taxonomy_label( $taxonomy ), $name ),
             [ 'taxonomy' => $taxonomy, 'changes' => $changes ], 'notice' );
     }
 
@@ -3263,7 +3263,7 @@ final class Capture {
                 $name = self::text( $deleted_term->name, 180 );
                 self::record( 'menu_deleted', 'menu', $term_id, $name,
                     // translators: %s is the menu or menu item name.
-                    sprintf( __( 'Deleted navigation menu “%s”', 'change-vigil-site-journal' ), $name ),
+                    sprintf( __( 'Deleted navigation menu “%s”', 'lanternmote-change-log' ), $name ),
                     [ 'changes' => [ 'Name' => [ $name, '' ] ] ], 'warning' );
             }
             return;
@@ -3274,7 +3274,7 @@ final class Capture {
         $name = self::text( $deleted_term->name, 180 );
         self::record( 'term_deleted', 'term', $taxonomy . ':' . $term_id, $name,
             // translators: %1$s is the name or label of the affected record; %2$s is the name or label of the affected record.
-            sprintf( __( 'Deleted %1$s “%2$s”', 'change-vigil-site-journal' ), self::taxonomy_label( $taxonomy ), $name ),
+            sprintf( __( 'Deleted %1$s “%2$s”', 'lanternmote-change-log' ), self::taxonomy_label( $taxonomy ), $name ),
             [ 'taxonomy' => $taxonomy, 'changes' => [ 'Name' => [ $name, '' ], 'Slug' => [ self::text( $deleted_term->slug, 180 ), '' ] ] ], 'warning' );
     }
 
@@ -3305,11 +3305,11 @@ final class Capture {
             $old_menu = $old_tt_ids ? get_term_by( 'term_taxonomy_id', absint( reset( $old_tt_ids ) ), $taxonomy ) : null;
             $menu = $new_menu instanceof \WP_Term ? $new_menu : $old_menu;
             $menu_id = $menu instanceof \WP_Term ? (int) $menu->term_id : $object_id;
-            $menu_name = $menu instanceof \WP_Term ? self::text( $menu->name, 180 ) : __( 'Navigation menu', 'change-vigil-site-journal' );
-            $title = self::text( $post->post_title, 180 ) ?: __( '(Untitled)', 'change-vigil-site-journal' );
+            $menu_name = $menu instanceof \WP_Term ? self::text( $menu->name, 180 ) : __( 'Navigation menu', 'lanternmote-change-log' );
+            $title = self::text( $post->post_title, 180 ) ?: __( '(Untitled)', 'lanternmote-change-log' );
             self::record( 'menu_item_updated', 'menu', $menu_id, $menu_name,
                 // translators: %1$s is the menu or menu item name; %2$s is the menu or menu item name.
-                sprintf( __( 'Moved “%1$s” in navigation menu “%2$s”', 'change-vigil-site-journal' ), $title, $menu_name ),
+                sprintf( __( 'Moved “%1$s” in navigation menu “%2$s”', 'lanternmote-change-log' ), $title, $menu_name ),
                 [ 'changes' => [ 'Navigation menu' => [ implode( ', ', $before ), implode( ', ', $after ) ] ] ], 'notice' );
             return;
         }
@@ -3331,10 +3331,10 @@ final class Capture {
         if ( $before === $after ) {
             return;
         }
-        $name = self::text( $post->post_title, 180 ) ?: __( '(Untitled)', 'change-vigil-site-journal' );
+        $name = self::text( $post->post_title, 180 ) ?: __( '(Untitled)', 'lanternmote-change-log' );
         self::record( 'terms_changed', $post->post_type, $object_id, $name,
             // translators: %1$s is the taxonomy name; %2$s is the affected item name.
-            sprintf( __( 'Changed %1$s for “%2$s”', 'change-vigil-site-journal' ), self::taxonomy_label( $taxonomy ), $name ),
+            sprintf( __( 'Changed %1$s for “%2$s”', 'lanternmote-change-log' ), self::taxonomy_label( $taxonomy ), $name ),
             [ 'taxonomy' => $taxonomy, 'changes' => [ self::taxonomy_label( $taxonomy ) => [ implode( ', ', $before ), implode( ', ', $after ) ] ] ], 'notice' );
     }
 
@@ -3343,19 +3343,19 @@ final class Capture {
         $title = $post instanceof \WP_Post ? self::text( $post->post_title, 160 ) : '';
         return $title
             // translators: %s is the name or label of the affected record.
-            ? sprintf( __( 'Comment on “%s”', 'change-vigil-site-journal' ), $title )
+            ? sprintf( __( 'Comment on “%s”', 'lanternmote-change-log' ), $title )
             // translators: %d is the ID or count described by the event summary.
-            : sprintf( __( 'Comment %d', 'change-vigil-site-journal' ), (int) $comment->comment_ID );
+            : sprintf( __( 'Comment %d', 'lanternmote-change-log' ), (int) $comment->comment_ID );
     }
 
     private static function comment_status_label( string $status ): string {
         $labels = [
-            'approved' => __( 'Approved', 'change-vigil-site-journal' ),
-            'unapproved' => __( 'Pending', 'change-vigil-site-journal' ),
-            'spam' => __( 'Spam', 'change-vigil-site-journal' ),
-            'trash' => __( 'Trash', 'change-vigil-site-journal' ),
-            'post-trashed' => __( 'Parent item trashed', 'change-vigil-site-journal' ),
-            'deleted' => __( 'Deleted', 'change-vigil-site-journal' ),
+            'approved' => __( 'Approved', 'lanternmote-change-log' ),
+            'unapproved' => __( 'Pending', 'lanternmote-change-log' ),
+            'spam' => __( 'Spam', 'lanternmote-change-log' ),
+            'trash' => __( 'Trash', 'lanternmote-change-log' ),
+            'post-trashed' => __( 'Parent item trashed', 'lanternmote-change-log' ),
+            'deleted' => __( 'Deleted', 'lanternmote-change-log' ),
         ];
         return $labels[ $status ] ?? self::text( $status, 40 );
     }
@@ -3368,7 +3368,7 @@ final class Capture {
         $name = self::comment_item_name( $comment );
         self::record( 'comment_created', 'comment', $comment_id, $name,
             // translators: %s is the name or label of the affected record.
-            sprintf( __( 'Added a comment on %s', 'change-vigil-site-journal' ), $name ),
+            sprintf( __( 'Added a comment on %s', 'lanternmote-change-log' ), $name ),
             [ 'changes' => [ 'Status' => [ '', self::comment_status_label( (string) wp_get_comment_status( $comment ) ) ] ] ], 'notice' );
     }
 
@@ -3396,8 +3396,8 @@ final class Capture {
         $name = self::comment_item_name( $comment );
         self::record( 'comment_edited', 'comment', $comment_id, $name,
             // translators: %s is the name or label of the affected record.
-            sprintf( __( 'Edited a comment on %s', 'change-vigil-site-journal' ), $name ),
-            [ 'changes' => [ 'Comment content' => [ __( 'Previous text', 'change-vigil-site-journal' ), __( 'Updated text', 'change-vigil-site-journal' ) ] ] ], 'info' );
+            sprintf( __( 'Edited a comment on %s', 'lanternmote-change-log' ), $name ),
+            [ 'changes' => [ 'Comment content' => [ __( 'Previous text', 'lanternmote-change-log' ), __( 'Updated text', 'lanternmote-change-log' ) ] ] ], 'info' );
     }
 
     public static function comment_status_changed( string $new_status, string $old_status, \WP_Comment $comment ): void {
@@ -3407,7 +3407,7 @@ final class Capture {
         $name = self::comment_item_name( $comment );
         self::record( 'comment_status', 'comment', (int) $comment->comment_ID, $name,
             // translators: %s is the name or label of the affected record.
-            sprintf( __( 'Changed comment status on %s', 'change-vigil-site-journal' ), $name ),
+            sprintf( __( 'Changed comment status on %s', 'lanternmote-change-log' ), $name ),
             [ 'changes' => [ 'Status' => [ self::comment_status_label( $old_status ), self::comment_status_label( $new_status ) ] ] ], 'notice' );
     }
 
@@ -3415,8 +3415,8 @@ final class Capture {
         $name = self::comment_item_name( $comment );
         self::record( 'comment_deleted', 'comment', $comment_id, $name,
             // translators: %s is the name or label of the affected record.
-            sprintf( __( 'Deleted a comment on %s', 'change-vigil-site-journal' ), $name ),
-            [ 'changes' => [ 'Status' => [ self::comment_status_label( (string) wp_get_comment_status( $comment ) ), __( 'Deleted', 'change-vigil-site-journal' ) ] ] ], 'warning' );
+            sprintf( __( 'Deleted a comment on %s', 'lanternmote-change-log' ), $name ),
+            [ 'changes' => [ 'Status' => [ self::comment_status_label( (string) wp_get_comment_status( $comment ) ), __( 'Deleted', 'lanternmote-change-log' ) ] ] ], 'warning' );
     }
 
     public static function widget_option_updated( string $option, mixed $old_value, mixed $new_value ): void {
@@ -3431,13 +3431,13 @@ final class Capture {
                     $names = [];
                     foreach ( $locations as $location => $menu_id ) {
                         $menu = wp_get_nav_menu_object( absint( $menu_id ) );
-                        $names[] = self::text( (string) $location, 80 ) . ': ' . ( $menu && ! is_wp_error( $menu ) ? self::text( $menu->name, 120 ) : __( 'None', 'change-vigil-site-journal' ) );
+                        $names[] = self::text( (string) $location, 80 ) . ': ' . ( $menu && ! is_wp_error( $menu ) ? self::text( $menu->name, 120 ) : __( 'None', 'lanternmote-change-log' ) );
                     }
                     sort( $names, SORT_NATURAL | SORT_FLAG_CASE );
                     return implode( ', ', $names );
                 };
-                self::record( 'menu_updated', 'menu', 'locations', __( 'Menu locations', 'change-vigil-site-journal' ),
-                    __( 'Changed navigation menu locations', 'change-vigil-site-journal' ),
+                self::record( 'menu_updated', 'menu', 'locations', __( 'Menu locations', 'lanternmote-change-log' ),
+                    __( 'Changed navigation menu locations', 'lanternmote-change-log' ),
                     [ 'changes' => [ 'Locations' => [ $menu_names( $before ), $menu_names( $after ) ] ] ], 'notice' );
             }
             return;
@@ -3448,8 +3448,8 @@ final class Capture {
             if ( $before === $after ) {
                 return;
             }
-            self::record( 'widget_changed', 'widget', $option, __( 'Widget placement', 'change-vigil-site-journal' ),
-                __( 'Changed widget placement', 'change-vigil-site-journal' ),
+            self::record( 'widget_changed', 'widget', $option, __( 'Widget placement', 'lanternmote-change-log' ),
+                __( 'Changed widget placement', 'lanternmote-change-log' ),
                 [ 'changes' => [ 'Widget placement' => [ implode( '; ', $before ), implode( '; ', $after ) ] ] ], 'notice' );
             return;
         }
@@ -3464,7 +3464,7 @@ final class Capture {
         }
         self::record( 'widget_changed', 'widget', $option, $name,
             // translators: %s is the plugin or component name.
-            sprintf( __( 'Updated %s settings', 'change-vigil-site-journal' ), $name ), [], 'notice' );
+            sprintf( __( 'Updated %s settings', 'lanternmote-change-log' ), $name ), [], 'notice' );
     }
 
     private static function sidebar_assignments( mixed $value ): array {
@@ -3503,13 +3503,13 @@ final class Capture {
             }
         }
         if ( (string) $old_user->user_email !== (string) $user->user_email ) {
-            $changes['Email address'] = [ __( 'Previous address', 'change-vigil-site-journal' ), __( 'Updated address', 'change-vigil-site-journal' ) ];
+            $changes['Email address'] = [ __( 'Previous address', 'lanternmote-change-log' ), __( 'Updated address', 'lanternmote-change-log' ) ];
         }
         if ( $changes ) {
             $name = self::text( $user->user_login, 180 );
             self::record( 'user_profile_changed', 'user', $id, $name,
                 // translators: %s is the file path.
-                sprintf( __( 'Updated profile for account “%s”', 'change-vigil-site-journal' ), $name ),
+                sprintf( __( 'Updated profile for account “%s”', 'lanternmote-change-log' ), $name ),
                 [ 'changes' => $changes ], 'notice' );
         }
         $old_hash = (string) ( $old_user->data->user_pass ?? '' );
@@ -3517,7 +3517,7 @@ final class Capture {
         if ( '' !== $old_hash && '' !== $new_hash && ! hash_equals( $old_hash, $new_hash ) ) {
             self::record( 'password_changed', 'user', $id, self::text( $user->user_login, 180 ),
                 // translators: %s is the account name.
-                sprintf( __( 'Changed password for account “%s”', 'change-vigil-site-journal' ), self::text( $user->user_login, 180 ) ), [], 'warning' );
+                sprintf( __( 'Changed password for account “%s”', 'lanternmote-change-log' ), self::text( $user->user_login, 180 ) ), [], 'warning' );
         }
     }
 
@@ -3525,7 +3525,7 @@ final class Capture {
         $name = self::text( $user->user_login, 180 );
         self::record( 'password_changed', 'user', $user->ID, $name,
             // translators: %s is the account name.
-            sprintf( __( 'Reset password for account “%s”', 'change-vigil-site-journal' ), $name ), [], 'warning' );
+            sprintf( __( 'Reset password for account “%s”', 'lanternmote-change-log' ), $name ), [], 'warning' );
     }
 
     public static function mark_new_user( array $meta, \WP_User $user, bool $update ): array {
@@ -3540,17 +3540,17 @@ final class Capture {
         $user = get_userdata( $id );
         if ( $user ) {
             /* translators: %s: username. */
-            self::record( 'user_created', 'user', $id, $user->user_login, sprintf( __( 'Created account “%s”', 'change-vigil-site-journal' ), $user->user_login ), [ 'changes' => [ 'Roles' => [ '', implode( ', ', $user->roles ) ] ] ], 'notice' );
+            self::record( 'user_created', 'user', $id, $user->user_login, sprintf( __( 'Created account “%s”', 'lanternmote-change-log' ), $user->user_login ), [ 'changes' => [ 'Roles' => [ '', implode( ', ', $user->roles ) ] ] ], 'notice' );
         }
     }
 
     public static function user_deleted( int $id, mixed $reassign, \WP_User $user ): void {
         if ( is_multisite() && get_userdata( $id ) instanceof \WP_User ) {
             /* translators: %s: username. */
-            self::record( 'user_removed_from_site', 'user', $id, $user->user_login, sprintf( __( 'Removed account “%s” from this site', 'change-vigil-site-journal' ), $user->user_login ), [], 'warning' );
+            self::record( 'user_removed_from_site', 'user', $id, $user->user_login, sprintf( __( 'Removed account “%s” from this site', 'lanternmote-change-log' ), $user->user_login ), [], 'warning' );
         } else {
             /* translators: %s: username. */
-            self::record( 'user_deleted', 'user', $id, $user->user_login, sprintf( __( 'Deleted account “%s”', 'change-vigil-site-journal' ), $user->user_login ), [], 'warning' );
+            self::record( 'user_deleted', 'user', $id, $user->user_login, sprintf( __( 'Deleted account “%s”', 'lanternmote-change-log' ), $user->user_login ), [], 'warning' );
         }
         unset( self::$deleting_users[ $id ] );
     }
@@ -3608,13 +3608,13 @@ final class Capture {
         $user = get_userdata( $id );
         if ( $user && $before !== $after ) {
             /* translators: %s: username. */
-            self::record( 'role_changed', 'user', $id, $user->user_login, sprintf( __( 'Changed roles for “%s”', 'change-vigil-site-journal' ), $user->user_login ),
+            self::record( 'role_changed', 'user', $id, $user->user_login, sprintf( __( 'Changed roles for “%s”', 'lanternmote-change-log' ), $user->user_login ),
                 [ 'changes' => [ 'Roles' => [ self::text( implode( ', ', $before ) ), self::text( implode( ', ', $after ) ) ] ] ], 'warning' );
         }
     }
 
     public static function sign_in( string $login, \WP_User $user ): void {
-        self::record( 'signed_in', 'user', $user->ID, $user->user_login, __( 'Signed in to WordPress', 'change-vigil-site-journal' ), [], 'info', self::actor( $user ) );
+        self::record( 'signed_in', 'user', $user->ID, $user->user_login, __( 'Signed in to WordPress', 'lanternmote-change-log' ), [], 'info', self::actor( $user ) );
     }
 
     public static function sign_out( int $user_id ): void {
@@ -3622,7 +3622,7 @@ final class Capture {
         if ( ! $user ) {
             return;
         }
-        self::record( 'signed_out', 'user', $user_id, $user->user_login, __( 'Signed out of WordPress', 'change-vigil-site-journal' ), [], 'info', self::actor( $user ) );
+        self::record( 'signed_out', 'user', $user_id, $user->user_login, __( 'Signed out of WordPress', 'lanternmote-change-log' ), [], 'info', self::actor( $user ) );
     }
 
     public static function failed_sign_in( string $attempt ): void {
@@ -3630,39 +3630,39 @@ final class Capture {
         $user = get_user_by( 'login', $attempt ) ?: get_user_by( 'email', $attempt );
         if ( $user ) {
             /* translators: %s: username. */
-            self::record( 'sign_in_failed', 'user', $user->ID, $user->user_login, sprintf( __( 'Failed sign in for “%s”', 'change-vigil-site-journal' ), $user->user_login ), [], 'warning', [ 'anonymous', 0, '' ] );
+            self::record( 'sign_in_failed', 'user', $user->ID, $user->user_login, sprintf( __( 'Failed sign in for “%s”', 'lanternmote-change-log' ), $user->user_login ), [], 'warning', [ 'anonymous', 0, '' ] );
             return;
         }
-        self::record( 'sign_in_failed', 'login', 'unknown', __( 'WordPress sign in', 'change-vigil-site-journal' ), __( 'Failed sign in for an unrecognised account', 'change-vigil-site-journal' ), [], 'warning', [ 'anonymous', 0, '' ] );
+        self::record( 'sign_in_failed', 'login', 'unknown', __( 'WordPress sign in', 'lanternmote-change-log' ), __( 'Failed sign in for an unrecognised account', 'lanternmote-change-log' ), [], 'warning', [ 'anonymous', 0, '' ] );
     }
 
     public static function plugin_activated( string $file ): void {
         /* translators: %s: plugin name. */
-        self::component( 'plugin_activated', 'plugin', $file, __( 'Activated plugin “%s”', 'change-vigil-site-journal' ) );
+        self::component( 'plugin_activated', 'plugin', $file, __( 'Activated plugin “%s”', 'lanternmote-change-log' ) );
     }
 
     public static function plugin_deactivated( string $file ): void {
         /* translators: %s: plugin name. */
-        self::component( 'plugin_deactivated', 'plugin', $file, __( 'Deactivated plugin “%s”', 'change-vigil-site-journal' ) );
+        self::component( 'plugin_deactivated', 'plugin', $file, __( 'Deactivated plugin “%s”', 'lanternmote-change-log' ) );
     }
 
     public static function plugin_deleted( string $file, bool $deleted ): void {
         if ( $deleted ) {
             /* translators: %s: plugin identifier. */
-            self::component( 'plugin_deleted', 'plugin', $file, __( 'Deleted plugin “%s”', 'change-vigil-site-journal' ) );
+            self::component( 'plugin_deleted', 'plugin', $file, __( 'Deleted plugin “%s”', 'lanternmote-change-log' ) );
         }
     }
 
     public static function theme_switched( string $name, \WP_Theme $theme, \WP_Theme $old ): void {
         /* translators: %s: theme name. */
-        self::component( 'theme_switched', 'theme', $theme->get_stylesheet(), __( 'Switched to theme “%s”', 'change-vigil-site-journal' ),
+        self::component( 'theme_switched', 'theme', $theme->get_stylesheet(), __( 'Switched to theme “%s”', 'lanternmote-change-log' ),
             [ 'changes' => [ 'Theme' => [ self::text( $old->get( 'Name' ) ), self::text( $name ) ] ] ] );
     }
 
     public static function theme_deleted( string $slug, bool $deleted ): void {
         if ( $deleted ) {
             /* translators: %s: theme identifier. */
-            self::component( 'theme_deleted', 'theme', $slug, __( 'Deleted theme “%s”', 'change-vigil-site-journal' ) );
+            self::component( 'theme_deleted', 'theme', $slug, __( 'Deleted theme “%s”', 'lanternmote-change-log' ) );
         }
     }
 
@@ -3704,13 +3704,13 @@ final class Capture {
     private static function upgraded_component( string $type, string $key, string $action ): void {
         $messages = [
             /* translators: %s: plugin or theme name. */
-            'plugin_installed' => __( 'Installed plugin “%s”', 'change-vigil-site-journal' ),
+            'plugin_installed' => __( 'Installed plugin “%s”', 'lanternmote-change-log' ),
             /* translators: %s: plugin or theme name. */
-            'plugin_updated'   => __( 'Updated plugin “%s”', 'change-vigil-site-journal' ),
+            'plugin_updated'   => __( 'Updated plugin “%s”', 'lanternmote-change-log' ),
             /* translators: %s: plugin or theme name. */
-            'theme_installed'  => __( 'Installed theme “%s”', 'change-vigil-site-journal' ),
+            'theme_installed'  => __( 'Installed theme “%s”', 'lanternmote-change-log' ),
             /* translators: %s: plugin or theme name. */
-            'theme_updated'    => __( 'Updated theme “%s”', 'change-vigil-site-journal' ),
+            'theme_updated'    => __( 'Updated theme “%s”', 'lanternmote-change-log' ),
         ];
         $event = $type . ( 'install' === $action ? '_installed' : '_updated' );
         self::component( $event, $type, $key, $messages[ $event ] );
@@ -3750,7 +3750,7 @@ final class Capture {
         $previous = self::setting_value( $key, $old );
         $next = self::setting_value( $key, $new );
         /* translators: %s: setting name. */
-        self::record( 'setting_changed', 'setting', $key, $name, sprintf( __( 'Changed setting “%s”', 'change-vigil-site-journal' ), $name ),
+        self::record( 'setting_changed', 'setting', $key, $name, sprintf( __( 'Changed setting “%s”', 'lanternmote-change-log' ), $name ),
             [ 'changes' => [ $name => [ $previous, $next ] ] ], 'notice' );
     }
 
@@ -3801,14 +3801,14 @@ final class Capture {
                 $old_value = count( $before[ $key ] ) . ' paths';
                 $new_value = count( $after[ $key ] ) . ' paths';
             } else {
-                $old_value = $before[ $key ] ? __( 'On', 'change-vigil-site-journal' ) : __( 'Off', 'change-vigil-site-journal' );
-                $new_value = $after[ $key ] ? __( 'On', 'change-vigil-site-journal' ) : __( 'Off', 'change-vigil-site-journal' );
+                $old_value = $before[ $key ] ? __( 'On', 'lanternmote-change-log' ) : __( 'Off', 'lanternmote-change-log' );
+                $new_value = $after[ $key ] ? __( 'On', 'lanternmote-change-log' ) : __( 'Off', 'lanternmote-change-log' );
             }
             $changes[ $label ] = [ (string) $old_value, (string) $new_value ];
         }
         if ( $changes ) {
-            self::record( 'plugin_settings_changed', 'setting', 'activity-log-settings', __( 'Change Vigil settings', 'change-vigil-site-journal' ),
-                __( 'Changed Change Vigil settings', 'change-vigil-site-journal' ), [ 'changes' => $changes ], 'notice', null, null, $before );
+            self::record( 'plugin_settings_changed', 'setting', 'activity-log-settings', __( 'Lanternmote settings', 'lanternmote-change-log' ),
+                __( 'Changed Lanternmote settings', 'lanternmote-change-log' ), [ 'changes' => $changes ], 'notice', null, null, $before );
         }
     }
 
@@ -3816,12 +3816,12 @@ final class Capture {
         $before = Store::normalize_settings( $old );
         $after = Store::normalize_settings( $new );
         $labels = [
-            'disabled_actions' => __( 'Disabled event types', 'change-vigil-site-journal' ),
-            'excluded_users' => __( 'Excluded accounts', 'change-vigil-site-journal' ),
-            'excluded_roles' => __( 'Excluded roles', 'change-vigil-site-journal' ),
-            'excluded_item_kinds' => __( 'Excluded item types', 'change-vigil-site-journal' ),
-            'excluded_items' => __( 'Excluded items', 'change-vigil-site-journal' ),
-            'excluded_post_statuses' => __( 'Excluded content statuses', 'change-vigil-site-journal' ),
+            'disabled_actions' => __( 'Disabled event types', 'lanternmote-change-log' ),
+            'excluded_users' => __( 'Excluded accounts', 'lanternmote-change-log' ),
+            'excluded_roles' => __( 'Excluded roles', 'lanternmote-change-log' ),
+            'excluded_item_kinds' => __( 'Excluded item types', 'lanternmote-change-log' ),
+            'excluded_items' => __( 'Excluded items', 'lanternmote-change-log' ),
+            'excluded_post_statuses' => __( 'Excluded content statuses', 'lanternmote-change-log' ),
         ];
         $changes = [];
         foreach ( $labels as $key => $label ) {
@@ -3837,8 +3837,8 @@ final class Capture {
             'recording_rules_changed',
             'setting',
             'recording-rules',
-            __( 'Recording rules', 'change-vigil-site-journal' ),
-            __( 'Changed activity recording rules', 'change-vigil-site-journal' ),
+            __( 'Recording rules', 'lanternmote-change-log' ),
+            __( 'Changed activity recording rules', 'lanternmote-change-log' ),
             [ 'changes' => $changes ],
             'notice',
             null,
@@ -3855,7 +3855,7 @@ final class Capture {
 
     private static function setting_value( string $key, mixed $value ): string {
         if ( 'blog_public' === $key ) {
-            return (int) $value ? __( 'Search indexing allowed', 'change-vigil-site-journal' ) : __( 'Search indexing discouraged', 'change-vigil-site-journal' );
+            return (int) $value ? __( 'Search indexing allowed', 'lanternmote-change-log' ) : __( 'Search indexing discouraged', 'lanternmote-change-log' );
         }
         if ( in_array( $key, [ 'home', 'siteurl' ], true ) ) {
             $url = wp_parse_url( (string) $value );
@@ -3871,10 +3871,10 @@ final class Capture {
             return;
         }
         // translators: %d is the ID of the affected item.
-        $name = sprintf( __( 'Order #%d', 'change-vigil-site-journal' ), $order_id );
+        $name = sprintf( __( 'Order #%d', 'lanternmote-change-log' ), $order_id );
         self::record( 'order_created', 'order', $order_id, $name,
             // translators: %d is the ID of the affected item.
-            sprintf( __( 'Created WooCommerce order #%d', 'change-vigil-site-journal' ), $order_id ), [], 'notice' );
+            sprintf( __( 'Created WooCommerce order #%d', 'lanternmote-change-log' ), $order_id ), [], 'notice' );
     }
 
     public static function order_status_changed( int $order_id, string $from, string $to ): void {
@@ -3884,10 +3884,10 @@ final class Capture {
         $from_label = function_exists( 'wc_get_order_status_name' ) ? wc_get_order_status_name( 'wc-' . sanitize_key( $from ) ) : sanitize_key( $from );
         $to_label = function_exists( 'wc_get_order_status_name' ) ? wc_get_order_status_name( 'wc-' . sanitize_key( $to ) ) : sanitize_key( $to );
         // translators: %d is the ID of the affected item.
-        $name = sprintf( __( 'Order #%d', 'change-vigil-site-journal' ), $order_id );
+        $name = sprintf( __( 'Order #%d', 'lanternmote-change-log' ), $order_id );
         self::record( 'order_status_changed', 'order', $order_id, $name,
             // translators: %1$d is the ID of the affected item; %2$s is the name or label of the affected record; %3$s is the name or label of the affected record.
-            sprintf( __( 'Changed WooCommerce order #%1$d from %2$s to %3$s', 'change-vigil-site-journal' ), $order_id, $from_label, $to_label ),
+            sprintf( __( 'Changed WooCommerce order #%1$d from %2$s to %3$s', 'lanternmote-change-log' ), $order_id, $from_label, $to_label ),
             [ 'changes' => [ 'Status' => [ self::text( (string) $from_label, 80 ), self::text( (string) $to_label, 80 ) ] ] ], 'notice' );
     }
 
@@ -3896,26 +3896,26 @@ final class Capture {
             return;
         }
         // translators: %d is the ID of the affected item.
-        $name = sprintf( __( 'Order #%d', 'change-vigil-site-journal' ), $order_id );
+        $name = sprintf( __( 'Order #%d', 'lanternmote-change-log' ), $order_id );
         $details = $refund_id > 0 ? [ 'refund_id' => $refund_id ] : [];
         self::record( 'order_refunded', 'order', $order_id, $name,
             // translators: %d is the ID of the affected item.
-            sprintf( __( 'Refunded WooCommerce order #%d', 'change-vigil-site-journal' ), $order_id ), $details, 'warning' );
+            sprintf( __( 'Refunded WooCommerce order #%d', 'lanternmote-change-log' ), $order_id ), $details, 'warning' );
     }
 
     public static function order_trashed( int $order_id ): void {
         // translators: %d is the ID of the affected item.
-        self::order_lifecycle_event( $order_id, 'order_trashed', __( 'Moved WooCommerce order #%d to Trash', 'change-vigil-site-journal' ), 'warning' );
+        self::order_lifecycle_event( $order_id, 'order_trashed', __( 'Moved WooCommerce order #%d to Trash', 'lanternmote-change-log' ), 'warning' );
     }
 
     public static function order_restored( int $order_id ): void {
         // translators: %d is the ID of the affected item.
-        self::order_lifecycle_event( $order_id, 'order_restored', __( 'Restored WooCommerce order #%d from Trash', 'change-vigil-site-journal' ), 'notice' );
+        self::order_lifecycle_event( $order_id, 'order_restored', __( 'Restored WooCommerce order #%d from Trash', 'lanternmote-change-log' ), 'notice' );
     }
 
     public static function order_deleted( int $order_id ): void {
         // translators: %d is the ID of the affected item.
-        self::order_lifecycle_event( $order_id, 'order_deleted', __( 'Deleted WooCommerce order #%d', 'change-vigil-site-journal' ), 'warning' );
+        self::order_lifecycle_event( $order_id, 'order_deleted', __( 'Deleted WooCommerce order #%d', 'lanternmote-change-log' ), 'warning' );
     }
 
     private static function order_lifecycle_event( int $order_id, string $action, string $summary_template, string $severity ): void {
@@ -3923,7 +3923,7 @@ final class Capture {
             return;
         }
         // translators: %d is the ID of the affected item.
-        $name = sprintf( __( 'Order #%d', 'change-vigil-site-journal' ), $order_id );
+        $name = sprintf( __( 'Order #%d', 'lanternmote-change-log' ), $order_id );
         self::record( $action, 'order', $order_id, $name, sprintf( $summary_template, $order_id ), [], $severity );
     }
 
@@ -3944,12 +3944,12 @@ final class Capture {
     private static function redirect_event( string $action, mixed $redirect ): void {
         $id = self::redirect_id( $redirect );
         // translators: %d is the ID of the affected item.
-        $name = $id ? sprintf( __( 'Redirect #%d', 'change-vigil-site-journal' ), $id ) : __( 'Redirect', 'change-vigil-site-journal' );
+        $name = $id ? sprintf( __( 'Redirect #%d', 'lanternmote-change-log' ), $id ) : __( 'Redirect', 'lanternmote-change-log' );
         $messages = [
-            'redirect_updated' => __( 'Created or updated a Redirection rule', 'change-vigil-site-journal' ),
-            'redirect_deleted' => __( 'Deleted a Redirection rule', 'change-vigil-site-journal' ),
-            'redirect_enabled' => __( 'Enabled a Redirection rule', 'change-vigil-site-journal' ),
-            'redirect_disabled' => __( 'Disabled a Redirection rule', 'change-vigil-site-journal' ),
+            'redirect_updated' => __( 'Created or updated a Redirection rule', 'lanternmote-change-log' ),
+            'redirect_deleted' => __( 'Deleted a Redirection rule', 'lanternmote-change-log' ),
+            'redirect_enabled' => __( 'Enabled a Redirection rule', 'lanternmote-change-log' ),
+            'redirect_disabled' => __( 'Disabled a Redirection rule', 'lanternmote-change-log' ),
         ];
         self::record( $action, 'redirect', $id ?: 'unknown', $name,
             $messages[ $action ] . ( $id ? ' #' . $id : '' ), [], 'redirect_deleted' === $action ? 'warning' : 'notice' );

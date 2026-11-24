@@ -8,7 +8,7 @@ const password = process.env.PILOT_PASSWORD ?? (process.env.PILOT_PASSWORD_FILE
   : passwordArgument);
 if (!base || !password || new URL(base).hostname !== "127.0.0.1") throw new Error("Pass a disposable loopback URL and its pilot password.");
 
-const activityPlugin = "change-vigil-site-journal/change-vigil-site-journal.php";
+const activityPlugin = "lanternmote-change-log/lanternmote-change-log.php";
 const infinitewpPlugin = "iwp-client/init.php";
 const browser = await chromium.launch({ headless: true, channel: process.env.PLAYWRIGHT_CHANNEL ?? "chrome" });
 const page = await browser.newPage({ viewport: { width: 1440, height: 950 } });
@@ -76,8 +76,8 @@ try {
   await setPluginActive(activityPlugin, true);
   await setPluginActive(infinitewpPlugin, true);
 
-  await page.goto(base + "/wp-admin/admin.php?page=change-vigil-site-journal");
-  await page.getByRole("heading", { name: "Change Vigil", exact: true }).waitFor();
+  await page.goto(base + "/wp-admin/admin.php?page=lanternmote-change-log");
+  await page.getByRole("heading", { name: "Lanternmote", exact: true }).waitFor();
   const original = await api("settings");
   assert.equal(original.status, 200);
   originalSettings = original.data.settings;
@@ -97,7 +97,7 @@ try {
 
   const result = await fixture("infinitewp");
   assert.equal(result.supported, true);
-  assert.equal(result.backupCount, 1, "One completed backup should create one Change Vigil event");
+  assert.equal(result.backupCount, 1, "One completed backup should create one Lanternmote event");
   assert.equal(result.eventCount, 1, "Non backup InfiniteWP details must not be copied as duplicate events");
   assert.equal(result.backupAction, "infinitewp_backup_completed");
   assert.equal(result.backupSource, "infinitewp");

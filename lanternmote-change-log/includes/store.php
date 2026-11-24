@@ -1,6 +1,6 @@
 <?php
 
-namespace ChangeVigilSiteJournal;
+namespace LanternmoteChangeLog;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -870,7 +870,7 @@ final class Store {
     public static function network_query( array $filters, int $limit, ?array $cursor = null, bool $include_details = false, ?string $ceiling = null ): array|\WP_Error {
         global $wpdb;
         if ( ! is_multisite() || ! is_super_admin() ) {
-            return new \WP_Error( 'cvsj_network_forbidden', __( 'Network activity is available to network administrators only.', 'change-vigil-site-journal' ), [ 'status' => 403 ] );
+            return new \WP_Error( 'cvsj_network_forbidden', __( 'Network activity is available to network administrators only.', 'lanternmote-change-log' ), [ 'status' => 403 ] );
         }
 
         $network_groups = self::event_groups();
@@ -882,13 +882,13 @@ final class Store {
             $site = get_site( $selected_site );
             if ( ! $site instanceof \WP_Site || (int) $site->site_id !== get_current_network_id()
                 || (int) $site->deleted || (int) $site->archived || (int) $site->spam ) {
-                return new \WP_Error( 'cvsj_network_site', __( 'Choose a site in this network.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+                return new \WP_Error( 'cvsj_network_site', __( 'Choose a site in this network.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
             }
             $site_ids = [ $selected_site ];
         } else {
             $site_ids = self::network_site_ids( get_current_network_id() );
             if ( count( $site_ids ) > 1000 ) {
-                return new \WP_Error( 'cvsj_network_size', __( 'This network has more than 1000 sites. Filter by a site ID to search its activity.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+                return new \WP_Error( 'cvsj_network_size', __( 'This network has more than 1000 sites. Filter by a site ID to search its activity.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
             }
         }
 
@@ -923,7 +923,7 @@ final class Store {
                 $site = get_blog_details( $site_id );
                 $site_labels[ $site_id ] = [
                     // translators: %d is the site ID.
-                    'name' => $site instanceof \WP_Site ? sanitize_text_field( $site->blogname ) : sprintf( __( 'Site %d', 'change-vigil-site-journal' ), $site_id ),
+                    'name' => $site instanceof \WP_Site ? sanitize_text_field( $site->blogname ) : sprintf( __( 'Site %d', 'lanternmote-change-log' ), $site_id ),
                     'timezone' => wp_timezone_string() ?: 'UTC',
                 ];
             } finally {
@@ -945,7 +945,7 @@ final class Store {
             $site_id = (int) $row['network_site_id'];
             $row['network_site_id'] = (string) $site_id;
             // translators: %d is the site ID.
-            $row['network_site_name'] = $site_labels[ $site_id ]['name'] ?? sprintf( __( 'Site %d', 'change-vigil-site-journal' ), $site_id );
+            $row['network_site_name'] = $site_labels[ $site_id ]['name'] ?? sprintf( __( 'Site %d', 'lanternmote-change-log' ), $site_id );
             $row['network_site_timezone'] = $site_labels[ $site_id ]['timezone'] ?? 'UTC';
         }
         unset( $row );
@@ -1172,7 +1172,7 @@ final class Store {
     public static function save_report_template( array $report ): array|\WP_Error {
         $reports = self::saved_reports();
         if ( count( $reports ) >= 20 ) {
-            return new \WP_Error( 'cvsj_saved_report_limit', __( 'Delete a saved report before adding another. A site can keep up to 20 report templates.', 'change-vigil-site-journal' ), [ 'status' => 409 ] );
+            return new \WP_Error( 'cvsj_saved_report_limit', __( 'Delete a saved report before adding another. A site can keep up to 20 report templates.', 'lanternmote-change-log' ), [ 'status' => 409 ] );
         }
         $saved = [
             'id' => wp_generate_uuid4(),
@@ -1192,7 +1192,7 @@ final class Store {
         }
         $reports[] = $saved;
         if ( ! update_option( self::SAVED_REPORTS, $reports, false ) && $reports !== self::saved_reports() ) {
-            return new \WP_Error( 'cvsj_saved_report_storage', __( 'The report template could not be saved.', 'change-vigil-site-journal' ), [ 'status' => 503 ] );
+            return new \WP_Error( 'cvsj_saved_report_storage', __( 'The report template could not be saved.', 'lanternmote-change-log' ), [ 'status' => 503 ] );
         }
         return $saved;
     }
@@ -1201,10 +1201,10 @@ final class Store {
         $reports = self::saved_reports();
         $remaining = array_values( array_filter( $reports, static fn( array $report ): bool => ! hash_equals( $report['id'], $id ) ) );
         if ( count( $remaining ) === count( $reports ) ) {
-            return new \WP_Error( 'cvsj_saved_report_missing', __( 'The saved report was not found.', 'change-vigil-site-journal' ), [ 'status' => 404 ] );
+            return new \WP_Error( 'cvsj_saved_report_missing', __( 'The saved report was not found.', 'lanternmote-change-log' ), [ 'status' => 404 ] );
         }
         if ( ! update_option( self::SAVED_REPORTS, $remaining, false ) && $remaining !== self::saved_reports() ) {
-            return new \WP_Error( 'cvsj_saved_report_storage', __( 'The saved report could not be deleted.', 'change-vigil-site-journal' ), [ 'status' => 503 ] );
+            return new \WP_Error( 'cvsj_saved_report_storage', __( 'The saved report could not be deleted.', 'lanternmote-change-log' ), [ 'status' => 503 ] );
         }
         return true;
     }
@@ -1251,7 +1251,7 @@ final class Store {
             return self::unavailable();
         }
         if ( ! $row ) {
-            return new \WP_Error( 'cvsj_not_found', __( 'This event is no longer available.', 'change-vigil-site-journal' ), [ 'status' => 404 ] );
+            return new \WP_Error( 'cvsj_not_found', __( 'This event is no longer available.', 'lanternmote-change-log' ), [ 'status' => 404 ] );
         }
         $row['details'] = json_decode( $row['details'], true ) ?: [];
         $row['notes'] = self::notes_for_event( $id );
@@ -1276,7 +1276,7 @@ final class Store {
             $user = get_userdata( (int) $row['user_id'] );
             $row['id'] = (string) $row['id'];
             $row['user_id'] = (string) $row['user_id'];
-            $row['author_name'] = $user instanceof \WP_User ? $user->display_name : __( 'Deleted user', 'change-vigil-site-journal' );
+            $row['author_name'] = $user instanceof \WP_User ? $user->display_name : __( 'Deleted user', 'lanternmote-change-log' );
             $timestamp = strtotime( $row['created_at'] . ' UTC' );
             $row['created_iso'] = gmdate( DATE_ATOM, $timestamp );
             $row['created_label'] = wp_date( 'j M Y, H:i:s T', $timestamp );
@@ -1299,7 +1299,7 @@ final class Store {
             $length = false === $length ? PHP_INT_MAX : $length;
         }
         if ( '' === $note || $length > 2000 ) {
-            return new \WP_Error( 'cvsj_note_invalid', __( 'Enter a note with 1 to 2000 characters.', 'change-vigil-site-journal' ), [ 'status' => 400 ] );
+            return new \WP_Error( 'cvsj_note_invalid', __( 'Enter a note with 1 to 2000 characters.', 'lanternmote-change-log' ), [ 'status' => 400 ] );
         }
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Keep event notes bounded for predictable detail reads and cleanup.
         $note_count = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE event_id = %d', self::notes_table(), $event_id ) );
@@ -1307,7 +1307,7 @@ final class Store {
             return self::unavailable();
         }
         if ( (int) $note_count >= self::MAX_EVENT_NOTES ) {
-            return new \WP_Error( 'cvsj_note_limit', __( 'This event has reached its 50 note limit.', 'change-vigil-site-journal' ), [ 'status' => 409 ] );
+            return new \WP_Error( 'cvsj_note_limit', __( 'This event has reached its 50 note limit.', 'lanternmote-change-log' ), [ 'status' => 409 ] );
         }
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Store an administrator note for one plugin event.
         if ( false === $wpdb->insert( self::notes_table(), [
@@ -1322,7 +1322,7 @@ final class Store {
         if ( is_wp_error( $notes ) ) {
             return $notes;
         }
-        return $notes ? end( $notes ) : new \WP_Error( 'cvsj_note_storage', __( 'The note was saved, but could not be loaded.', 'change-vigil-site-journal' ), [ 'status' => 503 ] );
+        return $notes ? end( $notes ) : new \WP_Error( 'cvsj_note_storage', __( 'The note was saved, but could not be loaded.', 'lanternmote-change-log' ), [ 'status' => 503 ] );
     }
 
     private static function event_exists( int $event_id ): bool|\WP_Error {
@@ -1333,7 +1333,7 @@ final class Store {
             return self::unavailable();
         }
         if ( ! $exists ) {
-            return new \WP_Error( 'cvsj_not_found', __( 'This event is no longer available.', 'change-vigil-site-journal' ), [ 'status' => 404 ] );
+            return new \WP_Error( 'cvsj_not_found', __( 'This event is no longer available.', 'lanternmote-change-log' ), [ 'status' => 404 ] );
         }
         return true;
     }
@@ -1450,16 +1450,16 @@ final class Store {
             },
             $rows
         );
-        $body = __( 'Change Vigil recorded warning events on your site.', 'change-vigil-site-journal' ) . "\n\n";
+        $body = __( 'Lanternmote recorded warning events on your site.', 'lanternmote-change-log' ) . "\n\n";
         if ( $settings['email_alert_include_events'] ) {
             $body .= implode( "\n", $lines ) . "\n\n";
         } else {
-            $body .= __( 'Event summaries were omitted by your notification settings.', 'change-vigil-site-journal' ) . "\n\n";
+            $body .= __( 'Event summaries were omitted by your notification settings.', 'lanternmote-change-log' ) . "\n\n";
         }
-        $body .= __( 'This digest includes up to the configured number of event summaries. Review the Change Vigil in WordPress for details.', 'change-vigil-site-journal' );
+        $body .= __( 'This digest includes up to the configured number of event summaries. Review the Lanternmote in WordPress for details.', 'lanternmote-change-log' );
         $site_name = sanitize_text_field( wp_specialchars_decode( (string) get_option( 'blogname' ), ENT_QUOTES ) );
         // translators: %s is the name or label of the affected record.
-        $subject = sprintf( __( '[%s] Change Vigil warning digest', 'change-vigil-site-journal' ), $site_name );
+        $subject = sprintf( __( '[%s] Lanternmote warning digest', 'lanternmote-change-log' ), $site_name );
         if ( wp_mail( $recipients, $subject, $body, [ 'Content-Type: text/plain; charset=UTF-8' ] ) ) {
             update_option( 'cvsj_alert_digest_after_id', (int) $rows[0]['id'] + 1, false );
             self::clear_failure( 'alert_error' );
@@ -1487,6 +1487,6 @@ final class Store {
     }
 
     private static function unavailable(): \WP_Error {
-        return new \WP_Error( 'cvsj_storage', __( 'The activity log database is unavailable. Check Settings for diagnostics.', 'change-vigil-site-journal' ), [ 'status' => 503 ] );
+        return new \WP_Error( 'cvsj_storage', __( 'The activity log database is unavailable. Check Settings for diagnostics.', 'lanternmote-change-log' ), [ 'status' => 503 ] );
     }
 }

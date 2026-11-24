@@ -10,7 +10,7 @@ require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
 if ( ! is_blog_installed() ) {
-    wp_install( 'Change Vigil Pilot', 'pilotadmin', 'admin@example.test', false, '', $password );
+    wp_install( 'Lanternmote Pilot', 'pilotadmin', 'admin@example.test', false, '', $password );
     update_option( 'siteurl', $url );
     update_option( 'home', $url );
     update_option( 'timezone_string', 'Europe/Dublin' );

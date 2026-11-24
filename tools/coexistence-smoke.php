@@ -11,7 +11,7 @@ if ( ! preg_match( '/^cvsj_(?:coexist|pilot)[a-z0-9_]*$/', DB_NAME ) || ! in_arr
 }
 $plugins = [
     'alfa' => 'activity-log-for-admins',
-    'cvsj' => 'change-vigil-site-journal',
+    'cvsj' => 'lanternmote-change-log',
 ];
 $check = static function ( bool $condition, string $message ): void {
     if ( ! $condition ) {

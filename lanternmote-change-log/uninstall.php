@@ -10,10 +10,10 @@ $cvsj_clear_site_data = static function (): void {
     $cvsj_settings = (array) get_option( 'cvsj_settings', [] );
     $cvsj_erase = in_array( $cvsj_settings['erase'] ?? false, [ true, 1, '1' ], true );
     if ( $cvsj_erase ) {
-        \ChangeVigilSiteJournal\Sessions::erase_all_activity_for_site();
-        if ( ! \ChangeVigilSiteJournal\ScheduledReports::erase_history_files() ) {
+        \LanternmoteChangeLog\Sessions::erase_all_activity_for_site();
+        if ( ! \LanternmoteChangeLog\ScheduledReports::erase_history_files() ) {
             // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Leave a server side diagnostic if explicit uninstall cannot remove private report copies.
-            error_log( 'Change Vigil Site Journal could not remove every private report copy during uninstall.' );
+            error_log( 'Lanternmote Change Log could not remove every private report copy during uninstall.' );
         }
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange -- Remove this site's plugin tables only after its admin opted in.
         if ( false !== $wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i, %i, %i', $wpdb->prefix . 'cvsj_events', $wpdb->prefix . 'cvsj_event_notes', $wpdb->prefix . 'cvsj_file_index' ) ) ) {
@@ -29,8 +29,8 @@ $cvsj_clear_site_data = static function (): void {
             delete_option( 'cvsj_alert_rule_queue_lock' );
             delete_option( 'cvsj_alert_retry_generation' );
             delete_option( 'cvsj_alert_queue_paused' );
-            delete_option( \ChangeVigilSiteJournal\ScheduledReports::SCHEDULES );
-            delete_option( \ChangeVigilSiteJournal\ScheduledReports::HISTORY );
+            delete_option( \LanternmoteChangeLog\ScheduledReports::SCHEDULES );
+            delete_option( \LanternmoteChangeLog\ScheduledReports::HISTORY );
         }
     }
     wp_clear_scheduled_hook( 'cvsj_cleanup' );
@@ -39,7 +39,7 @@ $cvsj_clear_site_data = static function (): void {
     wp_clear_scheduled_hook( 'cvsj_file_scan' );
     wp_clear_scheduled_hook( 'cvsj_alert_rule_dispatch' );
     wp_clear_scheduled_hook( 'cvsj_alert_event_retry' );
-    \ChangeVigilSiteJournal\ScheduledReports::deactivate_site();
+    \LanternmoteChangeLog\ScheduledReports::deactivate_site();
     delete_option( 'cvsj_privacy_erase_state' );
 };
 

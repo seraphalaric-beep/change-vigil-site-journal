@@ -42,9 +42,9 @@ try {
   await page.locator("#user_pass").fill(password);
   await page.locator("#wp-submit").click();
   await page.waitForLoadState("domcontentloaded");
-  const screen = base + "/wp-admin/admin.php?page=change-vigil-site-journal";
+  const screen = base + "/wp-admin/admin.php?page=lanternmote-change-log";
   await page.goto(screen);
-  await page.getByRole("heading", { name: "Change Vigil", exact: true }).waitFor();
+  await page.getByRole("heading", { name: "Lanternmote", exact: true }).waitFor();
 
   const defaults = await api("settings");
   assert.equal(defaults.status, 200);
@@ -62,7 +62,7 @@ try {
   unsafeExport.settings.file_excluded_paths = ["../private"];
   assert.equal((await api("settings/import", unsafeExport)).status, 400);
 
-  await page.getByRole("navigation", { name: "Change Vigil" }).getByRole("link", { name: "Settings", exact: true }).click();
+  await page.getByRole("navigation", { name: "Lanternmote" }).getByRole("link", { name: "Settings", exact: true }).click();
   await page.getByText(/Version 1\.1\.0/).waitFor();
   const fileToggle = page.getByRole("checkbox", { name: /File changes/ });
   const uploadsToggle = page.getByRole("checkbox", { name: /Include uploads/ });

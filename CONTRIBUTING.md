@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping improve Change Vigil Site Journal. The 1.0.0 release is a pilot, so reports about missing events, unclear changes, and difficult investigations are especially useful.
+Thanks for helping improve Lanternmote Change Log. The 1.0.0 release is a pilot, so reports about missing events, unclear changes, and difficult investigations are especially useful.
 
 ## Before opening an issue
 

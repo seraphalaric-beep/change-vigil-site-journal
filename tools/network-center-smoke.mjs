@@ -48,24 +48,24 @@ try {
   await page.locator("#user_pass").fill(password);
   await page.locator("#wp-submit").click();
   await page.waitForLoadState("domcontentloaded");
-  await page.goto(base + "/wp-admin/network/admin.php?page=change-vigil-site-journal-network");
-  if (await page.getByRole("heading", { name: "Network Change Vigil", exact: true }).count() === 0) {
+  await page.goto(base + "/wp-admin/network/admin.php?page=lanternmote-change-log-network");
+  if (await page.getByRole("heading", { name: "Network Lanternmote", exact: true }).count() === 0) {
     console.error(JSON.stringify({
       url: page.url(),
       title: await page.title(),
       body: (await page.locator("body").innerText()).slice(0, 1200),
       config: await page.evaluate(() => typeof window.cvsjSettings === "undefined" ? null : window.cvsjSettings),
-      links: await page.locator("#adminmenu a").evaluateAll(links => links.filter(link => link.textContent.includes("Change Vigil")).map(link => ({ text: link.textContent.trim(), href: link.href }))),
+      links: await page.locator("#adminmenu a").evaluateAll(links => links.filter(link => link.textContent.includes("Lanternmote")).map(link => ({ text: link.textContent.trim(), href: link.href }))),
       root: await page.locator("#cvsj-root").count(),
     }));
   }
-  await page.getByRole("heading", { name: "Network Change Vigil", exact: true }).waitFor();
+  await page.getByRole("heading", { name: "Network Lanternmote", exact: true }).waitFor();
   const config = await page.evaluate(() => window.cvsjSettings);
   assert.equal(config.networkMode, true);
   assert.equal(config.canManage, true);
-  assert.match(config.base, /change-vigil-site-journal\/v1\/network\/$/);
+  assert.match(config.base, /lanternmote-change-log\/v1\/network\/$/);
   assert.equal(await page.getByRole("link", { name: "Reports", exact: true }).count(), 0);
-  assert.equal(await page.getByRole("navigation", { name: "Change Vigil", exact: true }).getByRole("link", { name: "Settings", exact: true }).count(), 0);
+  assert.equal(await page.getByRole("navigation", { name: "Lanternmote", exact: true }).getByRole("link", { name: "Settings", exact: true }).count(), 0);
 
   const initial = await api("events");
   assert.equal(initial.status, 200);
@@ -119,7 +119,7 @@ try {
   assert.equal(new URL(page.url()).searchParams.get("network_site_id"), String(fixture.siteId));
   await page.getByRole("button", { name: /Network center probe .* child event 51/ }).waitFor();
   await page.reload();
-  await page.getByRole("heading", { name: "Network Change Vigil", exact: true }).waitFor();
+  await page.getByRole("heading", { name: "Network Lanternmote", exact: true }).waitFor();
   await page.getByRole("button", { name: /Filters/ }).click();
   assert.equal(await page.getByLabel("Network site ID", { exact: true }).inputValue(), String(fixture.siteId));
   await page.getByRole("button", { name: /Network center probe .* child event 51/ }).click();
@@ -133,13 +133,13 @@ try {
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), "The network view fits a narrow screen.");
   await page.screenshot({ path: ".tmp/network-parity-wp/network-center-mobile.png", animations: "disabled" });
 
-  await page.getByRole("navigation", { name: "Change Vigil", exact: true }).getByRole("link", { name: "Sites", exact: true }).click();
+  await page.getByRole("navigation", { name: "Lanternmote", exact: true }).getByRole("link", { name: "Sites", exact: true }).click();
   await page.getByRole("heading", { name: "Network sites", exact: true }).waitFor();
   await page.getByLabel("Search network sites", { exact: true }).fill(String(fixture.siteId));
   await page.getByRole("button", { name: "Search sites" }).click();
   const siteRow = page.getByRole("row").filter({ hasText: `Site #${fixture.siteId}` });
   await siteRow.getByText("Network center test site", { exact: true }).waitFor();
-  assert.equal(await page.getByText(`Change Vigil Site Journal, Version ${config.version}`, { exact: true }).count(), 1);
+  assert.equal(await page.getByText(`Lanternmote Change Log, Version ${config.version}`, { exact: true }).count(), 1);
   await siteRow.getByText(/Manage .* categories/).click();
   const contentCategory = siteRow.getByRole("checkbox", { name: "Posts and pages", exact: true });
   assert.equal(await contentCategory.isChecked(), true);
@@ -176,7 +176,7 @@ try {
   const nonceResponse = await editorContext.request.post(base + "/cvsj-fixture.php", { form: { operation: "nonce" } });
   assert.equal(nonceResponse.status(), 200);
   const { nonce } = await nonceResponse.json();
-  const denied = await editorContext.request.get(base + "/wp-json/change-vigil-site-journal/v1/network/events", { headers: { "X-WP-Nonce": nonce } });
+  const denied = await editorContext.request.get(base + "/wp-json/lanternmote-change-log/v1/network/events", { headers: { "X-WP-Nonce": nonce } });
   assert.equal(denied.status(), 403, "Site editors cannot read the network activity route.");
   await editorContext.close();
 

@@ -51,8 +51,8 @@ try {
     await activateWoo.click();
     await page.waitForLoadState("domcontentloaded");
   }
-  await page.goto(base + "/wp-admin/admin.php?page=change-vigil-site-journal");
-  await page.getByRole("heading", { name: "Change Vigil", exact: true }).waitFor();
+  await page.goto(base + "/wp-admin/admin.php?page=lanternmote-change-log");
+  await page.getByRole("heading", { name: "Lanternmote", exact: true }).waitFor();
   await fixture("reset");
 
   const defaults = await api("settings");
@@ -106,7 +106,7 @@ try {
   assert.ok(csv.data.includes("product_created"));
   assert.doesNotMatch(csv.data, /PRIVATE-COUPON|private-[a-z0-9]+@example\.invalid|updated-[a-z0-9]+@example\.invalid/i);
 
-  await page.goto(base + "/wp-admin/admin.php?page=change-vigil-site-journal&category=woocommerce&q=" + encodeURIComponent(probe.productName));
+  await page.goto(base + "/wp-admin/admin.php?page=lanternmote-change-log&category=woocommerce&q=" + encodeURIComponent(probe.productName));
   await page.getByRole("table", { name: "Activity events" }).waitFor();
   await page.getByRole("button", { name: /Renamed WooCommerce product/ }).first().click();
   const dialog = page.getByRole("dialog");
@@ -117,14 +117,14 @@ try {
   await page.keyboard.press("Escape");
   await dialog.waitFor({ state: "hidden" });
 
-  await page.getByRole("navigation", { name: "Change Vigil" }).getByRole("link", { name: "Settings", exact: true }).click();
+  await page.getByRole("navigation", { name: "Lanternmote" }).getByRole("link", { name: "Settings", exact: true }).click();
   const wooCheckbox = page.getByRole("checkbox", { name: /WooCommerce Record products,/ });
   await wooCheckbox.waitFor();
   assert.equal(await wooCheckbox.isChecked(), true);
   await page.getByText(/coupon email restrictions, payment details, and order contents are not recorded/i).waitFor();
   await page.screenshot({ path: ".tmp/woocommerce-settings.png", fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto(base + "/wp-admin/admin.php?page=change-vigil-site-journal&category=woocommerce");
+  await page.goto(base + "/wp-admin/admin.php?page=lanternmote-change-log&category=woocommerce");
   await page.getByRole("table", { name: "Activity events" }).waitFor();
   const dimensions = await page.evaluate(() => ({ viewport: innerWidth, document: document.documentElement.scrollWidth }));
   assert.ok(dimensions.document <= dimensions.viewport + 1, `Horizontal overflow at narrow width: ${JSON.stringify(dimensions)}`);

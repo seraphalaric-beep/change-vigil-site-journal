@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 1.2.3
+
+* Rename the plugin to Lanternmote Change Log and update the directory artwork and screenshots.
+* Preserve the existing 1.2.2 activity data and settings when switching to Lanternmote.
+
 ## 1.2.2
 
 * Introduce Change Vigil Site Journal as a separate plugin identity with isolated history and settings.

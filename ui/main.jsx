@@ -55,7 +55,7 @@ const actions = {
   plugin_installed: "Plugin installed", plugin_activated: "Plugin activated", plugin_deactivated: "Plugin deactivated",
   plugin_updated: "Plugin updated", plugin_deleted: "Plugin deleted", theme_installed: "Theme installed",
   theme_switched: "Theme switched", theme_updated: "Theme updated", theme_deleted: "Theme deleted",
-  setting_changed: "Setting changed", plugin_settings_changed: "Change Vigil settings changed", recording_rules_changed: "Recording rules changed",
+  setting_changed: "Setting changed", plugin_settings_changed: "Lanternmote settings changed", recording_rules_changed: "Recording rules changed",
 };
 const eventGroupLabels = {
   content: "Posts and pages", accounts: "Accounts and sign ins", comments: "Comments",
@@ -401,8 +401,8 @@ function Settings() {
     }
     try {
       const payload = JSON.parse(await file.text());
-      if (payload?.plugin !== "change-vigil-site-journal" || payload?.format !== "change-vigil-site-journal-settings" || payload?.schema_version !== 1 || !payload.settings) {
-        throw new Error("Choose a supported Change Vigil settings export.");
+      if (payload?.plugin !== "lanternmote-change-log" || payload?.format !== "lanternmote-change-log-settings" || payload?.schema_version !== 1 || !payload.settings) {
+        throw new Error("Choose a supported Lanternmote settings export.");
       }
       setTransfer({ busy: false, error: "", message: "", file: { name: file.name, payload }, confirmPrune: false, confirmErase: false });
     } catch (error) {
@@ -697,7 +697,7 @@ function Settings() {
     </div>}
     <AlertChannelManager />
     <AlertRuleManager />
-    <div className="cvsj-version">Change Vigil Site Journal · Version {config.version}</div>
+    <div className="cvsj-version">Lanternmote Change Log · Version {config.version}</div>
   </div>;
 }
 
@@ -1417,7 +1417,7 @@ function NetworkSites() {
       </div>
       <div className="cvsj-pagination" aria-label="Network site pages"><span>{data.total} sites, page {data.page}</span><Button variant="outline" disabled={data.page <= 1} onClick={() => setPage(value => Math.max(1, value - 1))}><ArrowLeft aria-hidden="true" /> Previous</Button><Button variant="outline" disabled={!data.has_more} onClick={() => setPage(value => value + 1)}>Next <ArrowRight aria-hidden="true" /></Button></div>
     </>}
-    <p className="cvsj-settings-version">Change Vigil Site Journal, Version {config.version}</p>
+    <p className="cvsj-settings-version">Lanternmote Change Log, Version {config.version}</p>
   </section>;
 }
 
@@ -1494,7 +1494,7 @@ function SessionsView() {
     <div className="cvsj-section-heading">
       <div><h2 id="cvsj-sessions-title">User sessions</h2><p>Review active WordPress logins and end a session if an account looks unexpected.</p></div>
     </div>
-    <div className="cvsj-session-privacy-note"><ShieldAlert aria-hidden="true" size={17} /><p>WordPress stores login time, expiry, browser data, and IP address in its session records. Change Vigil hides browser and IP details by default. On Multisite, sessions apply to the account across the network.</p></div>
+    <div className="cvsj-session-privacy-note"><ShieldAlert aria-hidden="true" size={17} /><p>WordPress stores login time, expiry, browser data, and IP address in its session records. Lanternmote hides browser and IP details by default. On Multisite, sessions apply to the account across the network.</p></div>
     {settings && <form className="cvsj-session-settings" onSubmit={saveSettings}>
       <div><h3>Session privacy</h3><p>Choose which session details this screen can show.</p></div>
       <label className="cvsj-check"><input type="checkbox" checked={settings.track_activity} onChange={event => setSettings(current => ({ ...current, track_activity: event.target.checked }))} /><span>Track last activity on this site</span></label>
@@ -1505,7 +1505,7 @@ function SessionsView() {
         <h4>Concurrent sessions</h4>
         <label className="cvsj-check"><input type="checkbox" checked={settings.limit_enabled} onChange={event => setSettings(current => ({ ...current, limit_enabled: event.target.checked }))} /><span>Limit active sessions per account</span></label>
         <label className="cvsj-field"><span>Maximum sessions</span><Input aria-label="Maximum sessions per account" type="number" min="1" max="20" step="1" disabled={!settings.limit_enabled} value={settings.max_sessions} onChange={event => setSettings(current => ({ ...current, max_sessions: Number(event.target.value) }))} /></label>
-        <small>New sign ins end the oldest sessions above this limit. Site administrators, Super Admins, and Change Vigil session managers are always excluded.</small>
+        <small>New sign ins end the oldest sessions above this limit. Site administrators, Super Admins, and Lanternmote session managers are always excluded.</small>
       </div>
       <div className="cvsj-session-policy-group">
         <h4>Idle expiry</h4>
@@ -1547,7 +1547,7 @@ function SessionsView() {
     </div>}
     {data && <div className="cvsj-pagination" aria-label="Account pages"><span>{data.total_users} accounts, page {data.page}</span><Button variant="outline" disabled={data.page <= 1} onClick={() => setPage(value => Math.max(1, value - 1))}><ArrowLeft aria-hidden="true" /> Previous</Button><Button variant="outline" disabled={!data.has_more} onClick={() => setPage(value => value + 1)}>Next <ArrowRight aria-hidden="true" /></Button></div>}
     <p className="cvsj-session-policy-note"><Clock3 aria-hidden="true" size={15} /> WordPress controls session expiry. This screen does not change the site's login duration.</p>
-    <p className="cvsj-settings-version">Change Vigil Site Journal, Version {config.version}</p>
+    <p className="cvsj-settings-version">Lanternmote Change Log, Version {config.version}</p>
   </section>;
 }
 
@@ -1579,9 +1579,9 @@ function App() {
   return <div className="cvsj-app">
     <div className="cvsj-heading">
       <div className="cvsj-mark"><Activity size={25} aria-hidden="true" /></div>
-      <div><h1 ref={heading} tabIndex={-1}>{config.networkMode ? "Network Change Vigil" : "Change Vigil"}</h1><p>{config.networkMode ? "Review changes across sites in this network." : "See who changed what across this WordPress site."}</p></div>
+      <div><h1 ref={heading} tabIndex={-1}>{config.networkMode ? "Network Lanternmote" : "Lanternmote"}</h1><p>{config.networkMode ? "Review changes across sites in this network." : "See who changed what across this WordPress site."}</p></div>
     </div>
-    <nav className="cvsj-nav" aria-label="Change Vigil">
+    <nav className="cvsj-nav" aria-label="Lanternmote">
       <a href={viewUrl(view.filters, "activity")} onClick={event => follow(event, "activity")} aria-current={currentPage === "activity" ? "page" : undefined}><Activity size={16} aria-hidden="true" /> Activity</a>
       {config.networkMode && <a href={viewUrl(view.filters, "sites")} onClick={event => follow(event, "sites")} aria-current={currentPage === "sites" ? "page" : undefined}><Globe size={16} aria-hidden="true" /> Sites</a>}
       {!config.networkMode && <a href={viewUrl(view.filters, "reports", { group: view.reportGroup, interval: view.reportInterval })} onClick={event => follow(event, "reports")} aria-current={currentPage === "reports" ? "page" : undefined}><FileText size={16} aria-hidden="true" /> Reports</a>}

@@ -64,8 +64,8 @@ async function setPluginActive(plugin, active) {
 }
 
 async function checkProvider(plugin) {
-  await page.goto(base + "/wp-admin/admin.php?page=change-vigil-site-journal");
-  await page.getByRole("heading", { name: "Change Vigil", exact: true }).waitFor();
+  await page.goto(base + "/wp-admin/admin.php?page=lanternmote-change-log");
+  await page.getByRole("heading", { name: "Lanternmote", exact: true }).waitFor();
   await fixture("reset");
   const defaults = await api("settings");
   assert.equal(defaults.status, 200);
@@ -108,7 +108,7 @@ async function checkProvider(plugin) {
   assert.ok(csv.data.includes(`${plugin.provider}_seo_settings_changed`));
   assert.doesNotMatch(csv.data, /PRIVATE_SEO_|private@example\.invalid|https:\/\/private\.invalid/);
 
-  await page.goto(base + `/wp-admin/admin.php?page=change-vigil-site-journal&category=${plugin.provider}&q=${encodeURIComponent(probe.postName)}`);
+  await page.goto(base + `/wp-admin/admin.php?page=lanternmote-change-log&category=${plugin.provider}&q=${encodeURIComponent(probe.postName)}`);
   const activityTable = page.getByRole("table", { name: "Activity events" });
   try {
     await activityTable.waitFor();
@@ -127,7 +127,7 @@ async function checkProvider(plugin) {
   await page.keyboard.press("Escape");
   await dialog.waitFor({ state: "hidden" });
 
-  await page.getByRole("navigation", { name: "Change Vigil" }).getByRole("link", { name: "Settings", exact: true }).click();
+  await page.getByRole("navigation", { name: "Lanternmote" }).getByRole("link", { name: "Settings", exact: true }).click();
   const integration = page.getByRole("checkbox", { name: new RegExp(plugin.title) });
   await integration.waitFor();
   assert.equal(await integration.isChecked(), true);
@@ -135,7 +135,7 @@ async function checkProvider(plugin) {
   await page.screenshot({ path: `.tmp/seo-${plugin.provider}-settings.png`, fullPage: true });
 
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto(base + `/wp-admin/admin.php?page=change-vigil-site-journal&category=${plugin.provider}`);
+  await page.goto(base + `/wp-admin/admin.php?page=lanternmote-change-log&category=${plugin.provider}`);
   await page.getByRole("table", { name: "Activity events" }).waitFor();
   const dimensions = await page.evaluate(() => ({ viewport: innerWidth, document: document.documentElement.scrollWidth }));
   assert.ok(dimensions.document <= dimensions.viewport + 1, `Horizontal overflow at narrow width: ${JSON.stringify(dimensions)}`);
@@ -150,8 +150,8 @@ try {
   await page.locator("#user_pass").fill(password);
   await page.locator("#wp-submit").click();
   await page.waitForLoadState("domcontentloaded");
-  await page.goto(base + "/wp-admin/admin.php?page=change-vigil-site-journal");
-  await page.getByRole("heading", { name: "Change Vigil", exact: true }).waitFor();
+  await page.goto(base + "/wp-admin/admin.php?page=lanternmote-change-log");
+  await page.getByRole("heading", { name: "Lanternmote", exact: true }).waitFor();
   const original = await api("settings");
   assert.equal(original.status, 200);
   originalSettings = original.data.settings;
@@ -167,8 +167,8 @@ try {
   }
 } finally {
   if (originalSettings) {
-    await page.goto(base + "/wp-admin/admin.php?page=change-vigil-site-journal");
-    await page.getByRole("heading", { name: "Change Vigil", exact: true }).waitFor();
+    await page.goto(base + "/wp-admin/admin.php?page=lanternmote-change-log");
+    await page.getByRole("heading", { name: "Lanternmote", exact: true }).waitFor();
     await api("settings", { data: originalSettings });
   }
   await page.goto(base + "/wp-admin/plugins.php");

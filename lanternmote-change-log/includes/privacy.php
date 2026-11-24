@@ -1,6 +1,6 @@
 <?php
 
-namespace ChangeVigilSiteJournal;
+namespace LanternmoteChangeLog;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -15,16 +15,16 @@ final class Privacy {
     }
 
     public static function exporters( array $exporters ): array {
-        $exporters['change-vigil-site-journal'] = [
-            'exporter_friendly_name' => __( 'Change Vigil Site Journal', 'change-vigil-site-journal' ),
+        $exporters['lanternmote-change-log'] = [
+            'exporter_friendly_name' => __( 'Lanternmote Change Log', 'lanternmote-change-log' ),
             'callback' => [ self::class, 'export_personal_data' ],
         ];
         return $exporters;
     }
 
     public static function erasers( array $erasers ): array {
-        $erasers['change-vigil-site-journal'] = [
-            'eraser_friendly_name' => __( 'Change Vigil Site Journal', 'change-vigil-site-journal' ),
+        $erasers['lanternmote-change-log'] = [
+            'eraser_friendly_name' => __( 'Lanternmote Change Log', 'lanternmote-change-log' ),
             'callback' => [ self::class, 'erase_personal_data' ],
         ];
         return $erasers;
@@ -33,7 +33,7 @@ final class Privacy {
     public static function export_personal_data( string $email_address, int $page = 1 ): array {
         global $wpdb;
         if ( ! self::can_manage_privacy() ) {
-            return [ 'data' => [], 'done' => true, 'messages' => [ __( 'You are not allowed to export this activity data.', 'change-vigil-site-journal' ) ] ];
+            return [ 'data' => [], 'done' => true, 'messages' => [ __( 'You are not allowed to export this activity data.', 'lanternmote-change-log' ) ] ];
         }
         $email = sanitize_email( $email_address );
         if ( ! is_email( $email ) ) {
@@ -62,8 +62,8 @@ final class Privacy {
                         'item_id' => 'session-activity-' . $user_id,
                         'group_id' => 'activity-log-session-activity',
                         'item_data' => [
-                            [ 'name' => __( 'Session activity', 'change-vigil-site-journal' ), 'value' => __( 'Last observed request', 'change-vigil-site-journal' ) ],
-                            [ 'name' => __( 'Time', 'change-vigil-site-journal' ), 'value' => wp_date( 'j M Y, H:i:s T', $last_activity ) ],
+                            [ 'name' => __( 'Session activity', 'lanternmote-change-log' ), 'value' => __( 'Last observed request', 'lanternmote-change-log' ) ],
+                            [ 'name' => __( 'Time', 'lanternmote-change-log' ), 'value' => wp_date( 'j M Y, H:i:s T', $last_activity ) ],
                         ],
                     ];
                 }
@@ -106,12 +106,12 @@ final class Privacy {
                 'item_id' => 'event-' . (int) $event['id'],
                 'group_id' => 'activity-log-events',
                 'item_data' => [
-                    [ 'name' => __( 'Time', 'change-vigil-site-journal' ), 'value' => wp_date( 'j M Y, H:i:s T', strtotime( $event['occurred_at'] . ' UTC' ) ) ],
-                    [ 'name' => __( 'Action', 'change-vigil-site-journal' ), 'value' => sanitize_text_field( (string) $event['action_key'] ) ],
-                    [ 'name' => __( 'Actor', 'change-vigil-site-journal' ), 'value' => ( ( $user_id && (int) $event['actor_id'] === $user_id ) || str_contains( strtolower( (string) $event['actor_name'] ), strtolower( $email ) ) ) ? sanitize_text_field( (string) $event['actor_name'] ) : __( 'Another site user', 'change-vigil-site-journal' ) ],
-                    [ 'name' => __( 'Affected item', 'change-vigil-site-journal' ), 'value' => ( 'user' === $event['item_kind'] && (string) $user_id === (string) $event['item_key'] ) ? __( 'WordPress account', 'change-vigil-site-journal' ) : sanitize_text_field( (string) $event['item_name'] ) ],
-                    [ 'name' => __( 'Summary', 'change-vigil-site-journal' ), 'value' => sanitize_text_field( (string) $event['summary'] ) ],
-                    [ 'name' => __( 'Event details', 'change-vigil-site-journal' ), 'value' => is_array( $details ) ? wp_json_encode( $details, JSON_INVALID_UTF8_SUBSTITUTE ) : '' ],
+                    [ 'name' => __( 'Time', 'lanternmote-change-log' ), 'value' => wp_date( 'j M Y, H:i:s T', strtotime( $event['occurred_at'] . ' UTC' ) ) ],
+                    [ 'name' => __( 'Action', 'lanternmote-change-log' ), 'value' => sanitize_text_field( (string) $event['action_key'] ) ],
+                    [ 'name' => __( 'Actor', 'lanternmote-change-log' ), 'value' => ( ( $user_id && (int) $event['actor_id'] === $user_id ) || str_contains( strtolower( (string) $event['actor_name'] ), strtolower( $email ) ) ) ? sanitize_text_field( (string) $event['actor_name'] ) : __( 'Another site user', 'lanternmote-change-log' ) ],
+                    [ 'name' => __( 'Affected item', 'lanternmote-change-log' ), 'value' => ( 'user' === $event['item_kind'] && (string) $user_id === (string) $event['item_key'] ) ? __( 'WordPress account', 'lanternmote-change-log' ) : sanitize_text_field( (string) $event['item_name'] ) ],
+                    [ 'name' => __( 'Summary', 'lanternmote-change-log' ), 'value' => sanitize_text_field( (string) $event['summary'] ) ],
+                    [ 'name' => __( 'Event details', 'lanternmote-change-log' ), 'value' => is_array( $details ) ? wp_json_encode( $details, JSON_INVALID_UTF8_SUBSTITUTE ) : '' ],
                 ],
             ];
         }
@@ -120,9 +120,9 @@ final class Privacy {
                 'item_id' => 'note-' . (int) $note['id'],
                 'group_id' => 'activity-log-notes',
                 'item_data' => [
-                    [ 'name' => __( 'Event ID', 'change-vigil-site-journal' ), 'value' => (string) $note['event_id'] ],
-                    [ 'name' => __( 'Time', 'change-vigil-site-journal' ), 'value' => wp_date( 'j M Y, H:i:s T', strtotime( $note['created_at'] . ' UTC' ) ) ],
-                    [ 'name' => __( 'Note', 'change-vigil-site-journal' ), 'value' => sanitize_textarea_field( (string) $note['note'] ) ],
+                    [ 'name' => __( 'Event ID', 'lanternmote-change-log' ), 'value' => (string) $note['event_id'] ],
+                    [ 'name' => __( 'Time', 'lanternmote-change-log' ), 'value' => wp_date( 'j M Y, H:i:s T', strtotime( $note['created_at'] . ' UTC' ) ) ],
+                    [ 'name' => __( 'Note', 'lanternmote-change-log' ), 'value' => sanitize_textarea_field( (string) $note['note'] ) ],
                 ],
             ];
         }
@@ -130,7 +130,7 @@ final class Privacy {
             return [
                 'data' => $data,
                 'done' => true,
-                'messages' => [ __( 'Activity data could not be fully read. Check the Change Vigil database table before completing this export.', 'change-vigil-site-journal' ) ],
+                'messages' => [ __( 'Activity data could not be fully read. Check the Lanternmote database table before completing this export.', 'lanternmote-change-log' ) ],
             ];
         }
         return [ 'data' => $data, 'done' => count( (array) $events ) < self::PAGE_SIZE && count( (array) $notes ) < self::PAGE_SIZE ];
@@ -165,12 +165,12 @@ final class Privacy {
                 }
             }
             if ( $matches_user ) {
-                $matching_filters[] = __( 'Actor: this account', 'change-vigil-site-journal' );
+                $matching_filters[] = __( 'Actor: this account', 'lanternmote-change-log' );
             }
             $schedule_name = (string) ( $schedule['name'] ?? '' );
             $name_matches = self::contains_identifier( $schedule_name, $identifiers );
             if ( $name_matches ) {
-                $matching_filters[] = __( 'Report name', 'change-vigil-site-journal' ) . ': ' . sanitize_text_field( $schedule_name );
+                $matching_filters[] = __( 'Report name', 'lanternmote-change-log' ) . ': ' . sanitize_text_field( $schedule_name );
             }
             if ( ! $is_recipient && ! $matching_filters && ! $name_matches ) {
                 continue;
@@ -182,11 +182,11 @@ final class Privacy {
                 'item_id' => 'scheduled-report-' . sanitize_key( (string) ( $schedule['id'] ?? '' ) ),
                 'group_id' => 'activity-log-report-recipients',
                 'item_data' => [
-                    [ 'name' => __( 'Report', 'change-vigil-site-journal' ), 'value' => sanitize_text_field( $schedule_name ) ],
-                    [ 'name' => __( 'Frequency', 'change-vigil-site-journal' ), 'value' => sanitize_key( (string) ( $schedule['cadence'] ?? '' ) ) ],
-                    [ 'name' => __( 'Format', 'change-vigil-site-journal' ), 'value' => sanitize_key( (string) ( $schedule['format'] ?? 'csv' ) ) ],
-                    [ 'name' => __( 'Why this report is linked', 'change-vigil-site-journal' ), 'value' => $is_recipient ? __( 'Recipient', 'change-vigil-site-journal' ) : implode( '; ', $matching_filters ) ],
-                    ...( $is_recipient ? [ [ 'name' => __( 'Recipient email', 'change-vigil-site-journal' ), 'value' => $email ] ] : [] ),
+                    [ 'name' => __( 'Report', 'lanternmote-change-log' ), 'value' => sanitize_text_field( $schedule_name ) ],
+                    [ 'name' => __( 'Frequency', 'lanternmote-change-log' ), 'value' => sanitize_key( (string) ( $schedule['cadence'] ?? '' ) ) ],
+                    [ 'name' => __( 'Format', 'lanternmote-change-log' ), 'value' => sanitize_key( (string) ( $schedule['format'] ?? 'csv' ) ) ],
+                    [ 'name' => __( 'Why this report is linked', 'lanternmote-change-log' ), 'value' => $is_recipient ? __( 'Recipient', 'lanternmote-change-log' ) : implode( '; ', $matching_filters ) ],
+                    ...( $is_recipient ? [ [ 'name' => __( 'Recipient email', 'lanternmote-change-log' ), 'value' => $email ] ] : [] ),
                 ],
             ];
         }
@@ -205,13 +205,13 @@ final class Privacy {
                 'item_id' => 'activity-log-report-history-' . sanitize_key( (string) ( $entry['id'] ?? '' ) ),
                 'group_id' => 'activity-log-report-history',
                 'item_data' => [
-                    [ 'name' => __( 'Report', 'change-vigil-site-journal' ), 'value' => sanitize_text_field( (string) ( $entry['name'] ?? '' ) ) ],
-                    [ 'name' => __( 'Format', 'change-vigil-site-journal' ), 'value' => sanitize_key( (string) ( $entry['format'] ?? '' ) ) ],
-                    [ 'name' => __( 'Frequency', 'change-vigil-site-journal' ), 'value' => sanitize_key( (string) ( $entry['cadence'] ?? '' ) ) ],
-                    [ 'name' => __( 'Delivery time', 'change-vigil-site-journal' ), 'value' => wp_date( 'j M Y, H:i:s T', max( 0, (int) ( $entry['occurred_at'] ?? 0 ) ) ) ],
-                    [ 'name' => __( 'Delivery status', 'change-vigil-site-journal' ), 'value' => sanitize_key( (string) ( $entry['status'] ?? '' ) ) ],
-                    [ 'name' => __( 'Matching events', 'change-vigil-site-journal' ), 'value' => (string) max( 0, (int) ( $entry['event_count'] ?? 0 ) ) ],
-                    ...( ! empty( $entry['file'] ) ? [ [ 'name' => __( 'Private report copy', 'change-vigil-site-journal' ), 'value' => __( 'A copy was retained in report history at the time of delivery.', 'change-vigil-site-journal' ) ] ] : [] ),
+                    [ 'name' => __( 'Report', 'lanternmote-change-log' ), 'value' => sanitize_text_field( (string) ( $entry['name'] ?? '' ) ) ],
+                    [ 'name' => __( 'Format', 'lanternmote-change-log' ), 'value' => sanitize_key( (string) ( $entry['format'] ?? '' ) ) ],
+                    [ 'name' => __( 'Frequency', 'lanternmote-change-log' ), 'value' => sanitize_key( (string) ( $entry['cadence'] ?? '' ) ) ],
+                    [ 'name' => __( 'Delivery time', 'lanternmote-change-log' ), 'value' => wp_date( 'j M Y, H:i:s T', max( 0, (int) ( $entry['occurred_at'] ?? 0 ) ) ) ],
+                    [ 'name' => __( 'Delivery status', 'lanternmote-change-log' ), 'value' => sanitize_key( (string) ( $entry['status'] ?? '' ) ) ],
+                    [ 'name' => __( 'Matching events', 'lanternmote-change-log' ), 'value' => (string) max( 0, (int) ( $entry['event_count'] ?? 0 ) ) ],
+                    ...( ! empty( $entry['file'] ) ? [ [ 'name' => __( 'Private report copy', 'lanternmote-change-log' ), 'value' => __( 'A copy was retained in report history at the time of delivery.', 'lanternmote-change-log' ) ] ] : [] ),
                 ],
             ];
         }
@@ -239,28 +239,28 @@ final class Privacy {
             }
             $matches_name = self::contains_identifier( (string) $report['name'], $identifiers );
             if ( $matches_user ) {
-                $references[] = __( 'Actor: this account', 'change-vigil-site-journal' );
+                $references[] = __( 'Actor: this account', 'lanternmote-change-log' );
             }
             if ( $matches_name ) {
-                $references[] = __( 'Report name', 'change-vigil-site-journal' ) . ': ' . sanitize_text_field( $report['name'] );
+                $references[] = __( 'Report name', 'lanternmote-change-log' ) . ': ' . sanitize_text_field( $report['name'] );
             }
             foreach ( (array) ( $report['tags'] ?? [] ) as $tag ) {
                 if ( is_string( $tag ) && self::contains_identifier( $tag, $identifiers ) ) {
                     $matches_name = true;
-                    $references[] = __( 'Tag', 'change-vigil-site-journal' ) . ': ' . sanitize_text_field( $tag );
+                    $references[] = __( 'Tag', 'lanternmote-change-log' ) . ': ' . sanitize_text_field( $tag );
                 }
             }
             if ( $matches_user || $matches_value || $matches_name ) {
                 $item_data = [
-                    [ 'name' => __( 'Saved report', 'change-vigil-site-journal' ), 'value' => sanitize_text_field( $report['name'] ) ],
-                    [ 'name' => __( 'Matching reference', 'change-vigil-site-journal' ), 'value' => implode( '; ', array_values( array_unique( $references ) ) ) ],
+                    [ 'name' => __( 'Saved report', 'lanternmote-change-log' ), 'value' => sanitize_text_field( $report['name'] ) ],
+                    [ 'name' => __( 'Matching reference', 'lanternmote-change-log' ), 'value' => implode( '; ', array_values( array_unique( $references ) ) ) ],
                 ];
                 if ( ( $matches_user || $matched_filter_identifier ) && isset( $report['statistics'] ) ) {
                     $statistics = $report['statistics'];
                     $item_data[] = [
-                        'name' => __( 'Saved statistics result', 'change-vigil-site-journal' ),
+                        'name' => __( 'Saved statistics result', 'lanternmote-change-log' ),
                         // translators: %1$d is the number of matching events; %2$s is the start of the date range; %3$s is the end of the date range.
-                        'value' => sprintf( _n( '%1$d event, %2$s through %3$s', '%1$d events, %2$s through %3$s', $statistics['total'], 'change-vigil-site-journal' ), $statistics['total'], $statistics['from'], $statistics['to'] ),
+                        'value' => sprintf( _n( '%1$d event, %2$s through %3$s', '%1$d events, %2$s through %3$s', $statistics['total'], 'lanternmote-change-log' ), $statistics['total'], $statistics['from'], $statistics['to'] ),
                     ];
                 }
                 $items[] = [
@@ -277,15 +277,15 @@ final class Privacy {
         $items = [];
         $settings = Store::settings();
         foreach ( [
-            'viewer_users' => __( 'Can view activity', 'change-vigil-site-journal' ),
-            'manager_users' => __( 'Can manage Change Vigil', 'change-vigil-site-journal' ),
-            'excluded_users' => __( 'Excluded from activity recording', 'change-vigil-site-journal' ),
+            'viewer_users' => __( 'Can view activity', 'lanternmote-change-log' ),
+            'manager_users' => __( 'Can manage Lanternmote', 'lanternmote-change-log' ),
+            'excluded_users' => __( 'Excluded from activity recording', 'lanternmote-change-log' ),
         ] as $key => $label ) {
             if ( in_array( $user_id, $settings[ $key ], true ) ) {
                 $items[] = [
                     'item_id' => 'activity-log-access-' . $key,
                     'group_id' => 'activity-log-settings',
-                    'item_data' => [ [ 'name' => __( 'Access setting', 'change-vigil-site-journal' ), 'value' => $label ] ],
+                    'item_data' => [ [ 'name' => __( 'Access setting', 'lanternmote-change-log' ), 'value' => $label ] ],
                 ];
             }
         }
@@ -293,7 +293,7 @@ final class Privacy {
             $items[] = [
                 'item_id' => 'activity-log-excluded-user-item',
                 'group_id' => 'activity-log-settings',
-                'item_data' => [ [ 'name' => __( 'Item exclusion', 'change-vigil-site-journal' ), 'value' => __( 'This account item is excluded from recording', 'change-vigil-site-journal' ) ] ],
+                'item_data' => [ [ 'name' => __( 'Item exclusion', 'lanternmote-change-log' ), 'value' => __( 'This account item is excluded from recording', 'lanternmote-change-log' ) ] ],
             ];
         }
         return $items;
@@ -304,8 +304,8 @@ final class Privacy {
             'item_id' => 'activity-log-email-' . sanitize_key( $purpose ),
             'group_id' => 'activity-log-email-settings',
             'item_data' => [
-                [ 'name' => __( 'Purpose', 'change-vigil-site-journal' ), 'value' => $purpose ],
-                [ 'name' => __( 'Email address', 'change-vigil-site-journal' ), 'value' => $email ],
+                [ 'name' => __( 'Purpose', 'lanternmote-change-log' ), 'value' => $purpose ],
+                [ 'name' => __( 'Email address', 'lanternmote-change-log' ), 'value' => $email ],
             ],
         ];
     }
@@ -313,7 +313,7 @@ final class Privacy {
     public static function erase_personal_data( string $email_address, int $page = 1 ): array {
         global $wpdb;
         if ( ! self::can_manage_privacy() ) {
-            return [ 'items_removed' => false, 'items_retained' => false, 'messages' => [ __( 'You are not allowed to erase this activity data.', 'change-vigil-site-journal' ) ], 'done' => true ];
+            return [ 'items_removed' => false, 'items_retained' => false, 'messages' => [ __( 'You are not allowed to erase this activity data.', 'lanternmote-change-log' ) ], 'done' => true ];
         }
         $email = sanitize_email( $email_address );
         if ( ! is_email( $email ) ) {
@@ -362,7 +362,7 @@ final class Privacy {
         $events_more = false;
         $events_safe = '' === $settings['error'] && '' === $alerts['error'] && ! empty( $delivery['events_safe'] );
         if ( ! $events_safe ) {
-            $messages[] = __( 'Activity entries will be processed after privacy related email settings, pending alerts, and active reports are secured.', 'change-vigil-site-journal' );
+            $messages[] = __( 'Activity entries will be processed after privacy related email settings, pending alerts, and active reports are secured.', 'lanternmote-change-log' );
             $has_error = true;
         }
         if ( $events_safe ) {
@@ -381,7 +381,7 @@ final class Privacy {
                 ) );
             }
             if ( $wpdb->last_error || ! is_array( $note_ids ) ) {
-                $messages[] = __( 'Personal notes could not be processed. Check the Change Vigil database table and retry the erasure.', 'change-vigil-site-journal' );
+                $messages[] = __( 'Personal notes could not be processed. Check the Lanternmote database table and retry the erasure.', 'lanternmote-change-log' );
                 $has_error = true;
             } elseif ( $note_ids ) {
                 $notes_more = count( $note_ids ) > self::ERASE_BATCH;
@@ -390,7 +390,7 @@ final class Privacy {
                     // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Remove a note selected for privacy erasure by its integer primary key.
                     $deleted = $wpdb->delete( Store::notes_table(), [ 'id' => $note_id ], [ '%d' ] );
                     if ( false === $deleted ) {
-                        $messages[] = __( 'Personal notes could not be deleted. Retry the erasure request.', 'change-vigil-site-journal' );
+                        $messages[] = __( 'Personal notes could not be deleted. Retry the erasure request.', 'lanternmote-change-log' );
                         $has_error = true;
                         break;
                     }
@@ -412,7 +412,7 @@ final class Privacy {
                 ), ARRAY_A );
             }
             if ( $wpdb->last_error || ! is_array( $events ) ) {
-                $messages[] = __( 'Activity data could not be processed. Check the Change Vigil database table and retry the erasure.', 'change-vigil-site-journal' );
+                $messages[] = __( 'Activity data could not be processed. Check the Lanternmote database table and retry the erasure.', 'lanternmote-change-log' );
                 $has_error = true;
             } elseif ( $events ) {
                 $events_more = count( $events ) > self::ERASE_BATCH;
@@ -426,13 +426,13 @@ final class Privacy {
                     }
                 }
                 if ( $note_deletion_failed ) {
-                    $messages[] = __( 'Notes linked to activity could not be deleted. Retry the erasure request.', 'change-vigil-site-journal' );
+                    $messages[] = __( 'Notes linked to activity could not be deleted. Retry the erasure request.', 'lanternmote-change-log' );
                     $has_error = true;
                 } else {
-                    $actor_name = __( 'Deleted user', 'change-vigil-site-journal' );
-                    $actor_summary = __( 'Activity retained, details removed during privacy erasure', 'change-vigil-site-journal' );
-                    $account_name = __( 'WordPress account', 'change-vigil-site-journal' );
-                    $account_summary = __( 'Account activity with personal details removed', 'change-vigil-site-journal' );
+                    $actor_name = __( 'Deleted user', 'lanternmote-change-log' );
+                    $actor_summary = __( 'Activity retained, details removed during privacy erasure', 'lanternmote-change-log' );
+                    $account_name = __( 'WordPress account', 'lanternmote-change-log' );
+                    $account_summary = __( 'Account activity with personal details removed', 'lanternmote-change-log' );
                     $update_failed = false;
                     foreach ( $events as $event ) {
                         $id = (int) $event['id'];
@@ -467,7 +467,7 @@ final class Privacy {
                                 $changes['item_key'] = '';
                             }
                             if ( $item_email_matches && ! $account_matches ) {
-                                $changes['item_name'] = __( 'Activity item', 'change-vigil-site-journal' );
+                                $changes['item_name'] = __( 'Activity item', 'lanternmote-change-log' );
                             }
                             $changes['summary'] = $actor_summary;
                             $changes['details'] = '{}';
@@ -485,7 +485,7 @@ final class Privacy {
                         }
                     }
                     if ( $update_failed ) {
-                        $messages[] = __( 'Activity entries could not be anonymized. Retry the erasure request.', 'change-vigil-site-journal' );
+                        $messages[] = __( 'Activity entries could not be anonymized. Retry the erasure request.', 'lanternmote-change-log' );
                         $has_error = true;
                     } else {
                         $event_ids = array_map( static fn( array $event ): int => (int) $event['id'], $events );
@@ -496,7 +496,7 @@ final class Privacy {
         }
 
         if ( $items_retained ) {
-            $messages[] = __( 'Activity entries were retained for site administration. Account names and identifiers were removed, and personal change details were cleared.', 'change-vigil-site-journal' );
+            $messages[] = __( 'Activity entries were retained for site administration. Account names and identifiers were removed, and personal change details were cleared.', 'lanternmote-change-log' );
         }
         $done = ! $has_error && ! $events_more && ! $notes_more;
         if ( $done ) {
@@ -507,7 +507,7 @@ final class Privacy {
         if ( $states ) {
             $saved_state = update_option( self::ERASE_STATE, $states, false );
             if ( ! $saved_state && $states !== get_option( self::ERASE_STATE, [] ) ) {
-                $messages[] = __( 'Privacy erasure progress could not be saved. Retry the erasure request.', 'change-vigil-site-journal' );
+                $messages[] = __( 'Privacy erasure progress could not be saved. Retry the erasure request.', 'lanternmote-change-log' );
                 $done = false;
             }
         } else {
@@ -556,7 +556,7 @@ final class Privacy {
         if ( $settings !== $stored ) {
             update_option( Store::SETTINGS, $settings, false );
         }
-        $error = Store::settings() !== $settings ? __( 'Change Vigil privacy settings could not be updated. Retry the erasure request.', 'change-vigil-site-journal' ) : '';
+        $error = Store::settings() !== $settings ? __( 'Lanternmote privacy settings could not be updated. Retry the erasure request.', 'lanternmote-change-log' ) : '';
         return [ 'removed' => $removed, 'error' => $error ];
     }
 
@@ -597,7 +597,7 @@ final class Privacy {
                 $changed = true;
             }
             if ( isset( $report['name'] ) && is_string( $report['name'] ) && self::contains_identifier( $report['name'], $identifiers ) ) {
-                $report['name'] = __( 'Saved report', 'change-vigil-site-journal' );
+                $report['name'] = __( 'Saved report', 'lanternmote-change-log' );
                 $changed = true;
             }
             if ( is_array( $report['tags'] ?? null ) ) {
@@ -612,7 +612,7 @@ final class Privacy {
         if ( $changed ) {
             update_option( Store::SAVED_REPORTS, $reports, false );
         }
-        $error = $changed && get_option( Store::SAVED_REPORTS, [] ) !== $reports ? __( 'Saved report privacy data could not be updated. Retry the erasure request.', 'change-vigil-site-journal' ) : '';
+        $error = $changed && get_option( Store::SAVED_REPORTS, [] ) !== $reports ? __( 'Saved report privacy data could not be updated. Retry the erasure request.', 'lanternmote-change-log' ) : '';
         return [ 'removed' => $changed && '' === $error, 'error' => $error ];
     }
 

@@ -74,13 +74,13 @@ try {
   await mkdir(output, { recursive: true });
   await context.addInitScript({ path: "node_modules/axe-core/axe.min.js" });
   await signIn(page, "pilotadmin", password);
-  const adminScreen = base + "/wp-admin/admin.php?page=change-vigil-site-journal";
+  const adminScreen = base + "/wp-admin/admin.php?page=lanternmote-change-log";
   await page.goto(base + "/wp-admin/plugins.php");
-  const pluginRow = page.locator('tr[data-plugin="change-vigil-site-journal/change-vigil-site-journal.php"]');
+  const pluginRow = page.locator('tr[data-plugin="lanternmote-change-log/lanternmote-change-log.php"]');
   const activate = pluginRow.locator(".activate a");
   if (await activate.count()) await activate.click();
   await page.goto(adminScreen);
-  await page.getByRole("heading", { name: "Change Vigil", exact: true }).waitFor();
+  await page.getByRole("heading", { name: "Lanternmote", exact: true }).waitFor();
 
   await fixture("reset");
   const seeded = await fixture("events");
@@ -127,7 +127,7 @@ try {
   const settingsExport = await context.request.get(endpoint(apiBase, "settings/export").href, { headers: { "X-WP-Nonce": nonce } });
   assert.equal(settingsExport.status(), 200);
   assertPrivateNoStore(settingsExport.headers(), "Settings export");
-  assert.equal((await settingsExport.json()).format, "change-vigil-site-journal-settings");
+  assert.equal((await settingsExport.json()).format, "lanternmote-change-log-settings");
 
   const exportUrl = endpoint(apiBase, "export");
   exportUrl.searchParams.set("_wpnonce", nonce);
@@ -207,7 +207,7 @@ try {
   for (const width of [320, 390, 768, 1440]) {
     await page.setViewportSize({ width, height: 950 });
     await page.goto(adminScreen + "&view=settings");
-    await page.getByText(`Change Vigil Site Journal · Version ${version}`).waitFor();
+    await page.getByText(`Lanternmote Change Log · Version ${version}`).waitFor();
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Settings view overflows at ${width}px.`);
     await audit(`Settings at ${width}px`);
   }

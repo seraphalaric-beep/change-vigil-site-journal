@@ -1,16 +1,16 @@
 <?php
 /**
- * Plugin Name: Change Vigil Site Journal
+ * Plugin Name: Lanternmote Change Log
  * Description: Investigate WordPress changes, with searchable history and CSV export.
  * Author: Bryan Mc Namara
- * Version: 1.2.2
+ * Version: 1.2.3
  * Requires at least: 6.9
  * Requires PHP: 8.3
  * License: GPL-2.0-or-later
- * Text Domain: change-vigil-site-journal
+ * Text Domain: lanternmote-change-log
  */
 
-namespace ChangeVigilSiteJournal;
+namespace LanternmoteChangeLog;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -27,7 +27,20 @@ require_once __DIR__ . '/includes/admin.php';
 register_activation_hook( __FILE__, __NAMESPACE__ . '\\activate' );
 register_deactivation_hook( __FILE__, __NAMESPACE__ . '\\deactivate' );
 
+/**
+ * Both names refer to the same data store. Only one copy should register its hooks.
+ */
+function previous_version_active(): bool {
+    $previous = 'change-vigil-site-journal/change-vigil-site-journal.php';
+    return in_array( $previous, (array) get_option( 'active_plugins', [] ), true )
+        || ( is_multisite() && isset( get_site_option( 'active_sitewide_plugins', [] )[ $previous ] ) );
+}
+
 function activate( bool $network_wide = false ): void {
+    if ( previous_version_active() ) {
+        wp_die( esc_html__( 'Deactivate version 1.2.2 before activating Lanternmote. Both versions use the same activity data.', 'lanternmote-change-log' ), '', [ 'back_link' => true ] );
+    }
+
     if ( $network_wide && is_multisite() ) {
         $offset = 0;
         do {
@@ -38,7 +51,7 @@ function activate( bool $network_wide = false ): void {
                 }
                 try {
                     if ( ! activate_site() ) {
-                        wp_die( esc_html__( 'The activity log table could not be installed or verified for every site. Check database permissions and try again.', 'change-vigil-site-journal' ), '', [ 'back_link' => true ] );
+                        wp_die( esc_html__( 'The activity log table could not be installed or verified for every site. Check database permissions and try again.', 'lanternmote-change-log' ), '', [ 'back_link' => true ] );
                     }
                 } finally {
                     restore_current_blog();
@@ -50,7 +63,7 @@ function activate( bool $network_wide = false ): void {
     }
 
     if ( ! activate_site() ) {
-        wp_die( esc_html__( 'The activity log table could not be installed or verified. Check the database permissions and try again.', 'change-vigil-site-journal' ), '', [ 'back_link' => true ] );
+        wp_die( esc_html__( 'The activity log table could not be installed or verified. Check the database permissions and try again.', 'lanternmote-change-log' ), '', [ 'back_link' => true ] );
     }
 }
 
@@ -65,6 +78,10 @@ function activate_site(): bool {
 }
 
 function deactivate( bool $network_wide = false ): void {
+    if ( previous_version_active() ) {
+        return;
+    }
+
     if ( $network_wide && is_multisite() ) {
         $offset = 0;
         do {
@@ -103,6 +120,10 @@ function initialize_new_site( \WP_Site $site ): void {
     } finally {
         restore_current_blog();
     }
+}
+
+if ( previous_version_active() ) {
+    return;
 }
 
 add_action( 'plugins_loaded', [ Store::class, 'upgrade' ], 5 );

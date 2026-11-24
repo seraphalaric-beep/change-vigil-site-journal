@@ -1,6 +1,6 @@
-# Change Vigil Site Journal developer API
+# Lanternmote Change Log developer API
 
-API version 1 lets another WordPress plugin add safe, filterable event types without calling internal database code. The API is available after `plugins_loaded` when Change Vigil Site Journal is active.
+API version 1 lets another WordPress plugin add safe, filterable event types without calling internal database code. The API is available after `plugins_loaded` when Lanternmote Change Log is active.
 
 ## Register an event type
 
@@ -23,8 +23,8 @@ Supported categories are `content`, `accounts`, `comments`, `taxonomies`, `appea
 Call the public method after the observed action succeeds. The event type must be registered. Attribution, request source, and time come from WordPress and cannot be supplied by the integration.
 
 ```php
-if ( class_exists( '\ChangeVigilSiteJournal\DeveloperAPI' ) ) {
-    \ChangeVigilSiteJournal\DeveloperAPI::record_event( [
+if ( class_exists( '\LanternmoteChangeLog\DeveloperAPI' ) ) {
+    \LanternmoteChangeLog\DeveloperAPI::record_event( [
         'event_type' => 'acme_plan_changed',
         'item_kind' => 'setting',
         'item_id' => 'plan',

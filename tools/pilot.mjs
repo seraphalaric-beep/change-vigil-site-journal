@@ -20,11 +20,11 @@ page.on("pageerror", error => pageErrors.push(error.message));
 page.on("request", request => {
   const url = new URL(request.url());
   const route = url.searchParams.get("rest_route") ?? url.pathname;
-  if (route.endsWith("/change-vigil-site-journal/v1/events")) activityRequests.push(url);
+  if (route.endsWith("/lanternmote-change-log/v1/events")) activityRequests.push(url);
 });
-const plugin = "change-vigil-site-journal/change-vigil-site-journal.php";
-const screen = "/wp-admin/admin.php?page=change-vigil-site-journal";
-const navigation = page.getByRole("navigation", { name: "Change Vigil", exact: true });
+const plugin = "lanternmote-change-log/lanternmote-change-log.php";
+const screen = "/wp-admin/admin.php?page=lanternmote-change-log";
+const navigation = page.getByRole("navigation", { name: "Lanternmote", exact: true });
 
 function assertPrivateNoStore(response, label) {
   assert.match(response.cacheControl ?? "", /\bprivate\b/i, `${label} response must be private`);
@@ -75,7 +75,7 @@ try {
   await fixture("reset");
   const accessUser = await fixture("access_user");
   await page.goto(base + screen);
-  await page.getByRole("heading", { name: "Change Vigil", exact: true }).waitFor();
+  await page.getByRole("heading", { name: "Lanternmote", exact: true }).waitFor();
   await page.getByText(/\d+ events? on this page/).waitFor();
   assert.ok(activityRequests.some(url => url.searchParams.has("_cvsj_request")), "Activity list requests must bypass shared caches");
   const settingsResponse = await api("settings");
@@ -96,8 +96,8 @@ try {
   const settingsExport = await api("settings/export");
   assert.equal(settingsExport.status, 200);
   assertPrivateNoStore(settingsExport, "Settings export");
-  assert.equal(settingsExport.data.format, "change-vigil-site-journal-settings");
-  assert.equal(settingsExport.data.plugin, "change-vigil-site-journal");
+  assert.equal(settingsExport.data.format, "lanternmote-change-log-settings");
+  assert.equal(settingsExport.data.plugin, "lanternmote-change-log");
   assert.deepEqual(settingsExport.data.settings.disabled_actions, []);
   assert.deepEqual(settingsExport.data.settings.viewer_roles, []);
   assert.deepEqual(settingsExport.data.settings.manager_roles, []);
@@ -121,7 +121,7 @@ try {
   eraseOnUninstall.settings.erase = true;
   assert.equal((await api("settings/import", { data: eraseOnUninstall })).status, 409);
   await navigation.getByRole("link", { name: "Settings", exact: true }).click();
-  await page.getByText(`Change Vigil Site Journal · Version ${version}`).waitFor();
+  await page.getByText(`Lanternmote Change Log · Version ${version}`).waitFor();
   const fileCategory = page.locator(".cvsj-settings-group .cvsj-check").filter({ hasText: "New, changed, removed, and permission changes found during scans" }).getByRole("checkbox");
   await fileCategory.waitFor();
   assert.equal(await fileCategory.isChecked(), false);
@@ -144,7 +144,7 @@ try {
   assert.equal((await api("settings")).data.settings.retention, 1);
   await api("settings", { data: settingsExport.data.settings });
   await page.reload();
-  await page.getByText(`Change Vigil Site Journal · Version ${version}`).waitFor();
+  await page.getByText(`Lanternmote Change Log · Version ${version}`).waitFor();
   await page.locator(".cvsj-event-controls > summary").click();
   await importFile(eraseOnUninstall);
   assert.equal(await page.getByRole("button", { name: "Apply imported settings" }).isDisabled(), true);
@@ -154,7 +154,7 @@ try {
   assert.equal((await api("settings")).data.settings.erase, true);
   await api("settings", { data: settingsExport.data.settings });
   await page.reload();
-  await page.getByText(`Change Vigil Site Journal · Version ${version}`).waitFor();
+  await page.getByText(`Lanternmote Change Log · Version ${version}`).waitFor();
   await page.locator(".cvsj-event-controls > summary").click();
   const individualEventSettings = structuredClone(settingsExport.data);
   individualEventSettings.settings.disabled_actions = ["content_edited"];
@@ -259,9 +259,9 @@ try {
   const editorContext = await browser.newContext();
   const editorPage = await editorContext.newPage();
   await signIn(editorPage, "piloteditor", accessUser.editorPassword);
-  const adminScreen = base + "/wp-admin/admin.php?page=change-vigil-site-journal";
+  const adminScreen = base + "/wp-admin/admin.php?page=lanternmote-change-log";
   await editorPage.goto(adminScreen);
-  await editorPage.getByRole("heading", { name: "Change Vigil", exact: true }).waitFor();
+  await editorPage.getByRole("heading", { name: "Lanternmote", exact: true }).waitFor();
   assert.equal(await editorPage.getByRole("link", { name: "Settings", exact: true }).count(), 0);
   const editorConfig = await editorPage.evaluate(() => window.cvsjSettings);
   const editorNonce = editorConfig.nonce;
@@ -304,7 +304,7 @@ try {
   await editorContext.close();
   await api("settings", { data: { ...settingsExport.data.settings, viewer_users: [], manager_users: [], excluded_users: [], excluded_roles: [], excluded_item_kinds: [], excluded_post_statuses: [], exclude_system_activity: false } });
   await page.reload();
-  await page.getByText(`Change Vigil Site Journal · Version ${version}`).waitFor();
+  await page.getByText(`Lanternmote Change Log · Version ${version}`).waitFor();
   assert.deepEqual(pageErrors, []);
   await navigation.getByRole("link", { name: "Settings", exact: true }).click();
   const databaseCategory = page.getByRole("checkbox", { name: /Database tables/ });

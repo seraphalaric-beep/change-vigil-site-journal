@@ -19,8 +19,8 @@ try {
   await page.locator("#user_pass").fill(password);
   await page.locator("#wp-submit").click();
   await page.waitForLoadState("domcontentloaded");
-  await page.goto(base + "/wp-admin/admin.php?page=change-vigil-site-journal");
-  await page.getByRole("heading", { name: "Change Vigil", exact: true }).waitFor();
+  await page.goto(base + "/wp-admin/admin.php?page=lanternmote-change-log");
+  await page.getByRole("heading", { name: "Lanternmote", exact: true }).waitFor();
 
   const marker = "API_FIXTURE_" + randomBytes(4).toString("hex").toUpperCase();
   const response = await page.request.post(base + "/cvsj-fixture.php", { form: { operation: "developer_api", marker } });

@@ -1,5 +1,5 @@
 <?php
-// Test only, register public custom content before the Change Vigil hooks are exercised.
+// Test only, register public custom content before the Lanternmote hooks are exercised.
 add_action( 'init', static function (): void {
 	register_post_type( 'cvsj_book', [
 		'labels' => [
